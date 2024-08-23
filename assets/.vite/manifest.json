@@ -15,20 +15,73 @@
     "file": "header.ClLSqIYG..css",
     "src": "resources/css/components/header.css"
   },
+  "resources/js/alpine/start.js": {
+    "file": "start.AqoZj64s.js",
+    "name": "start",
+    "src": "resources/js/alpine/start.js",
+    "isEntry": true,
+    "imports": [
+      "resources/js/alpine/xDatasApp.js",
+      "resources/js/components/CartDrawer.js",
+      "resources/js/base/env.js",
+      "resources/js/base/channels.js",
+      "_index.DjKJqAo0.js",
+      "resources/js/utils/ShopifyHelpers.js"
+    ]
+  },
+  "resources/js/alpine/xDatasApp.js": {
+    "file": "xDatasApp.C8tgExjc.js",
+    "name": "xDatasApp",
+    "src": "resources/js/alpine/xDatasApp.js",
+    "isEntry": true,
+    "imports": [
+      "resources/js/base/env.js",
+      "resources/js/base/channels.js"
+    ]
+  },
   "resources/js/app.js": {
-    "file": "app.D0dW4pnh.js",
+    "file": "app.1VV3Ho4i.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
       "_preload-helper.D6kgxu3v.js",
       "_piecesjs.DkskFDtB.js",
-      "resources/js/components.js"
+      "resources/js/components.js",
+      "resources/js/alpine/start.js",
+      "resources/js/alpine/xDatasApp.js",
+      "resources/js/base/env.js",
+      "resources/js/base/channels.js",
+      "resources/js/components/CartDrawer.js",
+      "_index.DjKJqAo0.js",
+      "resources/js/utils/ShopifyHelpers.js"
     ],
     "dynamicImports": [
       "resources/js/components/App.js",
       "resources/js/components/Transitions.js"
     ]
+  },
+  "resources/js/base/channels.js": {
+    "file": "channels.Csjl1DsX.js",
+    "name": "channels",
+    "src": "resources/js/base/channels.js",
+    "isEntry": true
+  },
+  "resources/js/base/detection.js": {
+    "file": "detection.CnKGgepQ.js",
+    "name": "detection",
+    "src": "resources/js/base/detection.js",
+    "isEntry": true,
+    "imports": [
+      "resources/js/base/env.js",
+      "resources/js/base/channels.js"
+    ]
+  },
+  "resources/js/base/env.js": {
+    "file": "env.JitegIQa.js",
+    "name": "env",
+    "src": "resources/js/base/env.js",
+    "isEntry": true
   },
   "resources/js/components.js": {
     "file": "components.KP_ZV8JT.js",
@@ -55,6 +108,18 @@
       "resources/js/utils/device.js",
       "resources/js/utils/sizes.js",
       "_index.DjKJqAo0.js"
+    ]
+  },
+  "resources/js/components/CartDrawer.js": {
+    "file": "CartDrawer.ChBbfRwY.js",
+    "name": "CartDrawer",
+    "src": "resources/js/components/CartDrawer.js",
+    "isEntry": true,
+    "imports": [
+      "resources/js/base/env.js",
+      "_index.DjKJqAo0.js",
+      "resources/js/utils/ShopifyHelpers.js",
+      "resources/js/base/channels.js"
     ]
   },
   "resources/js/components/Header.js": {
@@ -106,13 +171,19 @@
     "isEntry": true
   },
   "resources/js/styles.js": {
-    "file": "styles.CkzKMoUR.js",
+    "file": "styles.biHhCoZX.js",
     "name": "styles",
     "src": "resources/js/styles.js",
     "isEntry": true,
     "css": [
-      "styles.DSmeqaeP..css"
+      "styles.D1miIzpi..css"
     ]
+  },
+  "resources/js/utils/ShopifyHelpers.js": {
+    "file": "ShopifyHelpers.CxvC3EcH.js",
+    "name": "ShopifyHelpers",
+    "src": "resources/js/utils/ShopifyHelpers.js",
+    "isEntry": true
   },
   "resources/js/utils/device.js": {
     "file": "device.BVwl-S15.js",
