@@ -1,0 +1,139 @@
+<!doctype html>
+{%- assign viewComponent = template -%}
+{% if viewComponent == 'index' %}
+  {%- assign viewComponent = 'home' -%}
+{% elsif viewComponent == 'page.contact' %}
+  {%- assign viewComponent = 'contact' -%}
+{% elsif viewComponent == 'page' %}
+  {%- assign viewComponent = 'page' -%}
+{% elsif viewComponent == 'customers/login' %}
+  {%- assign viewComponent = 'login' -%}
+{% elsif viewComponent == 'customers/addresses' %}
+  {%- assign viewComponent = 'addresses' -%}
+{% elsif viewComponent == 'page.store-locator' %}
+  {%- assign viewComponent = 'stores' -%}
+{% endif %}
+<html class='no-js' lang='{{ request.locale.iso_code }}'>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <meta name='theme-color' content=''>
+    <link rel='canonical' href='{{ canonical_url }}'>
+
+    {%- if settings.favicon != blank -%}
+      <link
+        rel='icon'
+        type='image/png'
+        href='{{ settings.favicon | image_url: width: 32, height: 32 }}'>
+    {%- endif -%}
+
+    {%- unless settings.type_header_font.system?
+      and settings.type_body_font.system?
+    -%}
+      <link rel='preconnect' href='https://fonts.shopifycdn.com' crossorigin>
+    {%- endunless -%}
+
+    <title>
+      {{ page_title }}
+      {%- if current_tags %}
+        &ndash; tagged "{{ current_tags | join: ', ' }}"
+      {%- endif -%}
+      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %}
+        &ndash; {{ shop.name -}}
+      {%- endunless -%}
+    </title>
+
+    {% if page_description %}
+      <meta name='description' content='{{ page_description | escape }}'>
+    {% endif %}
+
+    {% render 'meta-tags' %}
+
+    <script src='{{ 'constants.js' | asset_url }}' defer='defer'></script>
+    <script src='{{ 'pubsub.js' | asset_url }}' defer='defer'></script>
+    <script src='{{ 'global.js' | asset_url }}' defer='defer'></script>
+    {% comment %} <script src="{{ 'details-disclosure.js' | asset_url }}" defer="defer"></script> {% endcomment %}
+    {% comment %} <script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script> {% endcomment %}
+    {% comment %} <script src="{{ 'search-form.js' | asset_url }}" defer="defer"></script> {% endcomment %}
+
+    {% render 'dawn-styles' %}
+
+    {%- liquid
+      render 'vite' with 'styles.js', preload_stylesheet: true
+      render 'vite' with 'app.js'
+    -%}
+
+    {{ content_for_header }}
+
+    {% render 'theme-assets' %}
+
+    {%- if settings.cart_type == 'drawer' -%}
+      {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
+      {{ 'component-cart.css' | asset_url | stylesheet_tag }}
+      {{ 'component-totals.css' | asset_url | stylesheet_tag }}
+      {{ 'component-price.css' | asset_url | stylesheet_tag }}
+      {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
+
+    {%- if localization.available_countries.size > 1
+      or localization.available_languages.size > 1
+    -%}
+      {{
+        'component-localization-form.css'
+        | asset_url
+        | stylesheet_tag: preload: true
+      }}
+      <script
+        src='{{ 'localization-form.js' | asset_url }}'
+        defer='defer'></script>
+    {%- endif -%}
+
+    {%- if settings.predictive_search_enabled -%}
+      <link
+        rel='stylesheet'
+        href='{{ 'component-predictive-search.css' | asset_url }}'
+        media='print'
+        onload="this.media='all'">
+    {%- endif -%}
+
+    <script>
+      document.documentElement.className =
+        document.documentElement.className.replace('no-js', 'js');
+      if (Shopify.designMode) {
+        document.documentElement.classList.add('shopify-design-mode');
+      }
+    </script>
+  </head>
+
+  <body x-data='DatasApp'>
+    <div x-data='CartDrawer' id='master' role='document'>
+      {%- render 'cart-drawer' -%}
+      {% sections 'header-group' %}
+
+      <c-app>
+        <c-transitions
+          cid='mainTransition'
+          log>
+          <div
+            id='transition-container'
+            data-swup-container
+            data-template='{{ block("controller") }}'>
+            <c-scroll
+              cid='main'>
+              <main
+                class='main-content'
+                tabindex='-1'
+                role='main'>
+                {{ content_for_layout }}
+              </main>
+            </c-scroll>
+          </div>
+        </c-transitions>
+      </c-app>
+      {% sections 'footer-group' %}
+    </div>
+    {% render 'dawn-scripts' %}
+  </body>
+</html>

@@ -1,0 +1,8 @@
+package.json
+package-lock.json
+tailwind.config.js
+node_modules
+node_modules/*
+resources
+indexconfig.json
+tasks

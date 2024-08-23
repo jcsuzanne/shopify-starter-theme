@@ -1,0 +1,19 @@
+{
+  "overrides": [
+    {
+      "files": "*.js",
+      "options": {
+        "parser": "flow"
+      }
+    }
+  ],
+  "printWidth": 80,
+  "tabWidth": 2,
+  "singleQuote": true,
+  "plugins": ["@shopify/prettier-plugin-liquid", "prettier-plugin-tailwindcss"],
+
+  "pluginSearchDirs": false,
+  "twigAlwaysBreakObjects": false,
+  "bracketSameLine": true,
+  "twigFollowOfficialCodingStandards": false
+}

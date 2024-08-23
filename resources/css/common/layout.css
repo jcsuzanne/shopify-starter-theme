@@ -1,0 +1,36 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font);
+  font-size: var(--font-size);
+  /* overflow: hidden; */
+
+  &.is-loading {
+    cursor: wait;
+  }
+  &.has-scroll-dragging {
+    user-select: none;
+  }
+  &.is-mobile {
+    overflow: overlay;
+  }
+}
+
+body {
+  background-color: gray;
+  color: white;
+
+  html.has-app-init & {
+    opacity: 1 !important;
+  }
+
+  html.is-desktop & {
+    /* overflow: hidden; */
+  }
+}
+
+svg {
+  fill: currentColor;
+}

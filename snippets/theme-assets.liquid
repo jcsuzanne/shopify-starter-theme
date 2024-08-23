@@ -1,0 +1,23 @@
+<script>
+  // <![CDATA[
+  var config = {
+    env: '{{ app_env }}',
+    lang: '{{ shop.locale }}',
+    pathAssets: "{{ '' | asset_url }}",
+    XHR_URL: '',
+    currencyCode: '{{ cart.currency.iso_code }}',
+    currencySymbol: '{{ cart.currency.symbol }}',
+    currencyName: '{{ cart.currency.name }}',
+    currencyFormat: '{{ shop.money_with_currency_format }}',
+    freeShippingAmount:
+      '{{ shop.metafields.shopping_features.free_shipping_after_amount }}',
+  };
+  var translations = {};
+  // ]]>
+</script>
+
+{% assign font_icomoonTTF = 'icomoon.ttf' | asset_url %}
+{% assign font_icomoonWOFF = 'icomoon.woff' | asset_url %}
+{% assign font_icomoonSVG = 'icomoon.svg' | asset_url %}
+{% style %}
+{% endstyle %}

@@ -1,0 +1,9 @@
+.c-header {
+  display: block;
+  padding: 25vh var(--unit-small) var(--unit-small);
+  text-align: center;
+
+  h1 {
+    font-size: 8vh;
+  }
+}
