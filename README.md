@@ -1,5 +1,5 @@
 
-# JCS starter dev theme for Shopify 2.0 store
+# Starter dev theme for Shopify 2.0 store
 
 
 Using modern tools like Vite.js, TailwindCSS and Pieces.js, this starter will help you to build more efficient theme with local environment and Github integration
