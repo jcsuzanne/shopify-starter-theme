@@ -61,6 +61,9 @@ export class Scroll extends Piece {
   mount() {
     this.$scrollItems = [];
 
+    // html.classList.add('lenis');
+    // html.classList.add('lenis-smooth');
+
     this.$scrollItems = Array.from(this.$('[data-scroll-item]'));
     // check if items are outside the container
     this.$scrollOutsideItems = document.querySelectorAll(
@@ -75,7 +78,7 @@ export class Scroll extends Piece {
     this.$wrapper =
       typeof this.getAttribute('data-scroll-wrapper') == 'string'
         ? document.querySelector(this.getAttribute('data-scroll-wrapper'))
-        : this.parentNode;
+        : document.documentElement;
     this.direction =
       typeof this.getAttribute('data-scroll-direction') == 'string'
         ? this.getAttribute('data-scroll-direction')
@@ -111,8 +114,8 @@ export class Scroll extends Piece {
         : false;
 
     this.lenis = new Lenis({
-      wrapper: this.$wrapper,
-      content: this,
+      wrapper: window,
+      content: this.$wrapper,
       orientation: this.direction,
       gestureOrientation: this.gestureDirection,
       smoothWheel: true,
@@ -124,6 +127,7 @@ export class Scroll extends Piece {
       touchInertiaMultiplier: 1,
       infinite: typeof this.getAttribute('data-scroll-infinite') == 'string',
     });
+
     window.scrollObjectInstance = this.lenis;
 
     document.documentElement.style.setProperty('--scrollValue', `0px`);
@@ -138,6 +142,14 @@ export class Scroll extends Piece {
           direction: velocity >= 0 ? 'down' : 'up',
           progress,
         };
+
+        // let directionAttr;
+
+        // if (velocity == 0) {
+        //   directionAttr = 'stop';
+        // }
+
+        html.setAttribute('data-direction', direction == 1 ? 'down' : 'up');
 
         document.documentElement.style.setProperty(
           '--scrollValue',
@@ -451,7 +463,7 @@ export class Scroll extends Piece {
     this.lenis.raf(time);
     this.rafInstance = requestAnimationFrame((time) => this.raf(time));
 
-    if (this.lenis.scroll > 200) {
+    if (this.lenis.scroll > 120) {
       if (!html.classList.contains('has-scrolled')) {
         html.classList.add('has-scrolled');
       }

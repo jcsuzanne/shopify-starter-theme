@@ -1,13 +1,13 @@
 [environments.development]
 store = "jcs-blueprint"
-theme = "167220773201"
+theme = "167272350033"
 
 [environments.staging]
 store = "jcs-blueprint"
-theme = "167220773201"
+theme = "167272350033"
 ignore = ["templates/*", "config/*"]
 
 [environments.production]
 store = "jcs-blueprint"
-theme = "167220773201"
+theme = "167272350033"
 ignore = ["templates/*", "config/*"]
