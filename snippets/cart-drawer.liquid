@@ -5,10 +5,7 @@
   <template x-if='itemsCount == 0'>
     <div class='tw-absolute tw-inset-0 tw-z-20 tw-bg-white'>
       <div class='tw-border-liza tw-px-cart-x-mobile lg:tw-px-cart-x tw-mx-auto tw-flex tw-h-[70px] tw-w-full tw-flex-row tw-items-center tw-justify-end tw-border-b tw-border-solid lg:tw-h-[80px]'>
-        <button @click='closeCart()'>
-          <p class='tw-sr-only'>{{ 'general.cart_drawer.close' | t }}</p>
-          {% render 'svg-close-popin' %}
-        </button>
+        <button @click='closeCart()'>Close</button>
       </div>
       <div class='tw-flex tw-h-[calc(100%-70px)] tw-flex-col tw-items-center tw-justify-center lg:tw-h-[calc(100%-80px)]'>
         <h4 class='util-heading-xs'>{{ 'sections.cart.empty' | t }}</h4>
@@ -22,13 +19,8 @@
   </template>
   {% # HEADER %}
   <header class='tw-border-liza tw-px-cart-x-mobile lg:tw-px-cart-x tw-mx-auto tw-flex tw-h-[70px] tw-w-full tw-flex-row tw-items-center tw-justify-between tw-border-b tw-border-solid lg:tw-h-[80px]'>
-    <p class='util-heading-xs'>
-      {{ 'general.cart_drawer.title' | t }}
-    </p>
-    <button @click='closeCart()'>
-      <p class='tw-sr-only'>{{ 'general.cart_drawer.close' | t }}</p>
-      {% render 'svg-close-popin' %}
-    </button>
+    <p class='util-heading-xs'>Cart</p>
+    <button @click='closeCart()'>close</button>
   </header>
 
   {% # CONTENT %}
@@ -120,11 +112,9 @@
       class='tw-mx-cart-x-mobile lg:tw-mx-cart-x tw-h-[40px] tw-w-auto'>
       {% # prettier-ignore %}
       <button type="submit" id="CartDrawer-Checkout" name="checkout" class="tw-font-suisse-md hover:tw-bg-chamakh tw-relative tw-block tw-h-full tw-w-full tw-bg-black tw-text-xs/4 tw-uppercase tw-tracking-[0.24px] tw-text-white tw-transition-colors tw-duration-200"
-  >{{ 'general.cart_drawer.checkout' | t }}</button>
+  >Buy</button>
     </form>
-    <div class='tw-mt-7 [&>svg]:tw-mx-auto'>
-      {% render 'svg-cards' %}
-    </div>
+    <div class='tw-mt-7 [&>svg]:tw-mx-auto'>Cards Showcase</div>
   </div>
 </cart-drawer>
 {% # Overlay %}
