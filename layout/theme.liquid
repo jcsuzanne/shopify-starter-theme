@@ -35,14 +35,7 @@
     {%- endunless -%}
 
     <title>
-      {{ page_title }}
-      {%- if current_tags %}
-        &ndash; tagged "{{ current_tags | join: ', ' }}"
-      {%- endif -%}
-      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-      {%- unless page_title contains shop.name %}
-        &ndash; {{ shop.name -}}
-      {%- endunless -%}
+      {{- shop.name -}}
     </title>
 
     {% if page_description %}
@@ -58,7 +51,7 @@
     {% comment %} <script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script> {% endcomment %}
     {% comment %} <script src="{{ 'search-form.js' | asset_url }}" defer="defer"></script> {% endcomment %}
 
-    {% render 'dawn-styles' %}
+    {% comment %} {% render 'dawn-styles' %} {% endcomment %}
 
     {%- liquid
       render 'vite' with 'styles.js', preload_stylesheet: true
@@ -68,27 +61,6 @@
     {{ content_for_header }}
 
     {% render 'theme-assets' %}
-
-    {%- if settings.cart_type == 'drawer' -%}
-      {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
-      {{ 'component-cart.css' | asset_url | stylesheet_tag }}
-      {{ 'component-totals.css' | asset_url | stylesheet_tag }}
-      {{ 'component-price.css' | asset_url | stylesheet_tag }}
-      {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
-    {%- endif -%}
-
-    {%- if localization.available_countries.size > 1
-      or localization.available_languages.size > 1
-    -%}
-      {{
-        'component-localization-form.css'
-        | asset_url
-        | stylesheet_tag: preload: true
-      }}
-      <script
-        src='{{ 'localization-form.js' | asset_url }}'
-        defer='defer'></script>
-    {%- endif -%}
 
     {%- if settings.predictive_search_enabled -%}
       <link
@@ -109,8 +81,8 @@
 
   <body x-data='DatasApp'>
     <div x-data='CartDrawer' id='master' role='document'>
-      {%- render 'cart-drawer' -%}
       {% sections 'header-group' %}
+      {% render 'password-access' %}
 
       <c-app>
         <c-transitions
@@ -126,14 +98,16 @@
                 class='main-content'
                 tabindex='-1'
                 role='main'>
-                {{ content_for_layout }}
+                <container-view>
+                  {{ content_for_layout }}
+                </container-view>
               </main>
             </c-scroll>
           </div>
         </c-transitions>
       </c-app>
-      {% sections 'footer-group' %}
     </div>
     {% render 'dawn-scripts' %}
+    {% render 'theme-datas' %}
   </body>
 </html>

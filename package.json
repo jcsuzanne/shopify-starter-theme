@@ -9,11 +9,12 @@
     "npm": ">=6.0"
   },
   "scripts": {
-    "dev": "concurrently --passthrough-arguments \"npm run vite:watch\" \"npm run shop:start {@}\" --",
-    "vite:watch": "vite",
+    "dev": "concurrently --passthrough-arguments \"npm run start\" \"npm run shop {@}\" --",
+    "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "shop:start": "shopify theme dev --poll --live-reload=\"hot-reload\" --notify=/tmp/theme.update"
+    "shopify": "shopify theme dev --poll --live-reload=\"hot-reload\" --notify=/tmp/theme.update --store=jcs-blueprint.myshopify.com",
+    "logout": "shopify auth logout"
   },
   "dependencies": {
     "@swup/fade-theme": "^2.0.1",
