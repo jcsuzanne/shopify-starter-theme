@@ -1,0 +1,58 @@
+html.lenis,
+html.lenis body {
+  /* height: auto; */
+}
+
+.scroll-wrapper {
+  height: 100.1vh;
+  width: 100vw;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  position: relative;
+
+  /* scrollbar */
+  /* width */
+  /* &::-webkit-scrollbar {
+    width: 4px;
+  } */
+
+  /* Track */
+  /* &::-webkit-scrollbar-track {
+    background-color: black;
+    transition: background-color var(--speed) var(--easing);
+
+    html[data-theme='light'] & {
+      background-color: white;
+    }
+  } */
+
+  /* Handle */
+  /* &::-webkit-scrollbar-thumb {
+    background-color: white;
+    transition: background-color var(--speed) var(--easing);
+
+    html[data-theme='light'] & {
+      background-color: black;
+    }
+  } */
+
+  html.has-dom-ready &:not(.lenis-stopped) {
+    overflow-y: scroll;
+  }
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}

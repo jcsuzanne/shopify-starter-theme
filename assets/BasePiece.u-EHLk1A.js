@@ -1,0 +1,1 @@
+import{d as t}from"./piecesjs.DVlbDbqt.js";class e extends t{constructor(){super("View",{})}mount(){this.DOM={view:this,...this.captureTree()},this.on("launcher::exit",document,this.afterMount)}afterMount(){}unmount(){this.off("launcher::exit",document,this.afterMount)}}customElements.define("view",e);

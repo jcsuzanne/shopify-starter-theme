@@ -1,59 +1,56 @@
 {
-  "_index.DjKJqAo0.js": {
-    "file": "index.DjKJqAo0.js",
+  "_index.Brfk6Bdo.js": {
+    "file": "index.Brfk6Bdo.js",
     "name": "index"
   },
-  "_piecesjs.DkskFDtB.js": {
-    "file": "piecesjs.DkskFDtB.js",
+  "_piecesjs.DVlbDbqt.js": {
+    "file": "piecesjs.DVlbDbqt.js",
     "name": "piecesjs"
   },
-  "_preload-helper.D6kgxu3v.js": {
-    "file": "preload-helper.D6kgxu3v.js",
-    "name": "preload-helper"
-  },
-  "resources/css/components/header.css": {
-    "file": "header.ClLSqIYG..css",
-    "src": "resources/css/components/header.css"
-  },
   "resources/js/alpine/start.js": {
-    "file": "start.AqoZj64s.js",
+    "file": "start.5ZogNp0W.js",
     "name": "start",
     "src": "resources/js/alpine/start.js",
     "isEntry": true,
     "imports": [
       "resources/js/alpine/xDatasApp.js",
       "resources/js/components/CartDrawer.js",
-      "resources/js/base/env.js",
+      "resources/js/utils/environment.js",
       "resources/js/base/channels.js",
-      "_index.DjKJqAo0.js",
+      "resources/js/shopify/CartEvents.js",
+      "_index.Brfk6Bdo.js",
+      "resources/js/base/env.js",
       "resources/js/utils/ShopifyHelpers.js"
     ]
   },
   "resources/js/alpine/xDatasApp.js": {
-    "file": "xDatasApp.C8tgExjc.js",
+    "file": "xDatasApp.CwTZdYml.js",
     "name": "xDatasApp",
     "src": "resources/js/alpine/xDatasApp.js",
     "isEntry": true,
     "imports": [
-      "resources/js/base/env.js",
-      "resources/js/base/channels.js"
+      "resources/js/utils/environment.js",
+      "resources/js/base/channels.js",
+      "resources/js/shopify/CartEvents.js",
+      "_index.Brfk6Bdo.js"
     ]
   },
   "resources/js/app.js": {
-    "file": "app.ClV5vDC7.js",
+    "file": "app.BAptOnMD.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_preload-helper.D6kgxu3v.js",
-      "_piecesjs.DkskFDtB.js",
       "resources/js/components.js",
+      "_piecesjs.DVlbDbqt.js",
       "resources/js/alpine/start.js",
       "resources/js/alpine/xDatasApp.js",
-      "resources/js/base/env.js",
+      "resources/js/utils/environment.js",
       "resources/js/base/channels.js",
+      "resources/js/shopify/CartEvents.js",
+      "_index.Brfk6Bdo.js",
       "resources/js/components/CartDrawer.js",
-      "_index.DjKJqAo0.js",
+      "resources/js/base/env.js",
       "resources/js/utils/ShopifyHelpers.js"
     ],
     "dynamicImports": [
@@ -62,13 +59,13 @@
     ]
   },
   "resources/js/base/channels.js": {
-    "file": "channels.Csjl1DsX.js",
+    "file": "channels.DQtPs32L.js",
     "name": "channels",
     "src": "resources/js/base/channels.js",
     "isEntry": true
   },
   "resources/js/base/detection.js": {
-    "file": "detection.CnKGgepQ.js",
+    "file": "detection.CNzbLSZ2.js",
     "name": "detection",
     "src": "resources/js/base/detection.js",
     "isEntry": true,
@@ -78,90 +75,131 @@
     ]
   },
   "resources/js/base/env.js": {
-    "file": "env.JitegIQa.js",
+    "file": "env.DJhTxE_i.js",
     "name": "env",
     "src": "resources/js/base/env.js",
     "isEntry": true
   },
   "resources/js/components.js": {
-    "file": "components.EMc0sSo5.js",
+    "file": "components.DKAcwj6-.js",
     "name": "components",
     "src": "resources/js/components.js",
     "isEntry": true,
     "imports": [
-      "_preload-helper.D6kgxu3v.js",
-      "_piecesjs.DkskFDtB.js"
+      "_piecesjs.DVlbDbqt.js"
     ],
     "dynamicImports": [
-      "resources/js/components/Scroll.js"
+      "resources/js/components/Scroll.js",
+      "resources/js/components/CartOpenTrigger.js",
+      "resources/js/components/UIview.js"
     ]
   },
+  "resources/js/components/AfterMountRenderer.js": {
+    "file": "AfterMountRenderer.l0sNRNKZ.js",
+    "name": "AfterMountRenderer",
+    "src": "resources/js/components/AfterMountRenderer.js",
+    "isEntry": true
+  },
   "resources/js/components/App.js": {
-    "file": "App.DXrmXJcP.js",
+    "file": "App.D2N_Vrya.js",
     "name": "App",
     "src": "resources/js/components/App.js",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_piecesjs.DkskFDtB.js",
+      "_piecesjs.DVlbDbqt.js",
       "resources/js/utils/environment.js",
       "resources/js/utils/device.js",
       "resources/js/utils/sizes.js",
-      "_index.DjKJqAo0.js"
+      "_index.Brfk6Bdo.js",
+      "resources/js/alpine/start.js",
+      "resources/js/alpine/xDatasApp.js",
+      "resources/js/base/channels.js",
+      "resources/js/shopify/CartEvents.js",
+      "resources/js/components/CartDrawer.js",
+      "resources/js/base/env.js",
+      "resources/js/utils/ShopifyHelpers.js"
+    ]
+  },
+  "resources/js/components/BasePiece.js": {
+    "file": "BasePiece.u-EHLk1A.js",
+    "name": "BasePiece",
+    "src": "resources/js/components/BasePiece.js",
+    "isEntry": true,
+    "imports": [
+      "_piecesjs.DVlbDbqt.js"
     ]
   },
   "resources/js/components/CartDrawer.js": {
-    "file": "CartDrawer.ChBbfRwY.js",
+    "file": "CartDrawer.A8GU0hD7.js",
     "name": "CartDrawer",
     "src": "resources/js/components/CartDrawer.js",
     "isEntry": true,
     "imports": [
       "resources/js/base/env.js",
-      "_index.DjKJqAo0.js",
+      "_index.Brfk6Bdo.js",
       "resources/js/utils/ShopifyHelpers.js",
       "resources/js/base/channels.js"
     ]
   },
-  "resources/js/components/Header.js": {
-    "file": "Header.DF7IzU89.js",
-    "name": "Header",
-    "src": "resources/js/components/Header.js",
+  "resources/js/components/CartOpenTrigger.js": {
+    "file": "CartOpenTrigger.DUPcb_hm.js",
+    "name": "CartOpenTrigger",
+    "src": "resources/js/components/CartOpenTrigger.js",
     "isEntry": true,
+    "isDynamicEntry": true,
     "imports": [
-      "_preload-helper.D6kgxu3v.js",
-      "_piecesjs.DkskFDtB.js"
+      "_piecesjs.DVlbDbqt.js",
+      "resources/js/base/channels.js"
     ]
   },
-  "resources/js/components/Piece.js": {
-    "file": "Piece.l0sNRNKZ.js",
-    "name": "Piece",
-    "src": "resources/js/components/Piece.js",
-    "isEntry": true
-  },
   "resources/js/components/Scroll.js": {
-    "file": "Scroll.x7Yq4SqJ.js",
+    "file": "Scroll.BhllgU8Y.js",
     "name": "Scroll",
     "src": "resources/js/components/Scroll.js",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_piecesjs.DkskFDtB.js",
-      "_index.DjKJqAo0.js",
+      "_piecesjs.DVlbDbqt.js",
+      "_index.Brfk6Bdo.js",
       "resources/js/utils/environment.js"
     ]
   },
+  "resources/js/components/Timeline.js": {
+    "file": "Timeline.9qckl555.js",
+    "name": "Timeline",
+    "src": "resources/js/components/Timeline.js",
+    "isEntry": true,
+    "imports": [
+      "_piecesjs.DVlbDbqt.js",
+      "_index.Brfk6Bdo.js"
+    ]
+  },
   "resources/js/components/Transitions.js": {
-    "file": "Transitions.ByCHTqWW.js",
+    "file": "Transitions.BsiyQor9.js",
     "name": "Transitions",
     "src": "resources/js/components/Transitions.js",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_piecesjs.DkskFDtB.js",
+      "_piecesjs.DVlbDbqt.js",
       "resources/js/utils/environment.js",
-      "_index.DjKJqAo0.js",
-      "resources/js/components.js",
-      "_preload-helper.D6kgxu3v.js"
+      "_index.Brfk6Bdo.js",
+      "resources/js/components.js"
+    ]
+  },
+  "resources/js/components/UIview.js": {
+    "file": "UIview.BgNBJJe9.js",
+    "name": "UIview",
+    "src": "resources/js/components/UIview.js",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_piecesjs.DVlbDbqt.js",
+      "resources/js/shopify/CartEvents.js",
+      "resources/js/base/channels.js",
+      "resources/js/utils/environment.js",
+      "_index.Brfk6Bdo.js"
     ]
   },
   "resources/js/piecesManager.js": {
@@ -170,13 +208,24 @@
     "src": "resources/js/piecesManager.js",
     "isEntry": true
   },
+  "resources/js/shopify/CartEvents.js": {
+    "file": "CartEvents.DLFJ0vv2.js",
+    "name": "CartEvents",
+    "src": "resources/js/shopify/CartEvents.js",
+    "isEntry": true,
+    "imports": [
+      "resources/js/utils/environment.js",
+      "resources/js/base/channels.js",
+      "_index.Brfk6Bdo.js"
+    ]
+  },
   "resources/js/styles.js": {
-    "file": "styles.2RAOm3xf.js",
+    "file": "styles.qkmCpuMN.js",
     "name": "styles",
     "src": "resources/js/styles.js",
     "isEntry": true,
     "css": [
-      "styles.cfFqczxV..css"
+      "styles.Bo9GKOwh..css"
     ]
   },
   "resources/js/utils/ShopifyHelpers.js": {

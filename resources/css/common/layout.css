@@ -1,11 +1,7 @@
-* {
-  box-sizing: border-box;
-}
-
 html {
-  font-family: var(--font);
-  font-size: var(--font-size);
-  /* overflow: hidden; */
+  image-rendering: optimizeQuality;
+  -webkit-font-smoothing: antialiased;
+  -ms-interpolation-mode: nearest-neighbor;
 
   &.is-loading {
     cursor: wait;
@@ -13,24 +9,48 @@ html {
   &.has-scroll-dragging {
     user-select: none;
   }
-  &.is-mobile {
-    overflow: overlay;
-  }
+}
+
+html,
+html body {
+  height: 100%;
+  width: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  overflow: hidden;
 }
 
 body {
-  background-color: gray;
-  color: white;
+  min-height: 100svh;
+  color: var(--black);
+  position: relative;
+  font-family: var(--font-serif);
+  -moz-osx-font-smoothing: grayscale;
+  /* background-color: var(--black); */
 
   html.has-app-init & {
     opacity: 1 !important;
+    transition: background-color 1s var(--easing);
   }
 
-  html.is-desktop & {
-    /* overflow: hidden; */
+  html.is-loading & {
+    pointer-events: none !important;
+  }
+
+  html.has-dom-ready-callback & {
+    background-color: var(--white);
+    /* transition-delay: 0.3s; */
   }
 }
 
-svg {
-  fill: currentColor;
+a {
+  color: currentColor;
+}
+
+html.is-changing .transition-fade {
+  transition: opacity 0.25s;
+  opacity: 1;
+}
+html.is-animating .transition-fade {
+  opacity: 0;
 }

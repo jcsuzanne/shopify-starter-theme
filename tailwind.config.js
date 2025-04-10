@@ -11,9 +11,6 @@ module.exports = {
     './resources/css/**/*.css',
   ],
   prefix: 'tw-',
-  corePlugins: {
-    aspectRatio: false,
-  },
   theme: {
     screens: {
       sm: '640px',
@@ -23,9 +20,6 @@ module.exports = {
       '2xl': '1680px',
     },
     fontFamily: {},
-    maxWidth: {
-      layout: '1600px',
-    },
     extend: {
       colors: {},
       screens: {
@@ -39,12 +33,22 @@ module.exports = {
         },
         'mobily-only': { max: '600px' },
       },
+      maxWidth: {
+        layout: '1600px',
+      },
       spacing: {
-        'ui-x': '7.5rem', //120px
-        'ui-x-mobile': '2rem', //32px
+        'ui-x': '3.75rem', //120px
+        'ui-x-xs': '1.5rem', //32px
+        tiny: '12px',
+        small: '30px',
+        unit: '60px',
+        double: '120px',
+        huge: '180px',
       },
       zIndex: {
+        nav: '55',
         ui: '60',
+        cart: '90',
       },
     },
   },
@@ -53,12 +57,15 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/forms'),
-    require('@tailwindcss/aspect-ratio'),
     require('@tailwindcss/typography'),
     require('tailwind-scrollbar'),
     require('tailwindcss-easing'),
     plugin(function ({ addVariant }) {
       addVariant('mainnav-opened', 'html[class~="mainnav--isOpened"] &');
+      addVariant('backend-preview', 'html[class~="wp-toolbar"] &');
+      addVariant('inview', '&[class~="is-inview"]');
+      addVariant('is-active', '&[class~="is-active"]');
+      addVariant('cart-opened', 'html[class~="cart-opened"] &');
     }),
   ],
 };

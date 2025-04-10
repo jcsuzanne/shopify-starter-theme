@@ -47,6 +47,7 @@ gsap.registerPlugin(ScrollTrigger);
 // }
 
 const IN_VIEW_CLASS = 'is-inview';
+const IN_VIEW_CLASS_FIRST = 'is-inview-first';
 
 export class Scroll extends Piece {
   constructor() {
@@ -60,14 +61,12 @@ export class Scroll extends Piece {
 
   mount() {
     this.$scrollItems = [];
+    this.$scrollItems = Array.from(this.querySelectorAll('[data-scroll-item]'));
+    console.log(this.querySelectorAll('[data-scroll-item]'));
 
-    // html.classList.add('lenis');
-    // html.classList.add('lenis-smooth');
-
-    this.$scrollItems = Array.from(this.$('[data-scroll-item]'));
     // check if items are outside the container
     this.$scrollOutsideItems = document.querySelectorAll(
-      '[data-scroll="outsideItem"]',
+      '[data-scroll-outside-item]',
     );
     this.$scrollOutsideItems.forEach((outsideItem) => {
       this.$scrollItems.push(outsideItem);
@@ -78,7 +77,7 @@ export class Scroll extends Piece {
     this.$wrapper =
       typeof this.getAttribute('data-scroll-wrapper') == 'string'
         ? document.querySelector(this.getAttribute('data-scroll-wrapper'))
-        : document.documentElement;
+        : this.parentNode;
     this.direction =
       typeof this.getAttribute('data-scroll-direction') == 'string'
         ? this.getAttribute('data-scroll-direction')
@@ -89,11 +88,6 @@ export class Scroll extends Piece {
     if (window.isMobile) {
       this.gestureDirection = 'vertical';
       this.direction = 'vertical';
-    }
-
-    if (window.isTablet) {
-      this.direction = 'horizontal';
-      this.gestureDirection = 'vertical';
     }
 
     window.scrollInstance = {
@@ -114,60 +108,71 @@ export class Scroll extends Piece {
         : false;
 
     this.lenis = new Lenis({
-      wrapper: window,
-      content: this.$wrapper,
+      wrapper: this.$wrapper,
+      content: this,
       orientation: this.direction,
       gestureOrientation: this.gestureDirection,
       smoothWheel: true,
-      smoothTouch: window.isMobile ? isSmoothOnMobile : true,
-      duration: 0.3,
-      lerp: window.isMobile ? 0.1 : 0.3,
+      smoothTouch: false,
+      syncTouch: true,
+      duration: window.isMobile ? 0.75 : 0.8,
+      lerp: window.isMobile ? 0.6 : 0.3,
+      easing: (t) => 1 - Math.pow(1 - t, 5), // Ease Out Quint
       // wheelMultiplier: 0.7,
-      touchMultiplier: 2.5,
-      touchInertiaMultiplier: 1,
+      touchMultiplier: 1.4,
+      touchInertiaMultiplier: 5,
       infinite: typeof this.getAttribute('data-scroll-infinite') == 'string',
     });
-
     window.scrollObjectInstance = this.lenis;
+    window.scrollObjectInstance.container = this.$wrapper;
 
     document.documentElement.style.setProperty('--scrollValue', `0px`);
 
     //get scroll value
     this.lenis.on(
       'scroll',
-      ({ scroll, limit, velocity, direction, progress }) => {
+      ({ scroll, velocity, progress }) => {
+        let direction = velocity >= 0 ? 'down' : 'up';
         window.scrollInstance = {
           scroll,
           velocity,
-          direction: velocity >= 0 ? 'down' : 'up',
+          direction,
           progress,
         };
 
-        // let directionAttr;
+        if (scroll > 60) {
+          if (!html.classList.contains('has-scrolled')) {
+            html.classList.add('has-scrolled');
+          }
+        } else {
+          if (html.classList.contains('has-scrolled')) {
+            html.classList.remove('has-scrolled');
+          }
+        }
 
-        // if (velocity == 0) {
-        //   directionAttr = 'stop';
-        // }
-
-        html.setAttribute('data-direction', direction == 1 ? 'down' : 'up');
+        html.setAttribute('data-direction', direction);
 
         document.documentElement.style.setProperty(
           '--scrollValue',
           `${-parseInt(Math.max(scroll, 0))}px`,
         );
       },
+      { passive: true },
     );
+    this.lenis.on('scroll', ScrollTrigger.update);
 
-    this.raf(0);
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
+    gsap.ticker.add((time) => this.lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
 
     // Init elements to detect
-    gsap.delayedCall(window.readyDelay * 1.2, () => {
+    gsap.delayedCall(1.2, () => {
       this.initElements();
     });
 
-    gsap.delayedCall(window.readyCallbackDelay, () => {
-      this.lenis.resize();
-      this.refresh();
+    gsap.delayedCall(1, () => {
+      this.update();
 
       if (window.location.hash != '') {
         this.lenis.scrollTo(document.querySelector(window.location.hash));
@@ -176,19 +181,18 @@ export class Scroll extends Piece {
       }
     });
 
-    gsap.delayedCall(window.readyCallbackDelay * 3, () => {
-      this.lenis.resize();
-      this.refresh();
-    });
-
     this.on('click', this.$('[data-scroll-to]'), this.scrollTo);
 
     this.on('resize', window, this.resize);
   }
 
   update() {
+    console.log('update lenis');
     this.lenis.resize();
-    this.refresh();
+    gsap.delayedCall(0.1, () => {
+      this.refresh();
+      this.emit('redraw::fx');
+    });
   }
 
   initContainerSize() {
@@ -287,11 +291,12 @@ export class Scroll extends Piece {
             if (scrollElement.progressCallParameters != undefined) {
               this.onElementProgress(self, scrollElement);
             }
+            if (scrollElement.parallaxTl != undefined) {
+              scrollElement.parallaxTl.progress(self.progress);
+            }
           },
         };
-      }
-
-      if (scrollElement.parallaxTl != undefined) {
+      } else if (scrollElement.parallaxTl != undefined) {
         options = {
           ...options,
           onUpdate: (self) => {
@@ -427,6 +432,7 @@ export class Scroll extends Piece {
       return;
     }
     scrollElement.$el.classList.add(IN_VIEW_CLASS);
+    scrollElement.$el.classList.add(IN_VIEW_CLASS_FIRST);
 
     // Call js functions in a specific module with data-attribute
     if (scrollElement.callParameters != undefined) {
@@ -459,40 +465,41 @@ export class Scroll extends Piece {
     }
   }
 
-  raf(time) {
-    this.lenis.raf(time);
-    this.rafInstance = requestAnimationFrame((time) => this.raf(time));
-
-    if (this.lenis.scroll > 120) {
-      if (!html.classList.contains('has-scrolled')) {
-        html.classList.add('has-scrolled');
-      }
-    } else {
-      if (html.classList.contains('has-scrolled')) {
-        html.classList.remove('has-scrolled');
-      }
-    }
-  }
-
   scrollTo(e) {
-    e.preventDefault();
+    if (typeof e.preventDefault === 'function') {
+      e.preventDefault();
+    }
+
     let target =
       typeof e.currentTarget.getAttribute('href') === 'string'
         ? e.currentTarget.getAttribute('href')
         : e.currentTarget.getAttribute('data-href');
+
     let duration =
       typeof e.currentTarget.getAttribute('data-scroll-to-duration') == 'string'
         ? parseFloat(e.currentTarget.getAttribute('data-scroll-to-duration'))
-        : 2;
+        : 1;
     let offset =
       typeof e.currentTarget.getAttribute('data-scroll-to-offset') == 'string'
-        ? parseInt(e.currentTarget.getAttribute('data-scroll-to-offset'))
-        : 0;
+        ? e.currentTarget.getAttribute('data-scroll-to-offset')
+        : window.isMobile
+          ? -80
+          : -120;
     let immediate =
       typeof e.currentTarget.getAttribute('data-scroll-to-immediate') ==
       'string';
     let easing = (x) =>
       x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
+
+    if (e.himself) {
+      target = e.currentTarget;
+    }
+
+    if (offset == 'middle') {
+      offset = -window.innerHeight / 2.5;
+    } else {
+      offset = parseInt(offset);
+    }
 
     this.lenis.scrollTo(target, {
       offset,
@@ -508,6 +515,14 @@ export class Scroll extends Piece {
         scrollElement.sTrigger.refresh();
       });
     }
+  }
+
+  stop() {
+    this.lenis.stop();
+  }
+
+  start() {
+    this.lenis.start();
   }
 
   resize() {
@@ -539,7 +554,7 @@ export class Scroll extends Piece {
       });
       this.$scrollItems = [];
     }
-    cancelAnimationFrame(this.rafInstance);
+    gsap.ticker.remove((time) => this.raf(time));
 
     this.off('click', this.$('[data-scroll-to]'), this.scrollTo);
     this.off('resize', window, this.resize);

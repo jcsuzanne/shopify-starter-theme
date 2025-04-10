@@ -1,0 +1,6 @@
+.c-container {
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: var(--unit-small);
+    padding-left: var(--unit-small);
+}

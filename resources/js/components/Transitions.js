@@ -2,7 +2,7 @@ import { Piece } from 'piecesjs';
 import { body, html } from '../utils/environment';
 import { gsap } from 'gsap';
 import Swup from 'swup';
-import SwupParallelPlugin from '@swup/parallel-plugin';
+// import SwupFragmentPlugin from '@swup/fragment-plugin';
 import SwupScrollPlugin from '@swup/scroll-plugin';
 import SwupPreloadPlugin from '@swup/preload-plugin';
 import { updateComponents } from '../components';
@@ -17,7 +17,7 @@ export class Transitions extends Piece {
       containers: ['[data-swup-container]'],
       animateHistoryBrowsing: true,
       plugins: [
-        new SwupParallelPlugin(),
+        // new SwupParallelPlugin(),
         new SwupPreloadPlugin(),
         new SwupScrollPlugin({
           doScrollingRightAway: true,
@@ -40,41 +40,56 @@ export class Transitions extends Piece {
     );
 
     this.swup.hooks.on('link:self', () => {
-      gsap.delayedCall(0.3, () => {
+      gsap.delayedCall(0.01, () => {
         html.classList.remove('is-loading');
+        html.classList.remove('has-nav-main-open');
+        html.classList.remove('has-menu-mobile-open');
+        html.classList.remove('has-nav-secondary-open');
       });
     });
 
-    this.swup.hooks.on('content:insert', (visit, { containers }) => {
-      // console.log('------ content::insert');
-
+    this.swup.hooks.on('visit:start', () => {
+      // this.call('hideLogo', null, 'Footer');
+      html.classList.add('is-loading');
       html.classList.add('has-transition');
+      html.classList.add('is-leaving');
+    });
+
+    this.swup.hooks.on('content:replace', () => {
+      this.newContainer = document.querySelector('[data-swup-container]');
+      updateComponents(this.newContainer);
+      return new Promise((res) => setTimeout(res, 600));
+    });
+
+    this.swup.hooks.on('animation:out:start', () => {
+      gsap.delayedCall(0.3, () => {
+        // this.call('closeNavs', {}, 'UI');
+      });
+    });
+
+    this.swup.hooks.on('animation:out:end', () => {
+      html.classList.remove('is-leaving');
+      html.classList.add('is-switching');
+
       html.classList.remove('has-dom-ready');
       html.classList.remove('has-dom-ready-callback');
       html.classList.remove('has-dom-animated');
-
-      for (const { next, remove } of containers) {
-        this.newContainer = next;
-        this.newContainer.classList.add('is-next-container');
-
-        // Update components in the new samePage
-        updateComponents(this.newContainer);
-      }
     });
 
-    this.swup.hooks.before('content:remove', (visit, { containers }) => {
-      console.log('------ content::remove');
+    this.swup.hooks.on('animation:in:start', () => {
+      console.log('animation:in:start');
+      html.classList.remove('is-switching');
 
       html.classList.remove('is-loading');
       this.newContainer.classList.remove('is-next-container');
 
-      gsap.delayedCall(window.readyDelay, () => {
-        html.classList.add('has-dom-ready');
+      body.setAttribute(
+        'data-template',
+        this.newContainer.getAttribute('data-template'),
+      );
 
-        body.setAttribute(
-          'data-template',
-          this.newContainer.getAttribute('data-template'),
-        );
+      gsap.delayedCall(0.3, () => {
+        html.classList.add('has-dom-ready');
 
         gsap.delayedCall(window.readyCallbackDelay, () => {
           html.classList.add('has-dom-ready-callback');
@@ -82,6 +97,8 @@ export class Transitions extends Piece {
           html.classList.remove('has-transition');
         });
       });
+
+      // });
     });
 
     // Manage errors
@@ -108,8 +125,13 @@ export class Transitions extends Piece {
     // first hit data template
     body.setAttribute(
       'data-template',
-      this.$('[data-swup-container]')[0].getAttribute('data-template'),
+      this.$('[data-swup-container]').getAttribute('data-template'),
     );
+  }
+
+  goto(href) {
+    // console.log('goto', href);
+    this.swup.navigate(href);
   }
 }
 

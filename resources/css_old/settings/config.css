@@ -1,0 +1,68 @@
+/*
+/* Settings / Config
+*/
+
+:root {
+  /* Base */
+  --font-size: 16px;
+  --line-height: 1;
+  --font-color: var(--black);
+  --font: 'Sohne Kraftig';
+
+  /* Headings */
+  --font-size-h0: 24vw;
+  --font-size-h1: 8vw;
+  --font-size-h2: 4vw;
+  --font-size-h3: 20px;
+  --font-size-h4: 18px;
+  --font-size-h5: 16px;
+  --line-height-h: var(--line-height);
+
+  /* Weights */
+  --light: 300;
+  --normal: 400;
+  --medium: 500;
+  --bold: 700;
+
+  /* Transitions */
+  /* ============================================================================= */
+
+  --speed: 0.3s;
+  --speed-slow: 0.6s;
+  --easing: var(--power2-out);
+
+  /* Spacing Units */
+  /* ============================================================================= */
+  --unit: 60px;
+  --unit-small: 30px;
+
+  /* Container */
+  /* ========================================================================== */
+  --padding: var(--unit);
+
+  /* Grid */
+  /* ========================================================================== */
+  --base-column-nb: 12;
+  --base-column-gap: var(--unit-small);
+}
+
+@custom-media --from-sm (min-width: 640px);
+@custom-media --to-sm (max-width: 639px);
+
+@custom-media --from-md (min-width: 768px);
+@custom-media --to-md (max-width: 767px);
+
+@custom-media --from-lg (min-width: 1024px);
+@custom-media --to-lg (max-width: 1023px);
+
+@custom-media --from-xl (min-width: 1400px);
+@custom-media --to-xl (max-width: 1399px);
+
+@custom-media --from-2xl (min-width: 1680px);
+@custom-media --to-2xl (max-width: 1679px);
+
+@custom-media --from-3xl (min-width: 1900px);
+@custom-media --to-3xl (max-width: 1899px);
+
+@custom-media --from-4xl (min-width: 2100px);
+@custom-media --to-4xl (max-width: 2099px);

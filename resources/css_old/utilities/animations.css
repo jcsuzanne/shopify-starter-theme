@@ -1,0 +1,86 @@
+.u-anim {
+    transform: translate3d(0,calc(var(--unit)/2),0);
+    opacity: 0;
+    transition: transform 0s var(--easing), opacity 0s var(--easing);
+
+    html.has-dom-ready-callback &:not([data-scroll]):not(.-parent) {
+        transform: translate3d(0,0,0);
+        opacity: 1;
+
+        @for $i from 1 to 12 {
+            &.-delay-$(i) {
+                transition-delay: (0.1s * $i) + 0.3s;
+            }
+        }
+    }
+
+    html.has-dom-ready-callback &.is-inview[data-scroll] {
+        transform: translate3d(0,0,0);
+        opacity: 1;
+
+        @for $i from 1 to 12 {
+            &.-delay-$(i) {
+                transition-delay: (0.1s * $i);
+            }
+        }
+    }
+
+    html.has-dom-ready-callback .is-inview[data-scroll] &.-parent {
+        transform: translate3d(0,0,0);
+        opacity: 1;
+
+        @for $i from 1 to 12 {
+            &.-delay-$(i) {
+                transition-delay: (0.1s * $i);
+            }
+        }
+    }
+
+    html.has-transition:not(.has-dom-ready) & {
+        opacity: 0;
+        transform: translate3d(0,0,0);
+    }
+
+    html.is-first-load & {
+        transition-duration: 1s;
+    }
+}
+
+.u-anim-simple {
+    opacity: 0;
+    transition: opacity 0s var(--easing);
+
+    html.has-dom-ready-callback &:not([data-scroll]):not(.-parent) {
+        opacity: 1;
+
+        @for $i from 1 to 12 {
+            &.-delay-$(i) {
+                transition-delay: (0.1s * $i) + 0.3s;
+            }
+        }
+    }
+
+    html.has-dom-ready-callback &.is-inview[data-scroll] {
+        opacity: 1;
+
+        @for $i from 1 to 12 {
+            &.-delay-$(i) {
+                transition-delay: (0.1s * $i);
+            }
+        }
+    }
+
+    html.has-dom-ready-callback .is-inview[data-scroll] &.-parent {
+        opacity: 1;
+
+        @for $i from 1 to 12 {
+            &.-delay-$(i) {
+                transition-delay: (0.1s * $i);
+            }
+        }
+    }
+
+    html.is-first-load & {
+        transition-duration: 1s;
+    }
+}

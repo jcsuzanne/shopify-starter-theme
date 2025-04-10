@@ -81,8 +81,9 @@
 
   <body x-data='DatasApp'>
     <div x-data='CartDrawer' id='master' role='document'>
+      {%- render 'cart-drawer' -%}
+      {%- render 'ui' -%}
       {% sections 'header-group' %}
-      {% render 'password-access' %}
 
       <c-app>
         <c-transitions
@@ -91,6 +92,7 @@
           <div
             id='transition-container'
             data-swup-container
+            class='scroll-wrapper'
             data-template='{{ block("controller") }}'>
             <c-scroll
               cid='main'>

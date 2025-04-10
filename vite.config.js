@@ -11,7 +11,7 @@ export default ({ mode }) => {
     clearScreen: false,
     server: {
       host: '127.0.0.1',
-      https: true,
+      https: false,
       port: 3000,
       hmr: true,
     },
@@ -40,9 +40,9 @@ export default ({ mode }) => {
           'resources/**/*.js', // relative to themeRoot
         ],
       }),
-      pageReload('/tmp/theme.update', {
-        delay: 2000,
-      }),
+      // pageReload('/tmp/theme.update', {
+      //   delay: 2000,
+      // }),
       {
         name: 'vite-plugin-liquid-tailwind-refresh',
         handleHotUpdate(ctx) {
