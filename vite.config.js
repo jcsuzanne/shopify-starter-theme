@@ -17,13 +17,15 @@ export default ({ mode }) => {
     },
     publicDir: 'public',
     build: {
-      manifest: false,
+      manifest: '_manifest.json',
       emptyOutDir: false,
       rollupOptions: {
+        input: 'resources/js/app.js',
         output: {
-          entryFileNames: '[name].[hash].js',
-          chunkFileNames: '[name].[hash].js',
-          assetFileNames: '[name].[hash].[extname]',
+          entryFileNames: 'app.[hash].js',
+          chunkFileNames: 'app.[hash].js',
+          assetFileNames: 'app.[hash].[extname]',
+          manualChunks: () => 'app',
         },
       },
     },

@@ -35,7 +35,14 @@
     {%- endunless -%}
 
     <title>
-      {{- shop.name -}}
+      {{ page_title }}
+      {%- if current_tags %}
+        &ndash; tagged "{{ current_tags | join: ', ' }}"
+      {%- endif -%}
+      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %}
+        &ndash; {{ shop.name -}}
+      {%- endunless -%}
     </title>
 
     {% if page_description %}
@@ -54,21 +61,12 @@
     {% comment %} {% render 'dawn-styles' %} {% endcomment %}
 
     {%- liquid
-      render 'vite' with 'styles.js', preload_stylesheet: true
       render 'vite' with 'app.js'
     -%}
 
     {{ content_for_header }}
 
     {% render 'theme-assets' %}
-
-    {%- if settings.predictive_search_enabled -%}
-      <link
-        rel='stylesheet'
-        href='{{ 'component-predictive-search.css' | asset_url }}'
-        media='print'
-        onload="this.media='all'">
-    {%- endif -%}
 
     <script>
       document.documentElement.className =

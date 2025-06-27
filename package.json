@@ -14,7 +14,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "shopify": "shopify theme dev --poll --live-reload=\"hot-reload\" --notify=/tmp/theme.update --store=jcs-blueprint.myshopify.com",
-    "logout": "shopify auth logout"
+    "logout": "shopify auth logout",
+    "deploy": "shopify theme push --store=jcs-blueprint.myshopify.com",
+    "pull": "shopify theme pull --store=jcs-blueprint.myshopify.com"
   },
   "dependencies": {
     "@swup/fade-theme": "^2.0.1",
