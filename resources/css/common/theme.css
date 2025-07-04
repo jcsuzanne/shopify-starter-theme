@@ -1,0 +1,33 @@
+@import '../settings/mixins.css';
+
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .swup-progress-bar {
+    @apply tw-h-px tw-bg-black;
+  }
+  html.is-changing .transition-main {
+    @apply tw-transition-opacity tw-duration-500 tw-ease-in-out-power2;
+  }
+
+  html.is-animating .transition-main {
+    @apply tw-opacity-0;
+  }
+  c-actions,
+  c-slideshow,
+  c-pattern,
+  c-wrapper,
+  c-grid,
+  c-visual,
+  c-content,
+  c-separator,
+  c-subtitle,
+  c-glyph,
+  c-spacer,
+  c-divider,
+  c-fill,
+  video-detector {
+    @apply tw-block;
+  }
+}

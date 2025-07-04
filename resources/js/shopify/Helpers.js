@@ -9,16 +9,16 @@ export function renderAmount(value) {
       symbol: config.currencySymbol,
       decimal: ',',
       separator: ' ',
-      pattern: `#!`,
-      fromCents: true,
-      precision: 0,
+      pattern: `# !`,
+      // fromCents: true,
+      // precision: 2,
     }).format(true);
   } else {
     amountRaw = formatCentsToDollars(value);
     amount = currency(amountRaw, {
       symbol: config.currencySymbol,
       decimal: ',',
-      separator: '.',
+      separator: ' ',
     }).format(true);
   }
 

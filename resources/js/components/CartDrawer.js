@@ -1,6 +1,6 @@
 import Env from '../base/env';
 import gsap from 'gsap';
-import { renderAmount, formatDollarsToCents } from '../utils/ShopifyHelpers';
+import { renderAmount, formatDollarsToCents } from '../shopify/Helpers';
 import Channels from '../base/channels';
 
 export default () => ({

@@ -4,7 +4,6 @@
     env: '{{ app_env }}',
     lang: '{{ shop.locale }}',
     pathAssets: "{{ '' | asset_url }}",
-    XHR_URL: '',
     currencyCode: '{{ cart.currency.iso_code }}',
     currencySymbol: '{{ cart.currency.symbol }}',
     currencyName: '{{ cart.currency.name }}',
@@ -15,5 +14,3 @@
   var translations = {};
   // ]]>
 </script>
-
-{% render 'theme-fonts' %}

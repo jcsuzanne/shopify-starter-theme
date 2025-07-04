@@ -17,7 +17,8 @@ html body {
   width: 100%;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
-  overflow: hidden;
+  /* overflow: hidden; */
+
 }
 
 body {
@@ -27,30 +28,12 @@ body {
   font-family: var(--font-serif);
   -moz-osx-font-smoothing: grayscale;
   /* background-color: var(--black); */
-
-  html.has-app-init & {
-    opacity: 1 !important;
-    transition: background-color 1s var(--easing);
-  }
-
-  html.is-loading & {
-    pointer-events: none !important;
-  }
-
-  html.has-dom-ready-callback & {
-    background-color: var(--white);
-    /* transition-delay: 0.3s; */
+  @screen mobile-only
+  {
+    overflow-x: hidden;
   }
 }
 
 a {
   color: currentColor;
-}
-
-html.is-changing .transition-fade {
-  transition: opacity 0.25s;
-  opacity: 1;
-}
-html.is-animating .transition-fade {
-  opacity: 0;
 }

@@ -15,95 +15,39 @@
       width: 100%;
     }
   }
-  .u-formate-svg-auto {
-    svg {
-      display: block;
-      height: auto;
-      width: 100%;
-    }
-  }
   .u-h-screen {
     height: var(--app-height);
     @screen lg {
       @apply tw-h-screen;
     }
   }
-  .u-h-availheight {
-    height: var(--app-availheight);
-    @screen lg {
-      @apply tw-h-screen;
-    }
-  }
-  .u-h-screen-lg {
-    @screen lg {
-      @apply tw-h-screen;
-    }
-  }
-  .u-videobg {
-    display: block;
-    height: auto;
-    left: 50%;
-    min-height: 101%;
-    min-width: 101%;
-    object-fit: cover;
-    position: absolute;
-    transform: translate(-50%, -50%);
-    transform-origin: center center;
-    top: 50%;
-    width: auto;
-  }
-  .u-scrollbar-hidden {
-    &::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-      background-color: transparent;
-    }
-  }
-
-  .u-will-reveal {
-    will-change: opacity, transform;
-  }
-
-  .u-will-clip {
-    will-change: clip;
-  }
-
-  .u-hide-scrollbar {
-    ::-webkit-scrollbar {
-      display: none;
-    }
-  }
-  .u-block,
-  .u-block-layout {
-    @apply tw-relative tw-z-10;
-  }
-  .u-target {
-    @apply u-h-screen;
-    width: 100%;
-  }
   .u-grid-layout {
-    @apply tw-grid tw-grid-cols-6 tw-gap-5 lg:tw-grid-cols-12 lg:tw-gap-6;
+    @apply tw-grid tw-grid-cols-4 tw-gap-2 lg:tw-grid-cols-32;
+  }
+  .u-grid-gap
+  {
+    @apply tw-gap-2;
+  }
+  .u-pl-layout {
+    @apply tw-pl-outer-x-xs lg:tw-pl-outer-x-lg;
   }
   .u-px-layout {
-    @apply tw-px-ui-x-xs lg:tw-px-ui-x;
-  }
-  .u-px-layout-max {
-    @apply tw-mx-auto tw-max-w-layout tw-px-ui-x-xs lg:tw-px-ui-x;
+    @apply tw-px-outer-x-xs lg:tw-px-outer-x-lg;
   }
   .u-pt-module {
-    @apply tw-pt-small lg:tw-pt-[70px];
+    @apply tw-pt-small lg:tw-pt-outer-y-lg;
   }
-  .u-pt-cover {
-    @apply tw-pt-[90px] lg:tw-pt-[210px];
+  .u-py-module-lg {
+    @apply lg:tw-py-outer-y-lg;
   }
   .u-py-module {
-    @apply tw-py-small lg:tw-py-[70px];
+    @apply tw-py-outer-y-xs lg:tw-py-outer-y-lg;
   }
   .u-pb-module {
-    @apply tw-pb-small lg:tw-pb-[70px];
+    @apply tw-pb-small lg:tw-pb-outer-y-lg;
   }
   .u-px-module {
-    @apply tw-px-ui-x-xs lg:tw-px-ui-x;
+    @apply tw-px-outer-x-xs lg:tw-px-outer-x-lg;
   }
   .u-center {
     @apply tw-absolute tw-left-1/2 tw-top-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2;
@@ -147,8 +91,5 @@
         counter-reset: mycounter;
       }
     }
-  }
-  .u-border-radius {
-    border-radius: var(--radius);
   }
 }

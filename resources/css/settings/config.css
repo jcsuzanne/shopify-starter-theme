@@ -3,27 +3,6 @@
 */
 
 :root {
-  /* Base */
-  --font-size: 16px;
-  --line-height: 1;
-  --font-color: var(--black);
-  --font: 'Sohne Kraftig';
-
-  /* Headings */
-  --font-size-h0: 24vw;
-  --font-size-h1: 8vw;
-  --font-size-h2: 4vw;
-  --font-size-h3: 20px;
-  --font-size-h4: 18px;
-  --font-size-h5: 16px;
-  --line-height-h: var(--line-height);
-
-  /* Weights */
-  --light: 300;
-  --normal: 400;
-  --medium: 500;
-  --bold: 700;
-
   /* Transitions */
   /* ============================================================================= */
 
@@ -35,15 +14,6 @@
   /* ============================================================================= */
   --unit: 60px;
   --unit-small: 30px;
-
-  /* Container */
-  /* ========================================================================== */
-  --padding: var(--unit);
-
-  /* Grid */
-  /* ========================================================================== */
-  --base-column-nb: 12;
-  --base-column-gap: var(--unit-small);
 }
 
 @custom-media --from-sm (min-width: 640px);

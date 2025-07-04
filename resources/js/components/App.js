@@ -24,12 +24,14 @@ export class App extends Piece {
 
     initDevice();
     initSizes();
+    this.detectEnvironment();
 
     html.classList.add('is-loaded');
     html.classList.remove('is-loading');
 
     gsap.delayedCall(window.readyDelay, () => {
       html.classList.add('has-dom-ready');
+      this.emit('launcher::exit', document);
 
       gsap.delayedCall(window.readyCallbackDelay, () => {
         html.classList.add('has-dom-ready-callback');
@@ -41,6 +43,12 @@ export class App extends Piece {
 
     this.bindResize = this.resize.bind(this);
     window.addEventListener('resize', this.bindResize);
+  }
+
+  detectEnvironment() {
+    if (window.location.href.includes('http://127.0.0.1:9292')) {
+      html.classList.add('local-env');
+    }
   }
 
   update() {

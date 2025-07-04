@@ -47,7 +47,6 @@ gsap.registerPlugin(ScrollTrigger);
 // }
 
 const IN_VIEW_CLASS = 'is-inview';
-const IN_VIEW_CLASS_FIRST = 'is-inview-first';
 
 export class Scroll extends Piece {
   constructor() {
@@ -61,12 +60,16 @@ export class Scroll extends Piece {
 
   mount() {
     this.$scrollItems = [];
-    this.$scrollItems = Array.from(this.querySelectorAll('[data-scroll-item]'));
-    console.log(this.querySelectorAll('[data-scroll-item]'));
 
+    // html.classList.add('lenis');
+    // html.classList.add('lenis-smooth');
+
+    if (this.querySelectorAll('[data-scroll-item]').length > 0) {
+      this.$scrollItems = Array.from(this.$('[data-scroll-item]'));
+    }
     // check if items are outside the container
     this.$scrollOutsideItems = document.querySelectorAll(
-      '[data-scroll-outside-item]',
+      '[data-scroll="outsideItem"]',
     );
     this.$scrollOutsideItems.forEach((outsideItem) => {
       this.$scrollItems.push(outsideItem);
@@ -77,7 +80,7 @@ export class Scroll extends Piece {
     this.$wrapper =
       typeof this.getAttribute('data-scroll-wrapper') == 'string'
         ? document.querySelector(this.getAttribute('data-scroll-wrapper'))
-        : this.parentNode;
+        : document.documentElement;
     this.direction =
       typeof this.getAttribute('data-scroll-direction') == 'string'
         ? this.getAttribute('data-scroll-direction')
@@ -88,6 +91,11 @@ export class Scroll extends Piece {
     if (window.isMobile) {
       this.gestureDirection = 'vertical';
       this.direction = 'vertical';
+    }
+
+    if (window.isTablet) {
+      this.direction = 'horizontal';
+      this.gestureDirection = 'vertical';
     }
 
     window.scrollInstance = {
@@ -107,27 +115,46 @@ export class Scroll extends Piece {
         ? true
         : false;
 
+    let scrollParams = {
+      smoothWheel: true,
+      duration: window.isMobile ? 0.75 : 0.8,
+      lerp: window.isMobile ? 0.3 : 0.3,
+      easing: (t) => 1 - Math.pow(1 - t, 5), // Ease Out Quint
+      touchMultiplier: 1,
+      touchInertiaMultiplier: 10,
+    };
+
+    var userAgent = navigator.userAgent.toLowerCase();
+    if (userAgent.includes('safari') && !userAgent.includes('chrome')) {
+      scrollParams.smoothWheel = false;
+      scrollParams.duration = 0;
+      scrollParams.lerp = 0;
+      scrollParams.easing = false;
+      scrollParams.touchMultiplier = 0;
+      scrollParams.touchInertiaMultiplier = 0;
+    }
+
     this.lenis = new Lenis({
-      wrapper: this.$wrapper,
-      content: this,
+      wrapper: window,
+      content: this.$wrapper,
       orientation: this.direction,
       gestureOrientation: this.gestureDirection,
-      smoothWheel: true,
-      smoothTouch: false,
-      syncTouch: true,
-      duration: window.isMobile ? 0.75 : 0.8,
-      lerp: window.isMobile ? 0.6 : 0.3,
-      easing: (t) => 1 - Math.pow(1 - t, 5), // Ease Out Quint
+      smoothWheel: scrollParams.smoothWheel,
+      smoothTouch: window.isMobile ? isSmoothOnMobile : true,
+      duration: scrollParams.duration,
+      lerp: scrollParams.lerp,
+      easing: scrollParams.easing,
       // wheelMultiplier: 0.7,
-      touchMultiplier: 1.4,
-      touchInertiaMultiplier: 5,
+      touchMultiplier: scrollParams.touchMultiplier,
+      touchInertiaMultiplier: scrollParams.touchInertiaMultiplier,
       infinite: typeof this.getAttribute('data-scroll-infinite') == 'string',
     });
+
     window.scrollObjectInstance = this.lenis;
-    window.scrollObjectInstance.container = this.$wrapper;
 
     document.documentElement.style.setProperty('--scrollValue', `0px`);
 
+    //get scroll value
     //get scroll value
     this.lenis.on(
       'scroll',
@@ -171,8 +198,8 @@ export class Scroll extends Piece {
       this.initElements();
     });
 
-    gsap.delayedCall(1, () => {
-      this.update();
+    gsap.delayedCall(1.5, () => {
+      // this.update();
 
       if (window.location.hash != '') {
         this.lenis.scrollTo(document.querySelector(window.location.hash));
@@ -181,15 +208,22 @@ export class Scroll extends Piece {
       }
     });
 
+    // gsap.delayedCall(3.5, () => {
+    //   this.update();
+    // });
+
+    gsap.delayedCall(5, () => {
+      this.update();
+    });
+
     this.on('click', this.$('[data-scroll-to]'), this.scrollTo);
 
     this.on('resize', window, this.resize);
   }
 
   update() {
-    console.log('update lenis');
     this.lenis.resize();
-    gsap.delayedCall(0.1, () => {
+    gsap.delayedCall(0.2, () => {
       this.refresh();
       this.emit('redraw::fx');
     });
@@ -267,6 +301,12 @@ export class Scroll extends Piece {
           this.onElementLeave(scrollElement, 'up');
         },
       };
+      if (
+        typeof $element.getAttribute('data-scroll-start-mobile') == 'string' &&
+        window.isMobile
+      ) {
+        options.start = $element.getAttribute('data-scroll-start-mobile');
+      }
 
       if (scrollElement.progressCallParameters != undefined) {
         options = {
@@ -291,12 +331,11 @@ export class Scroll extends Piece {
             if (scrollElement.progressCallParameters != undefined) {
               this.onElementProgress(self, scrollElement);
             }
-            if (scrollElement.parallaxTl != undefined) {
-              scrollElement.parallaxTl.progress(self.progress);
-            }
           },
         };
-      } else if (scrollElement.parallaxTl != undefined) {
+      }
+
+      if (scrollElement.parallaxTl != undefined) {
         options = {
           ...options,
           onUpdate: (self) => {
@@ -372,7 +411,7 @@ export class Scroll extends Piece {
 
     let parallaxTl;
 
-    if (parallax) {
+    if (parallax && !window.isSafari) {
       parallaxTl = gsap.fromTo(
         $element,
         {
@@ -432,7 +471,6 @@ export class Scroll extends Piece {
       return;
     }
     scrollElement.$el.classList.add(IN_VIEW_CLASS);
-    scrollElement.$el.classList.add(IN_VIEW_CLASS_FIRST);
 
     // Call js functions in a specific module with data-attribute
     if (scrollElement.callParameters != undefined) {
@@ -465,41 +503,40 @@ export class Scroll extends Piece {
     }
   }
 
-  scrollTo(e) {
-    if (typeof e.preventDefault === 'function') {
-      e.preventDefault();
-    }
+  raf(time) {
+    this.lenis.raf(time);
+    this.rafInstance = requestAnimationFrame((time) => this.raf(time));
 
+    if (this.lenis.scroll > 120) {
+      if (!html.classList.contains('has-scrolled')) {
+        html.classList.add('has-scrolled');
+      }
+    } else {
+      if (html.classList.contains('has-scrolled')) {
+        html.classList.remove('has-scrolled');
+      }
+    }
+  }
+
+  scrollTo(e) {
+    e.preventDefault();
     let target =
       typeof e.currentTarget.getAttribute('href') === 'string'
         ? e.currentTarget.getAttribute('href')
         : e.currentTarget.getAttribute('data-href');
-
     let duration =
       typeof e.currentTarget.getAttribute('data-scroll-to-duration') == 'string'
         ? parseFloat(e.currentTarget.getAttribute('data-scroll-to-duration'))
-        : 1;
+        : 2;
     let offset =
       typeof e.currentTarget.getAttribute('data-scroll-to-offset') == 'string'
-        ? e.currentTarget.getAttribute('data-scroll-to-offset')
-        : window.isMobile
-          ? -80
-          : -120;
+        ? parseInt(e.currentTarget.getAttribute('data-scroll-to-offset'))
+        : 0;
     let immediate =
       typeof e.currentTarget.getAttribute('data-scroll-to-immediate') ==
       'string';
     let easing = (x) =>
       x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
-
-    if (e.himself) {
-      target = e.currentTarget;
-    }
-
-    if (offset == 'middle') {
-      offset = -window.innerHeight / 2.5;
-    } else {
-      offset = parseInt(offset);
-    }
 
     this.lenis.scrollTo(target, {
       offset,
@@ -515,14 +552,6 @@ export class Scroll extends Piece {
         scrollElement.sTrigger.refresh();
       });
     }
-  }
-
-  stop() {
-    this.lenis.stop();
-  }
-
-  start() {
-    this.lenis.start();
   }
 
   resize() {
@@ -554,7 +583,7 @@ export class Scroll extends Piece {
       });
       this.$scrollItems = [];
     }
-    gsap.ticker.remove((time) => this.raf(time));
+    cancelAnimationFrame(this.rafInstance);
 
     this.off('click', this.$('[data-scroll-to]'), this.scrollTo);
     this.off('resize', window, this.resize);
