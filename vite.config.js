@@ -33,6 +33,7 @@ export default ({ mode }) => {
       basicSsl(),
       cleanup(),
       shopify({
+        themeHotReload: false,
         themeRoot: './',
         snippetFile: 'vite.liquid',
         sourceCodeDir: 'resources',
@@ -42,9 +43,9 @@ export default ({ mode }) => {
           'resources/**/*.js', // relative to themeRoot
         ],
       }),
-      // pageReload('/tmp/theme.update', {
-      //   delay: 2000,
-      // }),
+      pageReload('/tmp/theme.update', {
+        // delay: 2000,
+      }),
       {
         name: 'vite-plugin-liquid-tailwind-refresh',
         handleHotUpdate(ctx) {
