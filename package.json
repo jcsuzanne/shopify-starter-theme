@@ -16,7 +16,7 @@
     "shopify": "shopify theme dev --live-reload=\"hot-reload\" --notify=/tmp/theme.update --store=jcs-blueprint.myshopify.com",
     "logout": "shopify auth logout",
     "deploy": "shopify theme push --store=jcs-blueprint.myshopify.com --only=templates/* --only=sections/* --only=snippets/* --only=assets/* --only=locales/* --only=layout/* --only=blocks/*",
-    "pull": "shopify theme pull --store=jcs-blueprint.myshopify.com --only=templates/* --only=sections/* --only=snippets/",
+    "pull": "shopify theme pull --store=jcs-blueprint.myshopify.com --only=templates/* --only=sections/* --only=snippets/* --only=locales/*",
     "clean": "find assets -name 'app.*' \\( -name '*.js' -o -name '*.css' \\) -delete"
   },
   "dependencies": {
