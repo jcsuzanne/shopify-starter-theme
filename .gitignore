@@ -17,3 +17,7 @@ assets/app.*.css
 assets/_manifest.json
 snippets/vite.liquid
 CLAUDE.md
+assets/app.*.js
+assets/app.*.css
+assets/_manifest.json
+snippets/vite.liquid
