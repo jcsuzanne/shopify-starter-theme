@@ -1,7 +1,11 @@
 import { load } from 'piecesjs';
 
 export const updateComponents = (context) => {
-  load('c-scroll', () => import('/resources/js/components/Scroll.js'), context);
+  load(
+    'c-scroll',
+    () => import('/resources/js/components/ScrollLite.js'),
+    context,
+  );
   load(
     'cart-opentrigger',
     () => import('/resources/js/components/CartOpenTrigger.js'),
