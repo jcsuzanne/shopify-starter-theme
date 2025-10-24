@@ -82,16 +82,18 @@
   name='twitter:description'
   content='{{ og_description | escape }}'>
 
-<title>
-  {{ page_title }}
-  {%- if current_tags %}
-    &ndash; tagged "{{ current_tags | join: ', ' }}"
-  {%- endif -%}
-  {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-  {%- unless page_title contains shop.name %}
-    &ndash; {{ shop.name -}}
-  {%- endunless -%}
-</title>
+{% if password_mode == false %}
+  <title>
+    {{ page_title }}
+    {%- if current_tags %}
+      &ndash; tagged "{{ current_tags | join: ', ' }}"
+    {%- endif -%}
+    {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+    {%- unless page_title contains shop.name %}
+      &ndash; {{ shop.name -}}
+    {%- endunless -%}
+  </title>
+{% endif %}
 
 <link
   rel='canonical'
@@ -102,3 +104,10 @@
     name='description'
     content='{{ page_description | escape }}'>
 {% endif %}
+
+{%- if settings.favicon != blank -%}
+  <link
+    rel='icon'
+    type='image/png'
+    href='{{ settings.favicon | image_url: width: 32, height: 32 }}'>
+{%- endif -%}

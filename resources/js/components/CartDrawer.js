@@ -65,7 +65,7 @@ export default () => ({
     const delay = state ? 0.5 : 0;
     gsap.delayedCall(delay, () => {
       // console.log("cart update");
-      fetch('/cart.js', {
+      fetch(window.Shopify.routes.root + 'cart.js', {
         method: 'get',
       })
         .then((response) => response.json())
@@ -132,7 +132,7 @@ export default () => ({
     this.getCart(true);
   },
   resetCart() {
-    fetch('/cart/clear.js', {
+    fetch(window.Shopify.routes.root + 'cart/clear.js', {
       method: 'post',
     })
       .then((response) => response.json())
@@ -153,7 +153,7 @@ export default () => ({
     return showProps.join(', ');
   },
   updateItem(data) {
-    fetch('/cart/change.js', {
+    fetch(window.Shopify.routes.root + 'cart/change.js', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

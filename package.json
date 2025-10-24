@@ -2,21 +2,31 @@
   "name": "jcs-shopify-starter-theme",
   "description": "Starter theme for Shopify using modern dev tools like Vite.js, TailwindCSS and with Pieces.js (for native webcomponents)",
   "author": "JC SUZANNE (https://github.com/jcsuzanne)",
-  "version": "0.0.1",
+  "version": "1.2.3",
   "type": "module",
   "engines": {
     "node": ">=14.17",
     "npm": ">=6.0"
   },
   "scripts": {
-    "dev": "concurrently --passthrough-arguments \"npm run start\" \"npm run shop {@}\" --",
+    "dev": "concurrently --passthrough-arguments \"npm run start\" \"npm run shopify {@}\" --",
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "shopify": "shopify theme dev --poll --live-reload=\"hot-reload\" --notify=/tmp/theme.update --store=jcs-blueprint.myshopify.com",
+    "shopify": "shopify theme dev --live-reload=\"hot-reload\" --notify=/tmp/theme.update --store=jcs-blueprint.myshopify.com --store-password=jcs",
     "logout": "shopify auth logout",
-    "deploy": "shopify theme push --store=jcs-blueprint.myshopify.com",
-    "pull": "shopify theme pull --store=jcs-blueprint.myshopify.com"
+    "deploy": "shopify theme push --store=jcs-blueprint.myshopify.com --only=sections/* --only=snippets/* --only=assets/* --only=layout/* --only=blocks/*",
+    "push-assets": "shopify theme push --store=jcs-blueprint.myshopify.com --theme=182753263953 --only=snippets/* --only=assets/*",
+    "push-config": "shopify theme push --store=jcs-blueprint.myshopify.com --theme=182753263953 --only=config/settings_schema.json",
+    "push-locales": "shopify theme push --store=jcs-blueprint.myshopify.com --theme=182753263953 --only=locales/*",
+    "push-sections": "shopify theme push --store=jcs-blueprint.myshopify.com --theme=182753263953 --only=sections/*",
+    "push-templates": "shopify theme push --store=jcs-blueprint.myshopify.com --theme=182753263953 --only=templates/*",
+    "pull-config": "shopify theme pull --store=jcs-blueprint.myshopify.com --theme=182753263953 --only=config/settings_schema.json --only=config/settings_data.json",
+    "pull-header-group": "shopify theme pull --store=jcs-blueprint.myshopify.com --theme=182753263953 --only=sections/header-group.json",
+    "pull-locales": "shopify theme pull --store=jcs-blueprint.myshopify.com --theme=182753263953 --only=locales/*",
+    "pull-templates": "shopify theme pull --store=jcs-blueprint.myshopify.com --theme=182753263953 --only=templates/* --only=sections/header-group.json",
+    "sync-pull": "yarn pull-config && yarn pull-locales && yarn pull-header-group && yarn pull-templates",
+    "clean": "find assets -name 'app.*' \\( -name '*.js' -o -name '*.css' \\) -delete"
   },
   "dependencies": {
     "@swup/fade-theme": "^2.0.1",
@@ -73,8 +83,8 @@
     "tailwindcss": "^3.4.17",
     "tailwindcss-easing": "^0.2.1",
     "tailwindcss-scoped-preflight": "^3.4.12",
-    "vite": "^6.2.6",
+    "vite": "^7.0.2",
     "vite-plugin-page-reload": "^0.2.1",
-    "vite-plugin-shopify": "^3.2.0"
+    "vite-plugin-shopify": "^4.0.1"
   }
 }
