@@ -1,24 +1,24 @@
 <cart-drawer
-  class='lg:tw-right-popin-p lg:tw-inset-y-popin-p tw-z-cart cart-opened:tw-pointer-events-auto cart-opened:tw-translate-x-0 tw-pointer-events-none tw-fixed tw-inset-y-0 tw-right-0 tw-w-full tw-max-w-[600px] tw-translate-x-[calc(100%+30px)] tw-bg-white tw-duration-700 tw-ease-in-out-cubic lg:tw-w-1/2'
+  class='lg:right-popin-p lg:inset-y-popin-p z-cart cart-opened:pointer-events-auto cart-opened:translate-x-0 pointer-events-none fixed inset-y-0 right-0 w-full max-w-[600px] translate-x-[calc(100%+30px)] bg-white duration-700 ease-in-out-cubic lg:w-1/2'
   @cart-update.window='getCart(true)'>
   {% # IF CART EMPTY %}
   <template x-if='itemsCount == 0'>
-    <div class='tw-absolute tw-inset-0 tw-z-20 tw-bg-white'>
-      <div class='tw-border-liza tw-px-cart-x-mobile lg:tw-px-cart-x tw-mx-auto tw-flex tw-h-[70px] tw-w-full tw-flex-row tw-items-center tw-justify-end tw-border-b tw-border-solid lg:tw-h-[80px]'>
+    <div class='absolute inset-0 z-20 bg-white'>
+      <div class='border-liza px-cart-x-mobile lg:px-cart-x mx-auto flex h-[70px] w-full flex-row items-center justify-end border-b border-solid lg:h-[80px]'>
         <button @click='closeCart()'>Close</button>
       </div>
-      <div class='tw-flex tw-h-[calc(100%-70px)] tw-flex-col tw-items-center tw-justify-center lg:tw-h-[calc(100%-80px)]'>
+      <div class='flex h-[calc(100%-70px)] flex-col items-center justify-center lg:h-[calc(100%-80px)]'>
         <h4 class='util-heading-xs'>{{ 'sections.cart.empty' | t }}</h4>
         <button
           @click='closeCart()'
-          class='tw-font-suisse-md tw-relative tw-mt-6 tw-h-[40px] tw-bg-black tw-px-6 tw-text-xs/4 tw-uppercase tw-tracking-[0.24px] tw-text-white'>
+          class='font-suisse-md relative mt-6 h-[40px] bg-black px-6 text-xs/4 uppercase tracking-[0.24px] text-white'>
           {{- 'general.continue_shopping' | t -}}
         </button>
       </div>
     </div>
   </template>
   {% # HEADER %}
-  <header class='tw-border-liza tw-px-cart-x-mobile lg:tw-px-cart-x tw-mx-auto tw-flex tw-h-[70px] tw-w-full tw-flex-row tw-items-center tw-justify-between tw-border-b tw-border-solid lg:tw-h-[80px]'>
+  <header class='border-liza px-cart-x-mobile lg:px-cart-x mx-auto flex h-[70px] w-full flex-row items-center justify-between border-b border-solid lg:h-[80px]'>
     <p class='util-heading-xs'>Cart</p>
     <button @click='closeCart()'>close</button>
   </header>
@@ -26,39 +26,39 @@
   {% # CONTENT %}
   <ul
     data-lenis-prevent
-    class='tw-block tw-h-[calc(100%-225px)] tw-w-full tw-overflow-y-auto tw-overflow-x-hidden tw-bg-white lg:tw-relative lg:tw-top-[1px] lg:tw-h-[calc(100%-250px)]'>
+    class='block h-[calc(100%-225px)] w-full overflow-y-auto overflow-x-hidden bg-white lg:relative lg:top-[1px] lg:h-[calc(100%-250px)]'>
     <template
       x-for='(item, index) in items'
       x-key='index'>
-      <li class='tw-px-cart-x-mobile lg:tw-px-cart-x tw-border-liza tw-flex tw-flex-row tw-border-b tw-border-solid tw-py-6 lg:tw-py-8'>
+      <li class='flex flex-row py-6 border-b border-solid px-cart-x-mobile lg:px-cart-x border-liza lg:py-8'>
         {% # Col IMG %}
-        <div class='tw-relative tw-w-[100px]'>
+        <div class='relative w-[100px]'>
           <img
             :src='item.image'
-            class='tw-relative tw-left-0 tw-h-full tw-w-full tw-object-cover'>
+            class='object-cover relative left-0 w-full h-full'>
         </div>
         {% # Col Infos %}
-        <div class='tw-relative tw-flex tw-flex-auto tw-flex-col tw-justify-between tw-pl-6 lg:tw-pl-12'>
-          <infos class='util-dom tw-relative'>
-            <div class='tw-flex tw-flex-row tw-items-end tw-justify-between'>
+        <div class='flex relative flex-col flex-auto justify-between pl-6 lg:pl-12'>
+          <infos class='relative util-dom'>
+            <div class='flex flex-row justify-between items-end'>
               <h3
                 x-html='item.product_title'
-                class='tw-font-suisse-bk tw-text-sm/[18px] tw-text-black lg:tw-text-lg/6'></h3>
+                class='font-suisse-bk text-sm/[18px] text-black lg:text-lg/6'></h3>
               <p
-                class='tw-font-suisse-bk tw-relative tw-top-[1px] tw-hidden tw-text-base/6 tw-text-black lg:tw-block'
+                class='font-suisse-bk relative top-[1px] hidden text-base/6 text-black lg:block'
                 x-html='renderPrice(item.line_price,item)'></p>
-              <div class='tw-relative tw-top-[3px] tw-block tw-opacity-50 lg:tw-hidden'>
+              <div class='relative top-[3px] block opacity-50 lg:hidden'>
                 {% render 'cart-remove-button' %}
               </div>
             </div>
             {% # Check Preoder %}
             <template x-if='item.properties.Type == "Preorder"'>
-              <p class='tw-font-suisse-rg tw-mt-2 tw-inline-block tw-rounded-3xl tw-border tw-border-solid tw-border-black tw-px-4 tw-text-[10px]/[21px] tw-text-black lg:tw-text-xs/[21px]'>
+              <p class='font-suisse-rg mt-2 inline-block rounded-3xl border border-solid border-black px-4 text-[10px]/[21px] text-black lg:text-xs/[21px]'>
                 {{ 'general.cart_drawer.preorder' | t }}
               </p>
             </template>
             {% # Variant Infos %}
-            <div class='tw-font-suisse-rg tw-mt-3 tw-gap-y-2 tw-text-xs tw-text-[#717171] lg:tw-text-sm'>
+            <div class='font-suisse-rg mt-3 gap-y-2 text-xs text-[#717171] lg:text-sm'>
               <template x-if='item.properties._colorname != null'>
                 <p class=''>
                   {{ 'products.variants.color' | t }} :
@@ -72,16 +72,16 @@
             </div>
           </infos>
           {% # Modifier / Supprimer %}
-          <div class='tw-flex tw-flex-row tw-justify-between'>
-            <div class='tw-ml-auto tw-flex tw-flex-auto tw-flex-row tw-gap-x-2 lg:tw-gap-x-4'>
-              {%- assign btnKlass = 'tw-transitions-color tw-duration-300 hover:tw-opacity-40' -%}
+          <div class='flex flex-row justify-between'>
+            <div class='flex flex-row flex-auto gap-x-2 ml-auto lg:gap-x-4'>
+              {%- assign btnKlass = 'transitions-color duration-300 hover:opacity-40' -%}
               <button
                 class='{{ btnKlass }}'
                 x-on:click='deleteOneItem(item);'>
                 {% render 'svg-cart-minus' %}
               </button>
               <p
-                class='tw-font-suisse-rg tw-text-sm'
+                class='text-sm font-suisse-rg'
                 x-text='item.quantity'></p>
               <button
                 class='{{ btnKlass }}'
@@ -94,7 +94,7 @@
             </div>
             <div class='util-mobileonly'>
               <p
-                class='tw-font-suisse-bk tw-text-sm/[18px] tw-text-black'
+                class='font-suisse-bk text-sm/[18px] text-black'
                 x-html='renderPrice(item.line_price,item)'></p>
             </div>
           </div>
@@ -104,20 +104,20 @@
   </ul>
 
   {% # Checkout %}
-  <div class='tw-absolute tw-inset-x-0 tw-bottom-10'>
+  <div class='absolute inset-x-0 bottom-10'>
     <form
       action='{{ routes.cart_url }}'
       id='CartDrawer-Form'
       method='post'
-      class='tw-mx-cart-x-mobile lg:tw-mx-cart-x tw-h-[40px] tw-w-auto'>
+      class='mx-cart-x-mobile lg:mx-cart-x h-[40px] w-auto'>
       {% # prettier-ignore %}
-      <button type="submit" id="CartDrawer-Checkout" name="checkout" class="tw-font-suisse-md hover:tw-bg-chamakh tw-relative tw-block tw-h-full tw-w-full tw-bg-black tw-text-xs/4 tw-uppercase tw-tracking-[0.24px] tw-text-white tw-transition-colors tw-duration-200"
+      <button type="submit" id="CartDrawer-Checkout" name="checkout" class="font-suisse-md hover:bg-chamakh relative block h-full w-full bg-black text-xs/4 uppercase tracking-[0.24px] text-white transition-colors duration-200"
   >Buy</button>
     </form>
-    <div class='tw-mt-7 [&>svg]:tw-mx-auto'>Cards Showcase</div>
+    <div class='mt-7 [&>svg]:mx-auto'>Cards Showcase</div>
   </div>
 </cart-drawer>
 {% # Overlay %}
 <overlay
   @click='closeCart()'
-  class='u-popin-overlay cart-opened:tw-opacity-100 cart-opened:!tw-pointer-events-auto !tw-z-[80]'></overlay>
+  class='u-popin-overlay cart-opened:opacity-100 cart-opened:!pointer-events-auto !z-[80]'></overlay>

@@ -1,12 +1,8 @@
-@import "../settings/mixins.css";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @layer components {
   .u-dom {
-    @apply tw-relative tw-z-10 tw-block;
+    @apply relative z-10 block;
   }
   .u-formate-svg {
     svg {
@@ -17,73 +13,90 @@
   }
   .u-h-screen {
     height: var(--app-height);
-    @screen lg {
-      @apply tw-h-screen;
+    @media (min-width: theme(--breakpoint-lg)) {
+      @apply h-screen;
+    }
+  }
+  .u-h-full {
+    height: var(--app-height);
+    @media (min-width: theme(--breakpoint-lg)) {
+      @apply h-[calc(100svh-73px)];
+    }
+  }
+  .u-h-full-lg {
+    @media (min-width: theme(--breakpoint-lg)) {
+      @apply h-[calc(100svh-73px)];
     }
   }
   .u-grid-layout {
-    @apply tw-grid tw-grid-cols-4 tw-gap-2 lg:tw-grid-cols-32;
+    @apply grid grid-cols-4 gap-0.5 lg:grid-cols-12;
+    &.--half {
+      @apply lg:grid-cols-6;
+    }
   }
-  .u-grid-gap
-  {
-    @apply tw-gap-2;
+  .u-grid-gap {
+    @apply gap-0.5;
   }
   .u-pl-layout {
-    @apply tw-pl-outer-x-xs lg:tw-pl-outer-x-lg;
+    @apply pl-[var(--spacing-outer-x-xs)] lg:pl-[var(--spacing-outer-x-lg)];
   }
   .u-px-layout {
-    @apply tw-px-outer-x-xs lg:tw-px-outer-x-lg;
+    @apply px-[var(--spacing-outer-x-xs)] lg:px-[var(--spacing-outer-x-lg)];
   }
+
   .u-pt-module {
-    @apply tw-pt-small lg:tw-pt-outer-y-lg;
+    @apply pt-[var(--spacing-small)] lg:pt-[var(--spacing-outer-y-lg)];
   }
   .u-py-module-lg {
-    @apply lg:tw-py-outer-y-lg;
+    @apply lg:py-[var(--spacing-outer-y-lg)];
   }
   .u-py-module {
-    @apply tw-py-outer-y-xs lg:tw-py-outer-y-lg;
+    @apply py-9 lg:py-[var(--spacing-outer-y-lg)];
   }
   .u-pb-module {
-    @apply tw-pb-small lg:tw-pb-outer-y-lg;
+    @apply pb-9 lg:pb-20;
   }
   .u-px-module {
-    @apply tw-px-outer-x-xs lg:tw-px-outer-x-lg;
+    @apply px-2 lg:px-4;
+  }
+  .u-px-module-xs {
+    @apply px-2 lg:px-0;
   }
   .u-center {
-    @apply tw-absolute tw-left-1/2 tw-top-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2;
+    @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
   }
   .u-center-x {
-    @apply tw-absolute tw-left-1/2 -tw-translate-x-1/2;
+    @apply absolute left-1/2 -translate-x-1/2;
   }
   .u-center-lg {
-    @apply lg:tw-absolute lg:tw-left-1/2 lg:tw-top-1/2 lg:-tw-translate-x-1/2 lg:-tw-translate-y-1/2;
+    @apply lg:absolute lg:left-1/2 lg:top-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2;
   }
   .u-remove-br-xs {
-    @screen below-lg {
+    @media (max-width: theme(--breakpoint-lg)) {
       br {
-        @apply tw-hidden;
+        @apply hidden;
       }
     }
   }
   .u-remove-br-desktop {
-    @screen lg {
+    @media (min-width: theme(--breakpoint-lg)) {
       br {
-        @apply tw-hidden;
+        @apply hidden;
       }
     }
   }
   .u-mobile {
-    @apply tw-block lg:tw-hidden;
+    @apply block lg:hidden;
   }
   .u-desktop {
-    @apply tw-hidden lg:tw-block;
+    @apply hidden lg:block;
   }
   .u-numbered-list {
-    @apply tw-list-none;
+    @apply list-none;
     li {
-      @apply tw-pl-8 lg:tw-pl-12;
+      @apply pl-8 lg:pl-12;
       &:before {
-        @apply tw-absolute tw-left-0 tw-top-[20px] tw-mr-4 tw-inline-block tw-w-[15px] lg:tw-top-[30px] lg:tw-mr-[45px] lg:tw-w-[30px];
+        @apply absolute left-0 top-[20px] mr-4 inline-block w-[15px] lg:top-[30px] lg:mr-[45px] lg:w-[30px];
         counter-increment: mycounter;
         content: '0' counter(mycounter) '.';
       }
@@ -92,4 +105,12 @@
       }
     }
   }
+}
+
+
+/* Utilisation de @utility au lieu de @layer components pour Tailwind v4 */
+@utility dom {
+  position: relative;
+  z-index: 10;
+  display: block;
 }

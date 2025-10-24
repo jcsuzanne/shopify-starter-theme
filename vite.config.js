@@ -3,6 +3,7 @@ import shopify from 'vite-plugin-shopify';
 import pageReload from 'vite-plugin-page-reload';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import cleanup from '@by-association-only/vite-plugin-shopify-clean';
+import tailwindcss from '@tailwindcss/vite';
 
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -30,6 +31,7 @@ export default ({ mode }) => {
       },
     },
     plugins: [
+      tailwindcss(),
       basicSsl(),
       cleanup(),
       shopify({

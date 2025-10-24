@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+
+.swup-progress-bar {
+  @apply h-px bg-black;
+}
+html.is-changing .transition-main {
+  @apply transition-opacity duration-500
+}
+
+html.is-animating .transition-main {
+  @apply opacity-0;
+}
+c-actions,
+c-slideshow,
+c-pattern,
+c-wrapper,
+c-grid,
+c-visual,
+c-content,
+c-separator,
+c-subtitle,
+c-glyph,
+c-spacer,
+c-divider,
+c-fill,
+video-detector {
+  @apply block;
+}

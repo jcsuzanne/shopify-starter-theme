@@ -2,13 +2,6 @@ html {
   image-rendering: optimizeQuality;
   -webkit-font-smoothing: antialiased;
   -ms-interpolation-mode: nearest-neighbor;
-
-  &.is-loading {
-    cursor: wait;
-  }
-  &.has-scroll-dragging {
-    user-select: none;
-  }
 }
 
 html,
@@ -17,8 +10,6 @@ html body {
   width: 100%;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
-  /* overflow: hidden; */
-
 }
 
 body {
@@ -27,11 +18,6 @@ body {
   position: relative;
   font-family: var(--font-serif);
   -moz-osx-font-smoothing: grayscale;
-  /* background-color: var(--black); */
-  @screen mobile-only
-  {
-    overflow-x: hidden;
-  }
 }
 
 a {

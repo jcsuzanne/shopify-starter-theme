@@ -1,19 +1,20 @@
-<cart-opentrigger></cart-opentrigger>
+<cart-opentrigger class='dom'></cart-opentrigger>
 <div
+  class='u-h-screen u-pl-layout'
   style='height:2000px;background: linear-gradient(to bottom, #b5bdc8 0%,#828c95 36%,#28343b 100%)'>
   <h2
-    class='tw-w-1/2 tw-pl-12 tw-pt-12 tw-text-left tw-text-4xl tw-font-bold tw-text-white'
+    class='pt-12 pl-12 w-1/2 text-lg font-bold text-left text-white lg:text-4xl'
     style='font-family: Helvetica;'>
     New project is setup
   </h2>
   <h3
     data-scroll-item
-    class='tw-w-1/2 tw-pl-12 tw-text-left tw-text-xs tw-font-bold tw-text-white'
+    class='pl-12 w-1/2 text-xs font-bold text-left text-white inview:text-blue-600'
     style='font-family: Helvetica;'>
     Index Boilerplate for Shopify (Branch Main merged)
   </h3>
   <div
-    class='tw-absolute tw-bottom-12 tw-w-1/2 tw-px-12 tw-pt-5 tw-text-sm/6 tw-font-semibold tw-text-white'
+    class='absolute bottom-12 px-12 pt-5 w-1/2 font-semibold text-white text-sm/6'
     style='font-family: Helvetica;'>
     {%- for block in section.blocks -%}
       {%- case block.type -%}
