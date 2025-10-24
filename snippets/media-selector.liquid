@@ -1,0 +1,27 @@
+{% if video != blank %}
+  {% render 'render-image',
+    media: video,
+    klassPicture: klass_picture,
+    klassImg: klass_img,
+    lazy: lazy,
+    fetchpriority: fetchpriority,
+    videoDetector: videoDetector,
+    parallax: parallax,
+    poster: visual,
+    setWidth: setWidth,
+    setHeight: setHeight
+  %}
+{% endif %}
+{% if visual != blank and video == blank %}
+  {% render 'render-image',
+    media: visual,
+    klassPicture: klass_picture,
+    klassImg: klass_img,
+    lazy: lazy,
+    fetchpriority: fetchpriority,
+    videoDetector: videoDetector,
+    parallax: parallax,
+    setWidth: setWidth,
+    setHeight: setHeight
+  %}
+{% endif %}

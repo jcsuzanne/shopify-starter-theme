@@ -1,0 +1,87 @@
+{%- assign applyImgWidth = 2000 -%}
+{%- assign applyImgHeight = 2000 -%}
+{% if setWidth != blank %}
+  {%- assign applyImgWidth = setWidth -%}
+{% endif %}
+{% if setHeight != blank %}
+  {%- assign applyImgHeight = setHeight -%}
+{% endif %}
+{%- assign sizesAttr = '100vw' -%}
+{% if setWidth != blank or setHeight != blank %}
+  {%- assign sizesAttr = '' -%}
+{% endif %}
+
+{%- assign loading_param = 'eager' -%}
+{% if lazy == true %}
+  {%- assign loading_param = 'lazy' -%}
+{% endif %}
+{% if media.media_type == 'video' %}
+  {% render 'render-video',
+    media: media,
+    klassImg: klassImg,
+    videoDetector: videoDetector,
+    klassPicture: klassPicture,
+    poster: poster,
+    fetchpriority: fetchpriority,
+    loading: loading_param
+  %}
+{% else %}
+  {%- assign alt = media.alt | escape -%}
+  {% if revealFade %}
+    <div data-scroll-item data-scroll-start='top 70%' class='fx-reveal-fade'>
+  {% endif %}
+  {% if parallax %}
+    <div
+      data-scroll-item
+      data-scroll-start='top bottom'
+      data-scroll-end='bottom top'
+      data-scroll-parallax-from='40'
+      data-scroll-parallax-to='-40'
+      data-scroll-target='#{{ section.id }}'>
+  {% endif %}
+  <picture
+    {% if dataDom != blank %}
+      data-dom='{{ dataDom }}'
+    {% endif %}
+    class='{{ klassPicture }}'>
+    {% if setWidth == blank %}
+      <source
+        media='(max-width: 800px)'
+        srcset='
+          {{ media | image_url: width: 768 }} 768w,
+          {{ media | image_url: width: 912 }} 912w,
+          {{ media | image_url: width: 1368 }} 1368w,
+          {{ media | image_url: width: 1710 }} 1710w,
+          {{ media | image_url: width: 1920 }} 1920w,
+        '>
+    {% endif %}
+    {% if setHeight != blank %}
+      {{
+        media
+        | image_url: height: applyImgHeight
+        | image_tag:
+          widths: '1000, 2000',
+          sizes: sizesAttr,
+          alt: alt,
+          class: klassImg,
+          loading: loading_param,
+          fetchpriority: fetchpriority
+      }}
+    {% else %}
+      {{
+        media
+        | image_url: width: applyImgWidth
+        | image_tag:
+          widths: '1000, 2000',
+          sizes: sizesAttr,
+          alt: alt,
+          class: klassImg,
+          loading: loading_param,
+          fetchpriority: fetchpriority
+      }}
+    {% endif %}
+  </picture>
+  {% if revealFade or parallax %}
+    </div>
+  {% endif %}
+{% endif %}

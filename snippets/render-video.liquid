@@ -1,0 +1,22 @@
+{%- assign poster_img = blank -%}
+{% if poster != blank %}
+  {% assign poster_img = poster | image_url: width: 1980 %}
+{% endif %}
+
+{%- assign tag = 'div' -%}
+{%- if videoDetector -%}
+  {%- assign tag = 'video-detector' -%}
+{%- endif -%}
+<{{ tag }} class='{{ klassPicture }}' data-mode='video-all'>
+  {{
+    media
+    | video_tag:
+      autoplay: true,
+      muted: true,
+      loop: true,
+      class: klassImg,
+      poster: poster_img,
+      fetchpriority: fetchpriority,
+      loading: loading
+  }}
+</{{ tag }}>
