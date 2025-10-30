@@ -5,6 +5,7 @@ import Channels from '../base/channels';
 
 export default () => ({
   items: [],
+  itemsError: [],
   itemsCount: 0,
   RAF: false,
   total: 0,
@@ -24,7 +25,7 @@ export default () => ({
       id: item.key,
       quantity: item.quantity + 1,
     };
-    this.updateItem(data);
+    this.updateItem(data, item);
     this.getCart(true);
   },
   deleteOneItem(item) {
@@ -32,7 +33,7 @@ export default () => ({
       id: item.key,
       quantity: item.quantity - 1,
     };
-    this.updateItem(data);
+    this.updateItem(data, item);
     this.getCart(true);
   },
   watch() {
@@ -128,7 +129,7 @@ export default () => ({
       id: item.key,
       quantity: 0,
     };
-    this.updateItem(data);
+    this.updateItem(data, item);
     this.getCart(true);
   },
   resetCart() {
@@ -137,8 +138,14 @@ export default () => ({
     })
       .then((response) => response.json())
       .then((data) => {
+        this.itemsError = [];
         this.getCart();
       });
+  },
+  resetItemError(item) {
+    if (this.itemsError.find((error) => error.id == item.key)) {
+      this.itemsError = this.itemsError.filter((error) => error.id != item.key);
+    }
   },
   showProperties(item) {
     const propertiesClean = item.properties;
@@ -152,19 +159,26 @@ export default () => ({
     }
     return showProps.join(', ');
   },
-  updateItem(data) {
+  updateItem(payload, item) {
     fetch(window.Shopify.routes.root + 'cart/change.js', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     })
       .then((response) => response.json())
       .then((data) => {
-        this.items = data.items;
-        console.log(data);
+        if (data.status) {
+          this.itemsError.push({
+            id: payload.id,
+            message: data.message,
+          });
+        } else {
+          this.resetItemError(item);
+          this.items = data.items;
+        }
       })
       .catch((error) => {
         console.error('Error upading item from cart:', error);

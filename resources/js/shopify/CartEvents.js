@@ -20,8 +20,17 @@ export function AddToCart(data, triggerEvent = true) {
     .post(window.Shopify.routes.root + 'cart/add.js', data)
     .then((response) => {
       Channels.emit('cart::render', { status: 'added_to_cart' });
+      Channels.emit('adding-to-cart::success');
       if (triggerEvent) {
         gsap.delayedCall(0.5, () => Channels.emit('cart::open'));
+      }
+    })
+    .catch((error) => {
+      const errorData = error.response.data;
+      if (errorData.status) {
+        Channels.emit('adding-to-cart::error', {
+          message: errorData.message,
+        });
       }
     });
 }

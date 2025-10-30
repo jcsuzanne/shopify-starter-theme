@@ -50,6 +50,18 @@
               <div class='relative top-[3px] block opacity-50 lg:hidden'>
                 {% render 'cart-remove-button' %}
               </div>
+              {% # Error %}
+              <pdp-error
+                x-show='itemsError.find(error => error.id == item.key)'>
+                <c-content>
+                  <c-shape>
+                    {{- 'icon-error.svg' | inline_asset_content -}}
+                  </c-shape>
+                  <span
+                    data-dom='message'
+                    x-html='itemsError.find(error => error.id == item.key)?.message'></span>
+                </c-content>
+              </pdp-error>
             </div>
             {% # Check Preoder %}
             <template x-if='item.properties.Type == "Preorder"'>
@@ -78,7 +90,7 @@
               <button
                 class='{{ btnKlass }}'
                 x-on:click='deleteOneItem(item);'>
-                {% render 'svg-cart-minus' %}
+                {{ 'icon-minus.svg' | inline_asset_content }}
               </button>
               <p
                 class='text-sm font-suisse-rg'
@@ -86,7 +98,7 @@
               <button
                 class='{{ btnKlass }}'
                 x-on:click='addOneItem(item);'>
-                {% render 'svg-cart-plus' %}
+                {{ 'icon-plus.svg' | inline_asset_content }}
               </button>
             </div>
             <div class='util-nomobile'>

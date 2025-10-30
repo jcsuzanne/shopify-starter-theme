@@ -1,0 +1,19 @@
+<svg
+  width='100'
+  height='100'
+  viewBox='0 0 100 100'
+  fill='none'
+  xmlns='http://www.w3.org/2000/svg'>
+  <g>
+  <path d="M30 56C33.3137 56 36 53.3137 36 50C36 46.6863 33.3137 44 30 44C26.6863 44 24 46.6863 24 50C24 53.3137 26.6863 56 30 56Z" fill="white"/>
+  <animate attributeName="opacity" dur="1s" values="0;1;0" repeatCount="indefinite" begin="0.1"></animate>
+  </g>
+  <g>
+  <path d="M50 56C53.3137 56 56 53.3137 56 50C56 46.6863 53.3137 44 50 44C46.6863 44 44 46.6863 44 50C44 53.3137 46.6863 56 50 56Z" fill="white"/>
+  <animate attributeName="opacity" dur="1s" values="0;1;0" repeatCount="indefinite" begin="0.2"></animate>
+  </g>
+  <g>
+  <path d="M70 56C73.3137 56 76 53.3137 76 50C76 46.6863 73.3137 44 70 44C66.6863 44 64 46.6863 64 50C64 53.3137 66.6863 56 70 56Z" fill="white"/>
+  <animate attributeName="opacity" dur="1s" values="0;1;0" repeatCount="indefinite" begin="0.3"></animate>
+  </g>
+</svg>
