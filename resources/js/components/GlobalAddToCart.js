@@ -10,13 +10,10 @@ export class GlobalAddToCart extends Piece {
   mount() {
     this.DOM = { view: this, ...this.captureTree() };
     this.DOM.form = this.DOM.view.querySelector('form[action$="/cart/add"]');
-    // this.fnAddToCart = this.sendDatasToCard.bind(this);
+    this.DOM.error =
+      this.DOM.view.parentElement?.parentElement?.querySelector('pdp-error') ||
+      this.DOM.view.querySelector('pdp-error');
     this.on('click', this.domAttr('buttonAddToCart'), this.sendDatasToCard);
-    this.on('launcher::exit', document, this.afterMount);
-  }
-
-  afterMount() {
-    // Channels.addListener('product::addtocart', this.fnAddToCart);
   }
 
   logData(data) {
@@ -38,12 +35,10 @@ export class GlobalAddToCart extends Piece {
     // this.logData(data);
 
     // Continue with the form submission
-    AddToCart(data, true);
+    AddToCart(data, true, this.DOM.error);
   }
 
-  unmount() {
-    this.off('launcher::exit', document, this.afterMount);
-  }
+  unmount() {}
 }
 
 // Register the custom element
