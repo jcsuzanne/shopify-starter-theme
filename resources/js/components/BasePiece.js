@@ -1,24 +1,25 @@
 import { Piece } from 'piecesjs';
 
-export class View extends Piece {
+export class BasePiece extends Piece {
   constructor() {
-    super('View', {
-      // stylesheets: [() => import('/assets/css/components/file.css')],
+    super('BasePiece', {
+      // stylesheets: [() => import('/assets/css/components/view.css')],
     });
   }
 
   mount() {
     this.DOM = { view: this, ...this.captureTree() };
 
-    this.on('launcher::exit', document, this.afterMount);
+    // afterMount is now automatically called with /utils/afterMountHelper.js
+    // this.on('launcher::exit', document, this.afterMount);
   }
 
   afterMount() {}
 
   unmount() {
-    this.off('launcher::exit', document, this.afterMount);
+    // this.off('launcher::exit', document, this.afterMount);
   }
 }
 
 // Register the custom element
-customElements.define('view', View);
+customElements.define('c-base-piece', BasePiece);

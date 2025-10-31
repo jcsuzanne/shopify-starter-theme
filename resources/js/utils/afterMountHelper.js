@@ -1,7 +1,6 @@
-import { Piece } from 'piecesjs';
 import { piecesManager } from 'piecesjs';
 
-export function renderComponents() {
+export function triggerAfterMount(context = document.body) {
   Object.keys(piecesManager.currentPieces).forEach((name) => {
     Object.keys(piecesManager.currentPieces[name]).forEach((id) => {
       if (
@@ -11,7 +10,9 @@ export function renderComponents() {
           'function'
       ) {
         let piece = piecesManager.currentPieces[name][id].piece;
-        piece.afterMount();
+        if (context.contains(piece)) {
+          piece.afterMount();
+        }
       }
     });
   });

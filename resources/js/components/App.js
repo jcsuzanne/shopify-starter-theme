@@ -3,6 +3,7 @@ import { html } from '../utils/environment';
 import { initDevice } from '../utils/device';
 import { initSizes } from '../utils/sizes';
 import { gsap } from 'gsap';
+import { triggerAfterMount } from '../utils/afterMountHelper';
 
 import '../alpine/start';
 
@@ -32,6 +33,8 @@ export class App extends Piece {
     gsap.delayedCall(window.readyDelay, () => {
       html.classList.add('has-dom-ready');
       this.emit('launcher::exit', document);
+
+      triggerAfterMount();
 
       gsap.delayedCall(window.readyCallbackDelay, () => {
         html.classList.add('has-dom-ready-callback');

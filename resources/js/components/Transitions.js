@@ -7,7 +7,7 @@ import SwupProgressPlugin from '@swup/progress-plugin';
 import SwupScrollPlugin from '@swup/scroll-plugin';
 import SwupPreloadPlugin from '@swup/preload-plugin';
 import { updateComponents } from '../components';
-import { renderComponents } from './AfterMountRenderer';
+import { triggerAfterMount } from '../utils/afterMountHelper';
 import Channels from '../base/channels';
 
 export class Transitions extends Piece {
@@ -137,7 +137,7 @@ export class Transitions extends Piece {
   }
 
   renderPieces(context) {
-    renderComponents(context);
+    triggerAfterMount(context);
     this.emit('transition::end');
   }
 }

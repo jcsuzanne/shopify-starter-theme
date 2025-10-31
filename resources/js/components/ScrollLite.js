@@ -43,6 +43,12 @@ export class Scroll extends Piece {
     this.updateScrollValues();
 
     this.on('resize', window, this.resize);
+
+    console.log('ScrollLite mount');
+  }
+
+  afterMount() {
+    console.log('ScrollLite afterMount');
   }
 
   onScroll() {
