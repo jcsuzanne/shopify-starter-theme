@@ -15,12 +15,12 @@ export function EmitCartClose() {
   });
 }
 
-export function AddToCart(data, triggerEvent = true) {
+export function AddToCart(data, triggerEvent = true, errorDOM = null) {
   axios
     .post(window.Shopify.routes.root + 'cart/add.js', data)
     .then((response) => {
       Channels.emit('cart::render', { status: 'added_to_cart' });
-      Channels.emit('adding-to-cart::success');
+      HandleAddToCartSuccess(errorDOM);
       if (triggerEvent) {
         gsap.delayedCall(0.5, () => Channels.emit('cart::open'));
       }
@@ -28,11 +28,21 @@ export function AddToCart(data, triggerEvent = true) {
     .catch((error) => {
       const errorData = error.response.data;
       if (errorData.status) {
-        Channels.emit('adding-to-cart::error', {
-          message: errorData.message,
-        });
+        HandleAddToCartError(errorData, errorDOM);
       }
     });
+}
+
+export function HandleAddToCartSuccess(errorDOM = null) {
+  errorDOM.classList.add('tw-hidden');
+  errorDOM.style.display = '';
+}
+
+export function HandleAddToCartError(errorData, errorDOM = null) {
+  errorDOM.querySelector('[data-dom="message"]').textContent =
+    errorData.message;
+  errorDOM.classList.remove('tw-hidden');
+  errorDOM.style.display = 'block';
 }
 
 export function UpdateCart(data) {

@@ -10,6 +10,7 @@ export class PDPAddToCart extends Piece {
   mount() {
     this.DOM = { view: this, ...this.captureTree() };
     this.DOM.form = this.DOM.view.querySelector('form[action$="/cart/add"]');
+    this.DOM.error = this.DOM.view.querySelector('pdp-error');
     this.fnAddToCart = this.sendDatasToCard.bind(this);
     this.on('launcher::exit', document, this.afterMount);
   }
@@ -20,7 +21,7 @@ export class PDPAddToCart extends Piece {
 
   sendDatasToCard() {
     const data = new FormData(this.DOM.form);
-    AddToCart(data, true);
+    AddToCart(data, true, this.DOM.error);
   }
 
   unmount() {
