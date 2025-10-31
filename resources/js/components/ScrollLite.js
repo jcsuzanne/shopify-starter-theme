@@ -29,8 +29,7 @@ export class Scroll extends Piece {
     document.documentElement.style.setProperty('--scrollValue', `0px`);
 
     // Setup scroll listener
-    this.handleScroll = this.onScroll.bind(this);
-    window.addEventListener('scroll', this.handleScroll, { passive: true });
+    this.on('scroll', window, this.onScroll);
 
     ScrollTrigger.config({ ignoreMobileResize: true });
 
@@ -47,11 +46,8 @@ export class Scroll extends Piece {
     console.log('ScrollLite mount');
   }
 
-  afterMount() {
-    console.log('ScrollLite afterMount');
-  }
-
   onScroll() {
+    console.log('onScroll');
     if (!this.ticking) {
       window.requestAnimationFrame(() => {
         this.updateScrollValues();
@@ -290,7 +286,7 @@ export class Scroll extends Piece {
   }
 
   unmount() {
-    window.removeEventListener('scroll', this.handleScroll);
+    this.off('scroll', window, this.onScroll);
 
     if (this.scrollElements) {
       this.scrollElements.forEach((scrollElement) => {
