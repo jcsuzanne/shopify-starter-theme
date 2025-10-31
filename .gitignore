@@ -21,3 +21,5 @@ assets/app.*.js
 assets/app.*.css
 assets/_manifest.json
 snippets/vite.liquid
+
+.vscode
