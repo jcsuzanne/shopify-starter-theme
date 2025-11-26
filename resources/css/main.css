@@ -1,14 +1,22 @@
 /* SETTINGS */
-@import-glob "settings/*.css";
+@import './settings/variables.css';
+@import './settings/easings.css';
+
+/* TAILWIND */
+@import './tailwind-config.css';
 
 /* BASE */
-@import-glob "base/*.css";
+@import './base/custom-reset.css';
+@import './base/normalize.css';
+@import './base/scroll.css';
 
 /* COMMON */
-@import-glob "common/*.css";
-
-@import-glob "utilities/*.css";
+@import './commons/fonts.css';
+@import './commons/layout.css';
+@import './commons/animations.css';
 
 /* COMPONENTS */
-@import-glob "components/*.css";
+/* @import './components/yourComponent.css'; */
 
+/* UTILITIES */
+@import './utilities/utilities.css';

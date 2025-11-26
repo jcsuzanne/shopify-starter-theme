@@ -1,20 +1,20 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-/* Configuration du thème */
+/* Theme configuration */
 @theme {
-  /* Breakpoints de base */
+  /* Base breakpoints */
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1400px;
   --breakpoint-2xl: 1680px;
 
-  /* Font sizes personnalisés */
+  /* Custom font sizes */
   --font-size-xxxs: 10px;
   --font-size-xxs: 11px;
   --font-size-xsm: 13px;
 
-  /* Line heights personnalisés */
+  /* Custom line heights */
   --line-height-xxs: 11px;
   --line-height-xxxs: 10px;
   --line-height-xs: 12px;
@@ -22,7 +22,7 @@
   --line-height-xsm: 13px;
   --line-height-base-lg: 18px;
 
-  /* Spacing personnalisé */
+  /* Custom spacing */
   --spacing-outer-x-lg: 1.5rem;
   --spacing-outer-x-xs: 0.9375rem;
   --spacing-outer-y-lg: 8.125rem;
@@ -49,7 +49,7 @@
   --z-index-cart: 90;
 }
 
-/* Breakpoints personnalisés avec media queries */
+/* Custom breakpoints with media queries */
 @custom-media --below-lg (max-width: 1023px);
 @custom-media --lt (min-width: 1440px);
 @custom-media --3xl (min-width: 1900px);
@@ -59,17 +59,33 @@
 @custom-media --mobile-only (max-width: 600px);
 @custom-media --small-height (max-height: 850px);
 
-/* Variants pour breakpoints personnalisés */
-@variant below-lg (@media (--below-lg));
-@variant lt (@media (--lt));
-@variant 3xl (@media (--3xl));
-@variant 4xl (@media (--4xl));
-@variant h-xs (@media (--h-xs));
-@variant h-mobile-lg (@media (--h-mobile-lg));
-@variant mobile-only (@media (--mobile-only));
-@variant small-height (@media (--small-height));
+/* Variants for custom breakpoints */
+@custom-variant below-lg (@media (max-width: 1023px));
+@custom-variant lt (@media (min-width: 1440px));
+@custom-variant 3xl (@media (min-width: 1900px));
+@custom-variant 4xl (@media (min-width: 2100px));
+@custom-variant h-xs (@media (max-height: 800px) and (min-width: 1024px));
+@custom-variant h-mobile-lg (@media (min-height: 700px) and (max-height: 1000px) and (orientation: portrait));
+@custom-variant mobile-only (@media (max-width: 600px));
+@custom-variant small-height (@media (max-height: 850px));
 
-/* Variants d'état HTML */
+/* Variants for breakpoints (Quentin) */
+@custom-variant from-sm (@media (min-width: 640px));
+@custom-variant to-sm (@media (max-width: 639px));
+@custom-variant from-md (@media (min-width: 768px));
+@custom-variant to-md (@media (max-width: 767px));
+@custom-variant from-lg (@media (min-width: 1024px));
+@custom-variant to-lg (@media (max-width: 1023px));
+@custom-variant from-xl (@media (min-width: 1400px));
+@custom-variant to-xl (@media (max-width: 1399px));
+@custom-variant from-2xl (@media (min-width: 1680px));
+@custom-variant to-2xl (@media (max-width: 1679px));
+@custom-variant from-3xl (@media (min-width: 1900px));
+@custom-variant to-3xl (@media (max-width: 1899px));
+@custom-variant from-4xl (@media (min-width: 2100px));
+@custom-variant to-4xl (@media (max-width: 2099px));
+
+/* HTML state variants */
 @variant backend-preview (html[class~="wp-toolbar"] &);
 @variant local-env (html[class~="local-env"] &);
 @variant mainnav-opened (html[class~="has-nav-open"] &);
@@ -85,7 +101,7 @@
 @variant cart-updating (html[class~="cart-updating"] &);
 @variant newsletter-registered (html[class~="newsletter-registered"] &);
 
-/* Variants d'état élément */
+/* Element state variants */
 @variant inview (&[class~="is-inview"]);
 @variant is-selected (&[class~="is-selected"]);
 @variant is-active (&[class~="is-active"]);
