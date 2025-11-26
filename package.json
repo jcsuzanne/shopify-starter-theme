@@ -68,7 +68,6 @@
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-for": "^2.1.1",
     "postcss-import": "^16.1.1",
-    "postcss-import-ext-glob": "^2.1.1",
     "postcss-mixins": "^11.0.0",
     "postcss-nested": "^7.0.2",
     "postcss-pxtorem": "^6.1.0",

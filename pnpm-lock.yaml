@@ -120,9 +120,6 @@ importers:
       postcss-import:
         specifier: ^16.1.1
         version: 16.1.1(postcss@8.5.6)
-      postcss-import-ext-glob:
-        specifier: ^2.1.1
-        version: 2.1.1(postcss@8.5.6)
       postcss-mixins:
         specifier: ^11.0.0
         version: 11.0.3(postcss@8.5.6)
@@ -2260,9 +2257,6 @@ packages:
     resolution: {integrity: sha512-7MptL8U0cqcFdzIzwOTHoilX9x5BrNqye7Z/LuC7kCMRio1EMSyqRK3BEAUD7sXRq4iT4AzTVuZdhgQ2TCvYLg==}
     engines: {node: '>=8.6.0'}
 
-  fast-sort@3.4.1:
-    resolution: {integrity: sha512-76uvGPsF6So53sZAqenP9UVT3p5l7cyTHkLWVCMinh41Y8NDrK1IYXJgaBMfc1gk7nJiSRZp676kddFG2Aa5+A==}
-
   fast-uri@3.1.0:
     resolution: {integrity: sha512-iPeeDKJSWf4IEOasVVrknXpaBV0IApz/gp7S2bb7Z4Lljbl2MGJRqInZiUrQwV16cpzw/D3S5j5Julj/gT52AA==}
 
@@ -3488,11 +3482,6 @@ packages:
 
   postcss-for@2.1.1:
     resolution: {integrity: sha512-X0R84FCyr5cqzW4+/g4Dvz2OUe1iwC3G/atIrwEpiRstZlBBpknV+ETlIneSTnw/iXgUnEoTRaO2qXY62YWLhQ==}
-
-  postcss-import-ext-glob@2.1.1:
-    resolution: {integrity: sha512-qd4ELOx2G0hyjgtmLnf/fSVJXXPhkcxcxhLT1y1mAnk53JYbMLoGg+AFtnJowOSvnv4CvjPAzpLpAcfWeofP5g==}
-    peerDependencies:
-      postcss: ^8.2.0
 
   postcss-import@16.1.1:
     resolution: {integrity: sha512-2xVS1NCZAfjtVdvXiyegxzJ447GyqCeEI5V7ApgQVOWnros1p5lGNovJNapwPpMombyFBfqDwt7AD3n2l0KOfQ==}
@@ -7206,8 +7195,6 @@ snapshots:
       merge2: 1.4.1
       micromatch: 4.0.8
 
-  fast-sort@3.4.1: {}
-
   fast-uri@3.1.0: {}
 
   fastq@1.19.1:
@@ -8365,13 +8352,6 @@ snapshots:
     dependencies:
       postcss: 5.2.18
       postcss-simple-vars: 2.0.0
-
-  postcss-import-ext-glob@2.1.1(postcss@8.5.6):
-    dependencies:
-      fast-glob: 3.3.3
-      fast-sort: 3.4.1
-      postcss: 8.5.6
-      postcss-value-parser: 4.2.0
 
   postcss-import@16.1.1(postcss@8.5.6):
     dependencies:
