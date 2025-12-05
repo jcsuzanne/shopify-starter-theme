@@ -10,7 +10,7 @@
         href='{{ settings.favicon | image_url: width: 32, height: 32 }}'>
     {%- endif -%}
 
-    {% render 'meta-tags' %}
+    {% render 'meta-tags', password_mode: false %}
     {% render 'theme-assets' %}
     {% render 'theme-fonts' %}
     {%- liquid
