@@ -14,6 +14,7 @@ export class Scroll extends Piece {
 
   mount() {
     this.$scrollItems = [];
+    this.windowWidth = window.innerWidth;
 
     // Collect all scroll items
     if (this.querySelectorAll('[data-scroll-item]').length > 0) {
@@ -43,11 +44,44 @@ export class Scroll extends Piece {
 
     this.on('resize', window, this.resize);
 
-    console.log('ScrollLite mount');
+    // Detect scroll height change
+    this.scrollHeightObserver = new MutationObserver(() => {
+      this.detectScrollHeightChange();
+    });
+    this.scrollHeightObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'class'],
+    });
+
+    // console.log('ScrollLite mount');
+  }
+
+  detectScrollHeightChange() {
+    // Stocker la hauteur initiale
+    if (!this.lastScrollHeight) {
+      this.lastScrollHeight = document.documentElement.scrollHeight;
+    }
+
+    const currentScrollHeight = document.documentElement.scrollHeight;
+
+    if (currentScrollHeight !== this.lastScrollHeight) {
+      // console.log('Scroll height changed:', {
+      //   previous: this.lastScrollHeight,
+      //   current: currentScrollHeight,
+      //   difference: currentScrollHeight - this.lastScrollHeight,
+      // });
+
+      this.lastScrollHeight = currentScrollHeight;
+
+      // Optionnel : rafraîchir les ScrollTriggers après un changement de hauteur
+      this.refresh();
+    }
   }
 
   onScroll() {
-    console.log('onScroll');
+    // console.log('onScroll');
     if (!this.ticking) {
       window.requestAnimationFrame(() => {
         this.updateScrollValues();
@@ -273,16 +307,27 @@ export class Scroll extends Piece {
         scrollElement.sTrigger.refresh();
       });
     }
+    this.emit('redraw::fx');
   }
 
   resize() {
-    if (this.resizeTimeout) {
+    if (this.resizeTimeout != undefined) {
       this.resizeTimeout.kill();
     }
     this.resizeTimeout = gsap.delayedCall(window.isMobile ? 0.6 : 0.3, () => {
-      ScrollTrigger.refresh();
-      this.refresh();
+      this.resizeDebounce();
     });
+  }
+
+  resizeDebounce() {
+    if (
+      this.windowWidth != window.innerWidth ||
+      (this.direction == 'horizontal' && !window.isMobile)
+    ) {
+      console.log('resizeDebounce');
+      this.windowWidth = window.innerWidth;
+      this.refresh();
+    }
   }
 
   unmount() {
