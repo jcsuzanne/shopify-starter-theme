@@ -82,6 +82,9 @@
   name='twitter:description'
   content='{{ og_description | escape }}'>
 
+{% if password_mode == true %}
+  <title>{{ shop.name }}</title>
+{% endif %}
 {% if password_mode == false %}
   <title>
     {{ page_title }}
@@ -104,10 +107,3 @@
     name='description'
     content='{{ page_description | escape }}'>
 {% endif %}
-
-{%- if settings.favicon != blank -%}
-  <link
-    rel='icon'
-    type='image/png'
-    href='{{ settings.favicon | image_url: width: 32, height: 32 }}'>
-{%- endif -%}
