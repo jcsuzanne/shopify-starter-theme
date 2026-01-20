@@ -11,9 +11,9 @@
 @import './base/scroll.css';
 
 /* COMMON */
-@import './commons/fonts.css';
-@import './commons/layout.css';
-@import './commons/animations.css';
+@import './common/fonts.css';
+@import './common/layout.css';
+@import './common/animations.css';
 
 /* COMPONENTS */
 /* @import './components/yourComponent.css'; */
