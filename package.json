@@ -25,7 +25,7 @@
     "pull-header-group": "shopify theme pull --store=jcs-blueprint.myshopify.com --theme=188310552913 --only=sections/header-group.json",
     "pull-locales": "shopify theme pull --store=jcs-blueprint.myshopify.com --theme=188310552913 --only=locales/*",
     "pull-templates": "shopify theme pull --store=jcs-blueprint.myshopify.com --theme=188310552913 --only=templates/* --only=sections/header-group.json",
-    "sync-pull": "yarn pull-config && yarn pull-locales && yarn pull-header-group && yarn pull-templates",
+    "sync-pull": "pnpm pull-config && pnpm pull-locales && pnpm pull-header-group && pnpm pull-templates",
     "clean": "find assets -name 'app.*' \\( -name '*.js' -o -name '*.css' \\) -delete"
   },
   "dependencies": {
