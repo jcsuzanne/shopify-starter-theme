@@ -15,6 +15,7 @@
     "preview": "vite preview",
     "shopify": "shopify theme dev --live-reload=\"hot-reload\" --notify=/tmp/theme.update --store=jcs-blueprint.myshopify.com --store-password=jcs",
     "logout": "shopify auth logout",
+    "install-init": "shopify theme push --store=jcs-blueprint.myshopify.com --theme=188310552913",
     "deploy": "shopify theme push --store=jcs-blueprint.myshopify.com --theme=188310552913 --only=sections/* --only=snippets/* --only=assets/* --only=layout/* --only=blocks/*",
     "push-assets": "shopify theme push --store=jcs-blueprint.myshopify.com --theme=188310552913 --only=snippets/* --only=assets/*",
     "push-config": "shopify theme push --store=jcs-blueprint.myshopify.com --theme=188310552913 --only=config/settings_schema.json",
