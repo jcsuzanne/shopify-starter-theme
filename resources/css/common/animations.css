@@ -1,5 +1,20 @@
 @import 'tailwindcss';
 
+/* Animations delay */
+@for $i from 1 to 12 {
+  .fx-reveal-fade.-delay-$(i),
+  .fx-reveal-fade-out.-delay-$(i),
+  .fx-reveal-y.-delay-$(i),.fx-reveal-scaleY.-delay-$(i),
+  .fx-reveal-x.-delay-$(i),.fx-reveal-scaleX.-delay-$(i),
+  .fx-mask-reveal.-delay-$(i),.fx-reveal-mask.-delay-$(i),
+  .u-anim.-delay-$(i),
+  .u-anim-simple.-delay-$(i)
+ {
+    transition-delay: calc(0.1s * $i);
+  }
+}
+
+/* Animations */
 .u-anim {
   transform: translate3d(0, calc(var(--unit) / 2), 0);
   opacity: 0;
@@ -11,33 +26,33 @@
     transform: translate3d(0, 0, 0);
     opacity: 1;
 
-    @for $i from 1 to 12 {
+    /* @for $i from 1 to 12 {
       &.-delay-$(i) {
         transition-delay: (0.1s * $i) + 0.3s;
       }
-    }
+    } */
   }
 
   html.has-dom-ready-callback &.is-inview[data-scroll-item] {
     transform: translate3d(0, 0, 0);
     opacity: 1;
 
-    @for $i from 1 to 12 {
+    /* @for $i from 1 to 12 {
       &.-delay-$(i) {
         transition-delay: (0.1s * $i);
       }
-    }
+    } */
   }
 
   html.has-dom-ready-callback .is-inview[data-scroll-item] &.-parent {
     transform: translate3d(0, 0, 0);
     opacity: 1;
 
-    @for $i from 1 to 12 {
+    /* @for $i from 1 to 12 {
       &.-delay-$(i) {
         transition-delay: (0.1s * $i);
       }
-    }
+    } */
   }
 
   html.has-transition:not(.has-dom-ready) & {
@@ -57,31 +72,31 @@
   html.has-dom-ready-callback &:not([data-scroll-item]):not(.-parent) {
     opacity: 1;
 
-    @for $i from 1 to 12 {
+    /* @for $i from 1 to 12 {
       &.-delay-$(i) {
         transition-delay: (0.1s * $i) + 0.3s;
       }
-    }
+    } */
   }
 
   html.has-dom-ready-callback &.is-inview[data-scroll-item] {
     opacity: 1;
 
-    @for $i from 1 to 12 {
+    /* @for $i from 1 to 12 {
       &.-delay-$(i) {
         transition-delay: (0.1s * $i);
       }
-    }
+    } */
   }
 
   html.has-dom-ready-callback .is-inview[data-scroll-item] &.-parent {
     opacity: 1;
 
-    @for $i from 1 to 12 {
+    /* @for $i from 1 to 12 {
       &.-delay-$(i) {
         transition-delay: (0.1s * $i);
       }
-    }
+    } */
   }
 
   html.is-first-load & {
@@ -90,35 +105,20 @@
 }
 
 .fx-reveal-fade {
-  @apply opacity-0 transition-opacity duration-[1000ms] ease-(--ease-cubic-out) backend-preview:opacity-100 inview:opacity-100;
-  @for $i from 1 to 12 {
-    &.--delay-$(i) {
-      transition-delay: calc(0.1s * $i);
-    }
-  }
+  @apply opacity-0 transition-opacity duration-1000 ease-(--ease-cubic-out) backend-preview:opacity-100 inview:opacity-100;
 }
 .fx-reveal-fade-out {
-  @apply opacity-100 transition-opacity duration-[1000ms] ease-(--ease-cubic-out) backend-preview:opacity-0 inview:opacity-0;
-  @for $i from 1 to 12 {
-    &.--delay-$(i) {
-      transition-delay: calc(0.1s * $i);
-    }
-  }
+  @apply opacity-100 transition-opacity duration-1000 ease-(--ease-cubic-out) backend-preview:opacity-0 inview:opacity-0;
 }
 .fx-reveal-y {
-  @apply translate-y-[30px] opacity-0 duration-700 ease-(--ease-cubic-out) backend-preview:translate-y-0 backend-preview:opacity-100 inview:translate-y-0 inview:opacity-100;
-  @for $i from 1 to 12 {
-    &.--delay-$(i) {
-      transition-delay: calc(0.1s * $i);
-    }
-  }
+  @apply translate-y-small opacity-0 duration-700 ease-(--ease-cubic-out) backend-preview:translate-y-0 backend-preview:opacity-100 inview:translate-y-0 inview:opacity-100;
   &.--fx-xs {
     @apply translate-y-[8px] backend-preview:translate-y-0 backend-preview:opacity-100 inview:translate-y-0 inview:opacity-100;
   }
 }
 .fx-mask-reveal,
 .fx-reveal-mask {
-  @apply transition-[clip-path] duration-1000 ease-(--ease-in-out-power2) lg:z-0;
+  @apply transition-[clip-path] duration-1000 ease-in-out-power2 lg:z-0;
   clip-path: inset(0 0 100% 0);
   .is-safari & {
     @apply transition-none;
@@ -133,33 +133,18 @@
   .wp-toolbar & {
     clip-path: inset(0 0 0 0);
   }
-  @for $i from 1 to 12 {
-    &.--delay-$(i) {
-      transition-delay: calc(0.1s * $i);
-    }
-  }
 }
 .fx-reveal-scaleX,
 .fx-reveal-scale-x {
-  @apply origin-left scale-x-0 transition-transform duration-1000 ease-(--ease-power2-out) backend-preview:scale-x-100 inview:scale-x-100;
-  @for $i from 1 to 12 {
-    &.--delay-$(i) {
-      transition-delay: calc(0.1s * $i);
-    }
-  }
+  @apply origin-left scale-x-0 transition-transform duration-1000 ease-out-power2 backend-preview:scale-x-100 inview:scale-x-100;
 }
 .fx-reveal-scaleY,
 .fx-reveal-scale-y {
-  @apply origin-top scale-y-0 transition-transform duration-1000 ease-(--ease-out-power2) backend-preview:scale-y-100 inview:scale-y-100;
-  @for $i from 1 to 12 {
-    &.--delay-$(i) {
-      transition-delay: calc(0.1s * $i);
-    }
-  }
+  @apply origin-top scale-y-0 transition-transform duration-1000 ease-out-power2 backend-preview:scale-y-100 inview:scale-y-100;
 }
 
 .fx-hover-underline {
-  @screen lg {
+  @media (min-width: theme(--breakpoint-lg)) {
     @apply relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-current after:transition-transform after:duration-300 ease-(--ease-power2-in-out) hover:after:origin-bottom-left hover:after:scale-x-100;
   }
 }

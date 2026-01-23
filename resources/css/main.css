@@ -1,6 +1,5 @@
 /* SETTINGS */
 @import './settings/variables.css';
-@import './settings/easings.css';
 
 /* TAILWIND */
 @import './tailwind-config.css';
