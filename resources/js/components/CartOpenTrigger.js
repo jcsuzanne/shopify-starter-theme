@@ -13,13 +13,6 @@ export class CartOpenTrigger extends Piece {
     setTimeout(() => {
       Channels.emit('cart::open');
     }, 100);
-    this.on('launcher::exit', document, this.afterMount);
-  }
-
-  afterMount() {}
-
-  unmount() {
-    this.off('launcher::exit', document, this.afterMount);
   }
 }
 

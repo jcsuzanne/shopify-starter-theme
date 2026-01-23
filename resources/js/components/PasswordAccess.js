@@ -16,10 +16,7 @@ export class PasswordAccess extends Piece {
     }
   }
 
-  afterMount() {}
-
   unmount() {
-    this.off('launcher::exit', document, this.afterMount);
   }
 }
 

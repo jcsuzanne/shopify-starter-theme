@@ -10,11 +10,8 @@ export class LanguageSwitcher extends Piece {
   mount() {
     this.DOM = { view: this, ...this.captureTree() };
     this.DOM.form = this.DOM.view.querySelector('form');
-    this.on('launcher::exit', document, this.afterMount);
     this.events();
   }
-
-  afterMount() {}
 
   events() {
     for (let trigger of this.DOM.trigger) {
@@ -26,7 +23,6 @@ export class LanguageSwitcher extends Piece {
   }
 
   unmount() {
-    this.off('launcher::exit', document, this.afterMount);
   }
 }
 

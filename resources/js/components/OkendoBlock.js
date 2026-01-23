@@ -11,10 +11,10 @@ export class OkendoBlock extends Piece {
   mount() {
     this.DOM = { view: this, ...this.captureTree() };
     console.log('init okendo');
-    this.on('launcher::exit', document, this.afterMount);
+    this.setup();
   }
 
-  afterMount() {
+  setup() {
     if (window.hasTransitioned) {
       window.okeWidgetApi.initAllWidgets();
     }
@@ -28,8 +28,8 @@ export class OkendoBlock extends Piece {
   }
 
   unmount() {
-    this.off('launcher::exit', document, this.afterMount);
   }
+
 }
 
 // Register the custom element

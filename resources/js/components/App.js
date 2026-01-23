@@ -32,8 +32,6 @@ export class App extends Piece {
 
     gsap.delayedCall(window.readyDelay, () => {
       html.classList.add('has-dom-ready');
-      this.emit('launcher::exit', document);
-
       triggerAfterMount();
 
       gsap.delayedCall(window.readyCallbackDelay, () => {

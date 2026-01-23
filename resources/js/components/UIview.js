@@ -14,13 +14,6 @@ export class UIview extends Piece {
     //? Cart events
     EmitCartClose();
     EmitCartOpen();
-    this.on('launcher::exit', document, this.afterMount);
-  }
-
-  afterMount() {}
-
-  unmount() {
-    this.off('launcher::exit', document, this.afterMount);
   }
 }
 
