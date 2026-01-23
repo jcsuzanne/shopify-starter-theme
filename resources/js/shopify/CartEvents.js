@@ -1,6 +1,5 @@
 import { html } from '../utils/environment';
 import Channels from '../base/channels';
-import axios from 'axios';
 import gsap from 'gsap';
 
 export function EmitCartOpen() {
@@ -16,9 +15,18 @@ export function EmitCartClose() {
 }
 
 export function AddToCart(data, triggerEvent = true, errorDOM = null) {
-  axios
-    .post(window.Shopify.routes.root + 'cart/add.js', data)
-    .then((response) => {
+  fetch(window.Shopify.routes.root + 'cart/add.js', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then(async (response) => {
+      const responseData = await response.json();
+      if (!response.ok) {
+        throw { response: { data: responseData } };
+      }
       Channels.emit('cart::render', { status: 'added_to_cart' });
       HandleAddToCartSuccess(errorDOM);
       if (triggerEvent) {
@@ -26,7 +34,7 @@ export function AddToCart(data, triggerEvent = true, errorDOM = null) {
       }
     })
     .catch((error) => {
-      const errorData = error.response.data;
+      const errorData = error.response?.data || error;
       if (errorData.status) {
         HandleAddToCartError(errorData, errorDOM);
       }
@@ -46,5 +54,13 @@ export function HandleAddToCartError(errorData, errorDOM = null) {
 }
 
 export function UpdateCart(data) {
-  axios.post(window.Shopify.routes.root + 'cart/change.js', data);
+  fetch(window.Shopify.routes.root + 'cart/change.js', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  }).catch((error) => {
+    console.error('Error updating cart:', error);
+  });
 }
