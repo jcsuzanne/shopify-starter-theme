@@ -2,7 +2,7 @@
   "name": "jcs-shopify-starter-theme",
   "description": "Starter theme for Shopify using modern dev tools like Vite.js, TailwindCSS and with Pieces.js (for native webcomponents)",
   "author": "JC SUZANNE (https://github.com/jcsuzanne)",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "type": "module",
   "engines": {
     "node": ">=20.6.1",
