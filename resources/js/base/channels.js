@@ -14,14 +14,14 @@ class Channels extends EventTarget {
         callback();
       }
     };
-    
+
     this._listeners.set(callback, wrappedCallback);
     this.addEventListener(event, wrappedCallback);
   }
 
   removeListener(event, callback) {
     const wrappedCallback = this._listeners.get(callback);
-    
+
     if (wrappedCallback) {
       this.removeEventListener(event, wrappedCallback);
       this._listeners.delete(callback);
