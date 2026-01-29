@@ -17,10 +17,7 @@ export function EmitCartClose() {
 export function AddToCart(data, triggerEvent = true, errorDOM = null) {
   fetch(window.Shopify.routes.root + 'cart/add.js', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
+    body: data,
   })
     .then(async (response) => {
       const responseData = await response.json();

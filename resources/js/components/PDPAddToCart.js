@@ -11,10 +11,6 @@ export class PDPAddToCart extends Piece {
     this.DOM.form = this.DOM.view.querySelector('form[action$="/cart/add"]');
     this.DOM.error = this.DOM.view.querySelector('pdp-error');
     this.fnAddToCart = this.sendDatasToCard.bind(this);
-    this.afterMount();
-  }
-
-  afterMount() {
     Channels.addListener('product::addtocart', this.fnAddToCart);
   }
 
@@ -24,7 +20,7 @@ export class PDPAddToCart extends Piece {
   }
 
   unmount() {
-    Channels.removeListener('product::addtocart', this.fnAddToCart);
+
   }
 }
 
