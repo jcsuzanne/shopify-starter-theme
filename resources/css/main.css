@@ -6,7 +6,6 @@
 
 /* BASE */
 @import './base/custom-reset.css';
-@import './base/normalize.css';
 @import './base/scroll.css';
 
 /* COMMON */
