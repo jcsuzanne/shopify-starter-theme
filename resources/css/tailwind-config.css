@@ -161,10 +161,14 @@
 @variant product-unavailable (html[class~="product-unavailable"] &);
 @variant footer-inview (html[class~="footer-inview"] &);
 @variant promo-bar (html[class~="with-announcement"] &);
-@variant ui-ready (html[class~="ui-ready"] &);
-@variant ui-finalized (html[class~="ui-finalized"] &);
 @variant cart-updating (html[class~="cart-updating"] &);
 @variant newsletter-registered (html[class~="newsletter-registered"] &);
+
+/* UI state variants */
+@variant menu-open (html[class~="has-menu-open"] &);
+@variant ui-ready (html[class~="has-dom-ready"] &);
+@variant ui-finalized (html[class~="has-dom-finalized"] &);
+@variant buy-sticky (html[class~="buy-sticky"] &);
 
 /* Element state variants */
 @variant inview (&[class~="is-inview"]);
