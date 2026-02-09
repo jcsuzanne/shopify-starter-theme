@@ -18,6 +18,9 @@ body {
   position: relative;
   font-family: var(--font-serif);
   -moz-osx-font-smoothing: grayscale;
+
+  @media (min-width: theme(--from-lg)) {
+  }
 }
 
 a {
