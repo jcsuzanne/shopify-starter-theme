@@ -9,24 +9,3 @@ h6 {
     text-wrap: wrap;
   }
 }
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-}
-
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
