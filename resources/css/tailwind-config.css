@@ -1,5 +1,13 @@
 @import 'tailwindcss';
 
+:root {
+  --app-height: 100dvh;
+  --app-height-negative: -100dvh;
+  --app-availheight: calc(
+    100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+  );
+}
+
 /* Theme configuration */
 @theme {
   /* For the QHCD */
