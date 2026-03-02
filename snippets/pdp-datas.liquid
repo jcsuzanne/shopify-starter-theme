@@ -1,0 +1,24 @@
+{%- assign selected_product = product.selected_or_first_available_variant -%}
+{% assign gallery = product.images | map: 'src' %}
+{% assign current_image = product.selected_or_first_available_variant.featured_image
+  | image_url: width: 3000
+%}
+{%- capture key_variant %}
+  {%- for option in selected_product.options -%}{{- option.id | strip -}}{%- unless forloop.last -%}_{%- endunless -%}{%- endfor -%}
+{%- endcapture -%}
+<div
+  id='product-view'
+  x-data='ProductDatas'
+  @option-changed.window='generateKeyVariant(true)'
+  @pdp-panels-opened.window='togglePanel("opened")'
+  @pdp-panels-closed.window='togglePanel("closed")'
+  @panel-faq-opened.window='toggleFAQ("opened", event.detail)'
+  @panel-faq-closed.window='toggleFAQ("closed", event.detail)'
+  data-model='{ "variantId": "{{ selected_product.id }}", "currentImageId":"{{ product.selected_or_first_available_variant.featured_image.id }}", "currentImage":"{{ current_image }}", "price":"{{ selected_product.price }}", "priceToDisplay":"{{ selected_product.price | money | replace: ".", " " }}", "comparedPriceToDisplay":"{{ selected_product.compare_at_price | money | replace: ".", " " }}", "variantTitle":"{{ selected_product.title | replace: '"', '&quot;' | replace: "'", "&#x27;" }}", "variantDescription":"{{ selected_product.metafields.main.description }}", "inventoryPolicy":"{{ selected_product.inventory_policy }}", "inventoryDisplay":"{{ selected_product.inventory_quantity }}", "inventoryManagement":"{{ selected_product.inventory_management }}", "recipientName":"", "recipientEmail":"", "recipientMessage":"", "recipientControlFlag":false, "keyVariant":"{{- key_variant | strip -}}", "option1":"{{ selected_product.option1 | replace: '"', '&quot;' | replace: "'", "&#x27;" }}", "option2":"{{ selected_product.option2 | replace: '"', '&quot;' | replace: "'", "&#x27;" }}", "option3":"{{ selected_product.option3 | replace: '"', '&quot;' | replace: "'", "&#x27;" }}", "option1ID":"{{ selected_product.options[0].id }}", "option2ID":"{{ selected_product.options[1].id }}", "option3ID":"{{ selected_product.options[2].id }}", "variantQuantity":"1", "optionColorName":"{{ selected_product.options[1].name }}" }'>
+  <pdp-addtocart
+    class='z-10 flex flex-col lg:flex-row'>
+    {% render 'pdp-form', product: product, mode: mode %}
+  </pdp-addtocart>
+</div>
+{% render 'pdp-json' %}
+{% render 'product-json-schema' %}

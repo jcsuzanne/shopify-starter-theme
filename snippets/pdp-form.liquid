@@ -1,0 +1,37 @@
+{%- form 'product', product, id: product_form_installment_id, class: '' -%}
+  {% if mode == 'gift-card' %}
+    {%- assign gift_card_recipient_control_flag = 'properties[__shopify_send_gift_card_to_recipient]' -%}
+    <input
+      type='hidden'
+      name='{{ gift_card_recipient_control_flag }}'
+      value='false'
+      id='recipientControlFlag'>
+    <input
+      type='hidden'
+      name='properties[Recipient name]'
+      value=''
+      x-model='recipientName'>
+    <input
+      type='hidden'
+      name='properties[Recipient email]'
+      value=''
+      x-model='recipientEmail'>
+
+    <input
+      type='hidden'
+      name='properties[Message]'
+      value=''
+      x-model='recipientMessage'>
+  {% endif %}
+  <input
+    type='hidden'
+    name='items[0][id]'
+    id='jsVariantId'
+    x-model='variantId'
+    value='{{ product.selected_or_first_available_variant.id }}'>
+  <input
+    type='hidden'
+    name='items[0][quantity]'
+    x-model='variantQuantity'
+    value='1'>
+{%- endform -%}

@@ -1,116 +1,117 @@
-@import "tailwindcss";
-
-@layer components {
-  .u-dom {
-    @apply relative z-10 block;
-  }
-  .u-formate-svg {
-    svg {
-      display: block;
-      height: 100%;
-      width: 100%;
-    }
-  }
-  .u-h-screen {
-    height: var(--app-height);
-    @media (min-width: theme(--breakpoint-lg)) {
-      @apply h-screen;
-    }
-  }
-  .u-h-full {
-    height: var(--app-height);
-    @media (min-width: theme(--breakpoint-lg)) {
-      @apply h-[calc(100svh-73px)];
-    }
-  }
-  .u-h-full-lg {
-    @media (min-width: theme(--breakpoint-lg)) {
-      @apply h-[calc(100svh-73px)];
-    }
-  }
-  .u-grid-layout {
-    @apply grid grid-cols-4 gap-0.5 lg:grid-cols-12;
-    &.--half {
-      @apply lg:grid-cols-6;
-    }
-  }
-  .u-grid-gap {
-    @apply gap-0.5;
-  }
-  .u-pl-layout {
-    @apply pl-[var(--spacing-outer-x-xs)] lg:pl-[var(--spacing-outer-x-lg)];
-  }
-  .u-px-layout {
-    @apply px-[var(--spacing-outer-x-xs)] lg:px-[var(--spacing-outer-x-lg)];
-  }
-
-  .u-pt-module {
-    @apply pt-[var(--spacing-small)] lg:pt-[var(--spacing-outer-y-lg)];
-  }
-  .u-py-module-lg {
-    @apply lg:py-[var(--spacing-outer-y-lg)];
-  }
-  .u-py-module {
-    @apply py-9 lg:py-[var(--spacing-outer-y-lg)];
-  }
-  .u-pb-module {
-    @apply pb-9 lg:pb-20;
-  }
-  .u-px-module {
-    @apply px-2 lg:px-4;
-  }
-  .u-px-module-xs {
-    @apply px-2 lg:px-0;
-  }
-  .u-center {
-    @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
-  }
-  .u-center-x {
-    @apply absolute left-1/2 -translate-x-1/2;
-  }
-  .u-center-lg {
-    @apply lg:absolute lg:left-1/2 lg:top-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2;
-  }
-  .u-remove-br-xs {
-    @media (max-width: theme(--breakpoint-lg)) {
-      br {
-        @apply hidden;
-      }
-    }
-  }
-  .u-remove-br-desktop {
-    @media (min-width: theme(--breakpoint-lg)) {
-      br {
-        @apply hidden;
-      }
-    }
-  }
-  .u-mobile {
-    @apply block lg:hidden;
-  }
-  .u-desktop {
-    @apply hidden lg:block;
-  }
-  .u-numbered-list {
-    @apply list-none;
-    li {
-      @apply pl-8 lg:pl-12;
-      &:before {
-        @apply absolute left-0 top-[20px] mr-4 inline-block w-[15px] lg:top-[30px] lg:mr-[45px] lg:w-[30px];
-        counter-increment: mycounter;
-        content: '0' counter(mycounter) '.';
-      }
-      &:first-of-type {
-        counter-reset: mycounter;
-      }
-    }
-  }
-}
-
+@import 'tailwindcss';
 
 /* Utilisation de @utility au lieu de @layer components pour Tailwind v4 */
 @utility dom {
   position: relative;
   z-index: 10;
   display: block;
+}
+
+@utility no-scrollbar {
+  @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+}
+
+@utility u-grid-layout {
+  @apply grid grid-cols-6 gap-2.5 lg:grid-cols-24;
+  &.--half {
+    @apply lg:grid-cols-12;
+  }
+  &.--pdp {
+    @apply grid-cols-6 lg:grid-cols-8;
+  }
+}
+
+@utility u-mobile {
+  @apply block lg:hidden;
+}
+
+@utility u-desktop {
+  @apply hidden lg:block;
+}
+
+@utility u-px-layout {
+  @apply px-outer-x-xs lg:px-outer-x-lg;
+}
+
+@utility u-pl-layout {
+  @apply pl-outer-x-xs lg:pl-outer-x-lg;
+}
+
+@utility u-pr-layout {
+  @apply pr-outer-x-xs lg:pr-outer-x-lg;
+}
+
+@utility u-py-module {
+  @apply lg:py-outer-y-lg py-9;
+  &.--no-lg {
+    @apply py-9 lg:py-0;
+  }
+}
+
+@utility u-pb-module {
+  @apply lg:pb-outer-y-lg pb-9;
+  &.--no-lg {
+    @apply pb-9 lg:pb-0;
+  }
+}
+
+@utility u-pt-module {
+  @apply lg:pt-outer-y-lg pt-9;
+  &.--no-lg {
+    @apply pt-9 lg:pt-0;
+  }
+  &.--desktop {
+    @apply pt-0 lg:pt-9;
+  }
+}
+
+@utility u-formate-svg {
+  svg {
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+@utility u-center {
+  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+}
+
+@utility u-center-x {
+  @apply absolute left-1/2 -translate-x-1/2;
+}
+
+@utility u-center-lg {
+  @apply lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2;
+}
+
+@utility u-remove-br-mobile {
+  @media (max-width: theme(--breakpoint-lg)) {
+    br {
+      @apply hidden;
+    }
+  }
+}
+
+@utility u-remove-br-desktop {
+  @media (min-width: theme(--breakpoint-lg)) {
+    br {
+      @apply hidden;
+    }
+  }
+}
+
+@utility u-numbered-list {
+  @apply list-none;
+  li {
+    @apply pl-8 lg:pl-12;
+    &:before {
+      @apply absolute top-[20px] left-0 mr-4 inline-block w-[15px] lg:top-[30px] lg:mr-[45px] lg:w-[30px];
+      counter-increment: mycounter;
+      content: '0' counter(mycounter) '.';
+    }
+    &:first-of-type {
+      counter-reset: mycounter;
+    }
+  }
 }

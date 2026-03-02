@@ -1,7 +1,5 @@
 import { Piece } from 'piecesjs';
 import { AddToCart } from '../shopify/CartEvents';
-import Channels from '../base/channels';
-import gsap from 'gsap';
 export class GlobalAddToCart extends Piece {
   constructor() {
     super('GlobalAddToCart', {});
@@ -11,8 +9,9 @@ export class GlobalAddToCart extends Piece {
     this.DOM = { view: this, ...this.captureTree() };
     this.DOM.form = this.DOM.view.querySelector('form[action$="/cart/add"]');
     this.DOM.error =
-      this.DOM.view.parentElement?.parentElement?.querySelector('pdp-error') ||
-      this.DOM.view.querySelector('pdp-error');
+      this.DOM.view.parentElement?.parentElement?.querySelector(
+        'product-error',
+      ) || this.DOM.view.querySelector('product-error');
     this.on('click', this.domAttr('buttonAddToCart'), this.sendDatasToCard);
   }
 

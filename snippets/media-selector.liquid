@@ -1,8 +1,8 @@
 {% if video != blank %}
   {% render 'render-image',
     media: video,
-    klassPicture: klass_picture,
-    klassImg: klass_img,
+    klassPicture: klassPicture,
+    klassImg: klassImg,
     lazy: lazy,
     fetchpriority: fetchpriority,
     videoDetector: videoDetector,
@@ -15,8 +15,8 @@
 {% if visual != blank and video == blank %}
   {% render 'render-image',
     media: visual,
-    klassPicture: klass_picture,
-    klassImg: klass_img,
+    klassPicture: klassPicture,
+    klassImg: klassImg,
     lazy: lazy,
     fetchpriority: fetchpriority,
     videoDetector: videoDetector,

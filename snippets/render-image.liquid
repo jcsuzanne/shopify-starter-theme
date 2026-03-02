@@ -1,20 +1,4 @@
-{%- assign applyImgWidth = 2000 -%}
-{%- assign applyImgHeight = 2000 -%}
-{% if setWidth != blank %}
-  {%- assign applyImgWidth = setWidth -%}
-{% endif %}
-{% if setHeight != blank %}
-  {%- assign applyImgHeight = setHeight -%}
-{% endif %}
-{%- assign sizesAttr = '100vw' -%}
-{% if setWidth != blank or setHeight != blank %}
-  {%- assign sizesAttr = '' -%}
-{% endif %}
-
-{%- assign loading_param = 'eager' -%}
-{% if lazy == true %}
-  {%- assign loading_param = 'lazy' -%}
-{% endif %}
+{%- assign loading = loading | default: 'eager' -%}
 {% if media.media_type == 'video' %}
   {% render 'render-video',
     media: media,
@@ -23,37 +7,39 @@
     klassPicture: klassPicture,
     poster: poster,
     fetchpriority: fetchpriority,
-    loading: loading_param
+    loading: loading
   %}
 {% else %}
-  {%- assign alt = media.alt | escape -%}
   <picture
     {% if dataDom != blank %}
       data-dom='{{ dataDom }}'
     {% endif %}
     class='{{ klassPicture }}'>
-    {% if setWidth == blank %}
-      <source
-        media='(max-width: 800px)'
-        srcset='
-          {{ media | image_url: width: 768 }} 768w,
-          {{ media | image_url: width: 912 }} 912w,
-          {{ media | image_url: width: 1368 }} 1368w,
-          {{ media | image_url: width: 1710 }} 1710w,
-          {{ media | image_url: width: 1920 }} 1920w,
-        '>
-    {% endif %}
     {% if setHeight != blank %}
       {{
         media
-        | image_url: height: applyImgHeight
+        | image_url: height: setHeight
         | image_tag:
           widths: '1000, 2000',
-          sizes: sizesAttr,
-          alt: alt,
+          sizes: '100vw',
           class: klassImg,
-          loading: loading_param,
-          fetchpriority: fetchpriority
+          loading: loading,
+          fetchpriority: fetchpriority,
+          width: media.width,
+          height: media.height
+      }}
+    {% elsif setWidth != blank %}
+      {{
+        media
+        | image_url: width: setWidth
+        | image_tag:
+          widths: '1000, 2000',
+          sizes: '100vw',
+          class: klassImg,
+          loading: loading,
+          fetchpriority: fetchpriority,
+          width: media.width,
+          height: media.height
       }}
     {% else %}
       {{
@@ -61,11 +47,12 @@
         | image_url: width: 3000
         | image_tag:
           widths: '400, 768, 1040, 1368, 1710, 1920, 2560, 3000',
-          sizes: sizesAttr,
-          alt: alt,
+          sizes: '100vw',
           class: klassImg,
-          loading: loading_param,
-          fetchpriority: fetchpriority
+          loading: loading,
+          fetchpriority: fetchpriority,
+          width: media.width,
+          height: media.height
       }}
     {% endif %}
   </picture>
