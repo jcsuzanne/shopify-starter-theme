@@ -1,46 +1,47 @@
 <cart-drawer
-  class='lg:right-popin-p lg:inset-y-popin-p z-cart cart-opened:pointer-events-auto cart-opened:translate-x-0 pointer-events-none fixed inset-y-0 right-0 w-full max-w-[600px] translate-x-[calc(100%+30px)] bg-white duration-700 ease-in-out-cubic lg:w-1/2'
+  class='lg:right-popin-p lg:inset-y-popin-p z-cart cart-opened:pointer-events-auto cart-opened:translate-x-0 ease-in-out-cubic pointer-events-none fixed inset-y-0 right-0 w-full max-w-[600px] translate-x-[calc(100%+30px)] bg-white duration-700 lg:w-1/2'
   @cart-update.window='getCart(true)'>
   {% # IF CART EMPTY %}
   <template x-if='itemsCount == 0'>
     <div class='absolute inset-0 z-20 bg-white'>
-      <div class='border-liza px-cart-x-mobile lg:px-cart-x mx-auto flex h-[70px] w-full flex-row items-center justify-end border-b border-solid lg:h-[80px]'>
+      <div class='mx-auto flex h-20 w-full flex-row items-center justify-end border-b border-solid'>
         <button @click='closeCart()'>Close</button>
       </div>
       <div class='flex h-[calc(100%-70px)] flex-col items-center justify-center lg:h-[calc(100%-80px)]'>
-        <h4 class='util-heading-xs'>{{ 'sections.cart.empty' | t }}</h4>
+        <h4>Empty</h4>
         <button
-          @click='closeCart()'
-          class='font-suisse-md relative mt-6 h-[40px] bg-black px-6 text-xs/4 uppercase tracking-[0.24px] text-white'>
+          @click='closeCart()'>
           {{- 'general.continue_shopping' | t -}}
         </button>
       </div>
     </div>
   </template>
   {% # HEADER %}
-  <header class='border-liza px-cart-x-mobile lg:px-cart-x mx-auto flex h-[70px] w-full flex-row items-center justify-between border-b border-solid lg:h-[80px]'>
-    <p class='util-heading-xs'>Cart</p>
+  <header class='mx-auto flex h-20 w-full flex-row items-center justify-between border-b border-solid'>
+    <p>Cart</p>
     <button @click='closeCart()'>close</button>
   </header>
 
   {% # CONTENT %}
   <ul
     data-lenis-prevent
-    class='block h-[calc(100%-225px)] w-full overflow-y-auto overflow-x-hidden bg-white lg:relative lg:top-[1px] lg:h-[calc(100%-250px)]'>
+    class='block h-[calc(100%-250px)] w-full overflow-y-auto overflow-x-hidden bg-white lg:relative'>
     <template
       x-for='(item, index) in items'
       x-key='index'>
-      <li class='flex flex-row py-6 border-b border-solid px-cart-x-mobile lg:px-cart-x border-liza lg:py-8'>
+      <li class='flex flex-row border-b border-solid p-6'>
         {% # Col IMG %}
         <div class='relative w-[100px]'>
           <img
             :src='item.image'
-            class='object-cover relative left-0 w-full h-full'>
+            class='relative left-0 h-full w-full object-cover'
+            width='100'
+            height='100'>
         </div>
         {% # Col Infos %}
-        <div class='flex relative flex-col flex-auto justify-between pl-6 lg:pl-12'>
-          <infos class='relative util-dom'>
-            <div class='flex flex-row justify-between items-end'>
+        <div class='relative flex flex-auto flex-col justify-between pl-6 lg:pl-12'>
+          <infos class='util-dom relative'>
+            <div class='flex flex-row items-end justify-between'>
               <h3
                 x-html='item.product_title'
                 class='font-suisse-bk text-sm/[18px] text-black lg:text-lg/6'></h3>
@@ -65,48 +66,38 @@
             </div>
             {% # Check Preoder %}
             <template x-if='item.properties.Type == "Preorder"'>
-              <p class='font-suisse-rg mt-2 inline-block rounded-3xl border border-solid border-black px-4 text-[10px]/[21px] text-black lg:text-xs/[21px]'>
-                {{ 'general.cart_drawer.preorder' | t }}
-              </p>
+              <p>Preorder</p>
             </template>
             {% # Variant Infos %}
-            <div class='font-suisse-rg mt-3 gap-y-2 text-xs text-[#717171] lg:text-sm'>
-              <template x-if='item.properties._colorname != null'>
-                <p class=''>
-                  {{ 'products.variants.color' | t }} :
-                  <span x-text='item.properties._colorname'></span>
-                </p>
-              </template>
+            <div>
               <p>
-                {{ 'products.variants.size' | t }} :
+                Variant Title :
                 <span x-text='item.variant_title'></span>
               </p>
             </div>
           </infos>
           {% # Modifier / Supprimer %}
           <div class='flex flex-row justify-between'>
-            <div class='flex flex-row flex-auto gap-x-2 ml-auto lg:gap-x-4'>
-              {%- assign btnKlass = 'transitions-color duration-300 hover:opacity-40' -%}
+            <div class='ml-auto flex flex-auto flex-row gap-x-2 lg:gap-x-4'>
+              {%- assign btn_klass = 'transitions-color duration-300 hover:opacity-40' -%}
               <button
-                class='{{ btnKlass }}'
+                class='{{ btn_klass }}'
                 x-on:click='deleteOneItem(item);'>
                 {{ 'icon-minus.svg' | inline_asset_content }}
               </button>
               <p
-                class='text-sm font-suisse-rg'
                 x-text='item.quantity'></p>
               <button
-                class='{{ btnKlass }}'
+                class='{{ btn_klass }}'
                 x-on:click='addOneItem(item);'>
                 {{ 'icon-plus.svg' | inline_asset_content }}
               </button>
             </div>
-            <div class='util-nomobile'>
+            <div class='u-desktop'>
               {% render 'cart-remove-button' %}
             </div>
-            <div class='util-mobileonly'>
+            <div class='u-mobile'>
               <p
-                class='font-suisse-bk text-sm/[18px] text-black'
                 x-html='renderPrice(item.line_price,item)'></p>
             </div>
           </div>
@@ -119,17 +110,12 @@
   <div class='absolute inset-x-0 bottom-10'>
     <form
       action='{{ routes.cart_url }}'
-      id='CartDrawer-Form'
-      method='post'
-      class='mx-cart-x-mobile lg:mx-cart-x h-[40px] w-auto'>
-      {% # prettier-ignore %}
-      <button type="submit" id="CartDrawer-Checkout" name="checkout" class="font-suisse-md hover:bg-chamakh relative block h-full w-full bg-black text-xs/4 uppercase tracking-[0.24px] text-white transition-colors duration-200"
-  >Buy</button>
+      method='post'>
+      <button type='submit' name='checkout'>Buy</button>
     </form>
-    <div class='mt-7 [&>svg]:mx-auto'>Cards Showcase</div>
   </div>
 </cart-drawer>
 {% # Overlay %}
 <overlay
   @click='closeCart()'
-  class='u-popin-overlay cart-opened:opacity-100 cart-opened:!pointer-events-auto !z-[80]'></overlay>
+  class='u-popin-overlay cart-opened:opacity-100 cart-opened:pointer-events-auto! z-modal!'></overlay>

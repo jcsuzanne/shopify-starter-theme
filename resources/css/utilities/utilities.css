@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 
-/* Utilisation de @utility au lieu de @layer components pour Tailwind v4 */
 @utility dom {
   position: relative;
   z-index: 10;

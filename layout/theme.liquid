@@ -8,9 +8,8 @@
     {% render 'theme-assets' %}
     {% render 'theme-fonts' %}
     {%- liquid
-      render 'vite' with 'app.js'
+      render 'vite-tag', entry: 'app.js'
     -%}
-
     {{ content_for_header }}
   </head>
 

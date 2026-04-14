@@ -1,8 +1,5 @@
 import { defineConfig, loadEnv } from 'vite';
 import shopify from 'vite-plugin-shopify';
-import pageReload from 'vite-plugin-page-reload';
-import basicSsl from '@vitejs/plugin-basic-ssl';
-import cleanup from '@by-association-only/vite-plugin-shopify-clean';
 import tailwindcss from '@tailwindcss/vite';
 
 export default ({ mode }) => {
@@ -16,7 +13,6 @@ export default ({ mode }) => {
       port: 3000,
       hmr: true,
     },
-    publicDir: 'public',
     build: {
       manifest: '_manifest.json',
       emptyOutDir: false,
@@ -25,41 +21,23 @@ export default ({ mode }) => {
         output: {
           entryFileNames: 'app.[hash].js',
           chunkFileNames: 'app.[hash].js',
-          assetFileNames: 'app.[hash].[extname]',
+          assetFileNames: 'app.[hash][extname]',
           manualChunks: () => 'app',
         },
       },
     },
     plugins: [
       tailwindcss(),
-      basicSsl(),
-      cleanup(),
       shopify({
-        themeHotReload: false,
+        themeHotReload: true,
         themeRoot: './',
-        snippetFile: 'vite.liquid',
         sourceCodeDir: 'resources',
         // Front-end entry points directory
         entrypointsDir: 'resources/js',
         additionalEntrypoints: [
           'resources/**/*.js', // relative to themeRoot
         ],
-      }),
-      pageReload('/tmp/theme.update', {
-        // delay: 2000,
-      }),
-      {
-        name: 'vite-plugin-liquid-tailwind-refresh',
-        handleHotUpdate(ctx) {
-          if (ctx.file.endsWith('.liquid')) {
-            // Filter out the liquid module to prevent a full refresh
-            return [
-              ...(ctx.modules[0]?.importers ?? []),
-              ...ctx.modules.slice(1),
-            ];
-          }
-        },
-      },
+      })
     ],
   });
 };

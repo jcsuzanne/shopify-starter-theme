@@ -2,7 +2,7 @@
   "name": "jcs-shopify-starter-theme",
   "description": "Starter theme for Shopify using modern dev tools like Vite.js, TailwindCSS and with Pieces.js (for native webcomponents)",
   "author": "JC SUZANNE (https://github.com/jcsuzanne)",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "type": "module",
   "engines": {
     "node": ">=20.6.1",
@@ -30,28 +30,26 @@
     "clean": "find assets -name 'app.*' \\( -name '*.js' -o -name '*.css' \\) -delete"
   },
   "dependencies": {
-    "gsap": "^3.14.2",
-    "lenis": "^1.3.15",
-    "piecesjs": "^0.4.0"
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.21",
+    "piecesjs": "^0.5.5"
   },
   "devDependencies": {
-    "@by-association-only/vite-plugin-shopify-clean": "^2.2.0",
-    "@shopify/prettier-plugin-liquid": "1.9.3",
-    "@tailwindcss/vite": "^4.1.16",
-    "@vitejs/plugin-basic-ssl": "^2.1.0",
-    "alpinejs": "^3.15.3",
-    "concurrently": "^9.2.0",
+    "@shopify/prettier-plugin-liquid": "1.10.2",
+    "@tailwindcss/vite": "^4.2.2",
+    "alpinejs": "^3.15.11",
+    "concurrently": "^9.2.1",
     "currency.js": "^2.0.4",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.9",
     "postcss-calc": "^10.1.1",
     "postcss-comment": "^2.0.0",
     "postcss-for": "^2.1.1",
     "postcss-simple-vars": "^7.0.1",
-    "prettier": "^3.6.2",
-    "prettier-plugin-tailwindcss": "^0.6.13",
-    "tailwindcss": "4.1.16",
-    "vite": "^7.3.0",
-    "vite-plugin-page-reload": "^0.2.1",
-    "vite-plugin-shopify": "^4.0.1"
+    "prettier": "^3.8.2",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "tailwindcss": "4.2.2",
+    "vite": "^8.0.8",
+    "vite-plugin-page-reload": "^0.2.3",
+    "vite-plugin-shopify": "^4.1.2"
   }
 }
