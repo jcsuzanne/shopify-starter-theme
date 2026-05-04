@@ -12,6 +12,10 @@ export default ({ mode }) => {
       https: false,
       port: 3000,
       hmr: true,
+      watch: {
+        usePolling: true,
+        interval: 2500,
+      },
     },
     build: {
       manifest: '_manifest.json',
@@ -29,7 +33,7 @@ export default ({ mode }) => {
     plugins: [
       tailwindcss(),
       shopify({
-        themeHotReload: true,
+        themeHotReload: false,
         themeRoot: './',
         sourceCodeDir: 'resources',
         // Front-end entry points directory
@@ -37,7 +41,7 @@ export default ({ mode }) => {
         additionalEntrypoints: [
           'resources/**/*.js', // relative to themeRoot
         ],
-      })
+      }),
     ],
   });
 };

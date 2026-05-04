@@ -7,9 +7,7 @@
     {% render 'meta-tags', password_mode: false %}
     {% render 'theme-assets' %}
     {% render 'theme-fonts' %}
-    {%- liquid
-      render 'vite-tag', entry: 'app.js'
-    -%}
+    {% render 'vite-tag', entry: 'app.js' %}
     {{ content_for_header }}
   </head>
 
