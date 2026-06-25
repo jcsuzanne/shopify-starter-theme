@@ -2,7 +2,7 @@
   "name": "jcs-shopify-starter-theme",
   "description": "Starter theme for Shopify using modern dev tools like Vite.js, TailwindCSS and with Pieces.js (for native webcomponents)",
   "author": "JC SUZANNE (https://github.com/jcsuzanne)",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "type": "module",
   "engines": {
     "node": ">=20.6.1",
@@ -28,28 +28,29 @@
     "pull-locales": "shopify theme pull --store=jcs-blueprint.myshopify.com --theme=188310552913 --only=locales/*",
     "pull-templates": "shopify theme pull --store=jcs-blueprint.myshopify.com --theme=188310552913 --only=templates/* --only=sections/header-group.json",
     "sync-pull": "pnpm pull-config && pnpm pull-locales && pnpm pull-header-group && pnpm pull-templates",
-    "clean": "find assets -name 'app.*' \\( -name '*.js' -o -name '*.css' \\) -delete"
+    "clean": "find assets -name 'app.*' \\( -name '*.js' -o -name '*.css' \\) -delete",
+    "make-tree": "tree -L 4 > .docs/project-tree.txt && find . -maxdepth 4 -type f > .docs/files.txt"
   },
   "dependencies": {
     "gsap": "^3.15.0",
-    "lenis": "^1.3.21",
+    "lenis": "^1.3.24",
     "piecesjs": "^0.5.5"
   },
   "devDependencies": {
-    "@shopify/prettier-plugin-liquid": "1.10.2",
-    "@tailwindcss/vite": "^4.2.2",
-    "alpinejs": "^3.15.11",
-    "concurrently": "^9.2.1",
+    "@shopify/prettier-plugin-liquid": "1.10.3",
+    "@tailwindcss/vite": "^4.3.1",
+    "alpinejs": "^3.15.12",
+    "concurrently": "^10.0.3",
     "currency.js": "^2.0.4",
-    "postcss": "^8.5.9",
+    "postcss": "^8.5.15",
     "postcss-calc": "^10.1.1",
     "postcss-comment": "^2.0.0",
     "postcss-for": "^2.1.1",
     "postcss-simple-vars": "^7.0.1",
-    "prettier": "^3.8.2",
-    "prettier-plugin-tailwindcss": "^0.7.2",
-    "tailwindcss": "4.2.2",
-    "vite": "^8.0.8",
+    "prettier": "^3.8.4",
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "tailwindcss": "4.3.1",
+    "vite": "^8.1.0",
     "vite-plugin-page-reload": "^0.2.3",
     "vite-plugin-shopify": "^4.1.2"
   }

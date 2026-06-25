@@ -1,10 +1,8 @@
 {
   "sections": {
     "main": {
-      "type": "main-login"
+      "type": "dummy"
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }
