@@ -30,6 +30,15 @@ export class App extends Piece {
     html.classList.add('is-loaded');
     html.classList.remove('is-loading');
 
+    this.on('pieces:ready', document, this.onPiecesReady);
+
+    this.bindResize = this.resize.bind(this);
+    window.addEventListener('resize', this.bindResize);
+  }
+
+  onPiecesReady() {
+    this.off('pieces:ready', document, this.onPiecesReady);
+
     gsap.delayedCall(window.readyDelay, () => {
       html.classList.add('has-dom-ready');
       triggerAfterMount();
@@ -41,9 +50,6 @@ export class App extends Piece {
         window.firstHit = false;
       });
     });
-
-    this.bindResize = this.resize.bind(this);
-    window.addEventListener('resize', this.bindResize);
   }
 
   detectEnvironment() {
@@ -70,6 +76,7 @@ export class App extends Piece {
   }
 
   unmount() {
+    this.off('pieces:ready', document, this.onPiecesReady);
     window.removeEventListener('resize', this.bindResize);
   }
 }

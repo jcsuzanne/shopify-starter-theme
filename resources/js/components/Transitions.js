@@ -80,7 +80,7 @@ export class Transitions extends Piece {
         this.newContainer = document.querySelector(param.containers[0]);
 
         this.newContainer.classList.add('is-next-container');
-        updateComponents(this.newContainer);
+        this.piecesReady = updateComponents(this.newContainer);
 
         html.classList.remove('is-loading');
         this.newContainer.classList.remove('is-next-container');
@@ -118,7 +118,8 @@ export class Transitions extends Piece {
 
       this.swup.hooks.before('visit:end', (e) => {
         if (typeof e.fragmentVisit == 'undefined') {
-          this.renderPieces(this.newContainer);
+          const container = this.newContainer;
+          this.piecesReady.then(() => this.renderPieces(container));
         }
       });
 
