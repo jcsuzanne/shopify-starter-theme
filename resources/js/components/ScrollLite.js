@@ -6,6 +6,13 @@ import { html } from '../utils/environment';
 gsap.registerPlugin(ScrollTrigger);
 
 const IN_VIEW_CLASS = 'is-inview';
+const SCROLLED_CLASS = 'has-scrolled';
+const SCROLLED_THRESHOLD = 60;
+
+const parseCall = (value, id) => {
+  const [fn, module, moduleId] = value.split(',');
+  return { function: fn, module, moduleId: moduleId ?? id };
+};
 
 export class Scroll extends Piece {
   constructor() {
@@ -13,227 +20,160 @@ export class Scroll extends Piece {
   }
 
   mount() {
-    this.$scrollItems = [];
+    this.$scrollItems = this.$All('[data-scroll-item]');
+    this.scrollElements = [];
     this.windowWidth = window.innerWidth;
-
-    // Collect all scroll items
-    if (this.querySelectorAll('[data-scroll-item]').length > 0) {
-      this.$scrollItems = Array.from(
-        this.querySelectorAll('[data-scroll-item]'),
-      );
-    }
 
     // Native scroll setup
     this.lastScrollY = 0;
-    this.ticking = false;
+    this.lastDirection = null;
+    this.lastScrollValue = null;
+    this.lastScrollProgress = null;
+    this.lastScrollHeight = null;
+    this.frame = null;
 
-    document.documentElement.style.setProperty('--scrollValue', `0px`);
-
-    // Setup scroll listener
+    this.onFrame = this.onFrame.bind(this);
     this.on('scroll', window, this.onScroll);
 
     ScrollTrigger.config({ ignoreMobileResize: true });
 
-    // Init scroll detection after a short delay
-    gsap.delayedCall(0.5, () => {
-      this.initElements();
-    });
+    this.initCall = gsap.delayedCall(0.5, this.initElements.bind(this));
 
-    // Initial scroll update
+    this.updateMaxScroll();
     this.updateScrollValues();
 
     this.on('resize', window, this.resize);
 
-    // Detect scroll height change
-    this.scrollHeightObserver = new MutationObserver(() => {
-      this.detectScrollHeightChange();
-    });
-    this.scrollHeightObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['style', 'class'],
-    });
-
-    // console.log('ScrollLite mount');
+    // ResizeObserver only fires on real size changes and gives the size without forcing a layout.
+    // Observe #master, not body: body is height: 100% (layout.css) so it never grows with the content
+    this.scrollHeightObserver = new ResizeObserver(
+      this.detectScrollHeightChange.bind(this),
+    );
+    this.scrollHeightObserver.observe(
+      document.getElementById('master') ?? document.body,
+    );
   }
 
-  detectScrollHeightChange() {
-    // Stocker la hauteur initiale
-    if (!this.lastScrollHeight) {
-      this.lastScrollHeight = document.documentElement.scrollHeight;
+  detectScrollHeightChange([entry]) {
+    const height = entry.contentRect.height;
+
+    if (this.lastScrollHeight === null) {
+      this.lastScrollHeight = height;
+      return;
     }
 
-    const currentScrollHeight = document.documentElement.scrollHeight;
-
-    if (currentScrollHeight !== this.lastScrollHeight) {
-      // console.log('Scroll height changed:', {
-      //   previous: this.lastScrollHeight,
-      //   current: currentScrollHeight,
-      //   difference: currentScrollHeight - this.lastScrollHeight,
-      // });
-
-      this.lastScrollHeight = currentScrollHeight;
-
-      // Optionnel : rafraîchir les ScrollTriggers après un changement de hauteur
+    if (height !== this.lastScrollHeight) {
+      this.lastScrollHeight = height;
       this.refresh();
+      this.updateMaxScroll();
+      this.updateScrollValues();
     }
+  }
+
+  // Cached so the scroll loop never reads layout: only changes with content height or viewport size
+  updateMaxScroll() {
+    this.maxScroll = document.documentElement.scrollHeight - window.innerHeight;
   }
 
   onScroll() {
-    // console.log('onScroll');
-    if (!this.ticking) {
-      window.requestAnimationFrame(() => {
-        this.updateScrollValues();
-        this.ticking = false;
-      });
-      this.ticking = true;
+    if (this.frame === null) {
+      this.frame = requestAnimationFrame(this.onFrame);
     }
   }
 
+  onFrame() {
+    this.frame = null;
+    this.updateScrollValues();
+  }
+
   updateScrollValues() {
-    const currentScroll =
-      window.pageYOffset || document.documentElement.scrollTop;
-    const scrollDelta = currentScroll - this.lastScrollY;
+    const currentScroll = window.scrollY;
+    const direction = currentScroll - this.lastScrollY >= 0 ? 'down' : 'up';
 
-    // Determine direction
-    const direction = scrollDelta >= 0 ? 'down' : 'up';
+    html.classList.toggle(SCROLLED_CLASS, currentScroll > SCROLLED_THRESHOLD);
 
-    // Update has-scrolled class
-    if (currentScroll > 60) {
-      if (!html.classList.contains('has-scrolled')) {
-        html.classList.add('has-scrolled');
-      }
-    } else {
-      if (html.classList.contains('has-scrolled')) {
-        html.classList.remove('has-scrolled');
-      }
+    // Avoid style/attribute writes on <html> when nothing changed: they invalidate the whole document style
+    if (direction !== this.lastDirection) {
+      this.lastDirection = direction;
+      html.setAttribute('data-direction', direction);
     }
 
-    html.setAttribute('data-direction', direction);
+    const scrollValue = -Math.trunc(Math.max(currentScroll, 0));
+    if (scrollValue !== this.lastScrollValue) {
+      this.lastScrollValue = scrollValue;
+      html.style.setProperty('--scrollValue', `${scrollValue}px`);
+    }
 
-    document.documentElement.style.setProperty(
-      '--scrollValue',
-      `${-parseInt(Math.max(currentScroll, 0))}px`,
-    );
+    const scrollProgress = (
+      this.maxScroll > 0
+        ? Math.min(Math.max(currentScroll / this.maxScroll, 0), 1)
+        : 0
+    ).toFixed(4);
+    if (scrollProgress !== this.lastScrollProgress) {
+      this.lastScrollProgress = scrollProgress;
+      html.style.setProperty('--scrollProgress', scrollProgress);
+    }
 
     this.lastScrollY = currentScroll;
   }
 
   initElements() {
-    this.scrollElements = [];
-
     this.$scrollItems.forEach(($element) => {
       const scrollElement = this.createElement($element);
-      const hasMarkers =
-        typeof $element.getAttribute('data-scroll-marker') == 'string';
+      const hasProgressCss = $element.hasAttribute('data-scroll-progress-css');
+      const startMobile = window.isMobile
+        ? $element.getAttribute('data-scroll-start-mobile')
+        : null;
 
       const options = {
         trigger: $element,
         start:
-          typeof $element.getAttribute('data-scroll-start') == 'string'
-            ? $element.getAttribute('data-scroll-start')
-            : 'top bottom',
-        end:
-          typeof $element.getAttribute('data-scroll-end') == 'string'
-            ? $element.getAttribute('data-scroll-end')
-            : 'bottom top',
-        markers: hasMarkers,
-        onEnter: () => {
-          this.onElementEnter(scrollElement, 'down');
-        },
-        onLeave: () => {
-          this.onElementLeave(scrollElement, 'down');
-        },
-        onEnterBack: () => {
-          this.onElementEnter(scrollElement, 'up');
-        },
-        onLeaveBack: () => {
-          this.onElementLeave(scrollElement, 'up');
-        },
+          startMobile ??
+          $element.getAttribute('data-scroll-start') ??
+          'top bottom',
+        end: $element.getAttribute('data-scroll-end') ?? 'bottom top',
+        markers: $element.hasAttribute('data-scroll-marker'),
+        onEnter: () => this.onElementEnter(scrollElement, 'down'),
+        onLeave: () => this.onElementLeave(scrollElement, 'down'),
+        onEnterBack: () => this.onElementEnter(scrollElement, 'up'),
+        onLeaveBack: () => this.onElementLeave(scrollElement, 'up'),
       };
 
-      // Mobile specific start position
-      if (
-        typeof $element.getAttribute('data-scroll-start-mobile') == 'string' &&
-        window.isMobile
-      ) {
-        options.start = $element.getAttribute('data-scroll-start-mobile');
-      }
+      if (hasProgressCss) $element.style.setProperty('--progress', 0);
 
-      // Add progress callback if needed
-      if (scrollElement.progressCallParameters != undefined) {
+      if (hasProgressCss || scrollElement.progressCallParameters) {
         options.onUpdate = (self) => {
-          this.onElementProgress(self, scrollElement);
-        };
-      }
+          const progress = Math.round(self.progress * 1000) / 1000;
 
-      // Add CSS progress variable if needed
-      if (
-        typeof $element.getAttribute('data-scroll-progress-css') == 'string'
-      ) {
-        $element.style.setProperty('--progress', 0);
-
-        const previousOnUpdate = options.onUpdate;
-        options.onUpdate = (self) => {
-          let progress = self.progress.toFixed(3);
-          $element.style.setProperty('--progress', progress);
-
-          if (previousOnUpdate) {
-            previousOnUpdate(self);
+          if (hasProgressCss) {
+            $element.style.setProperty('--progress', progress);
+          }
+          if (scrollElement.progressCallParameters) {
+            this.onElementProgress(progress, scrollElement);
           }
         };
       }
 
-      const sTrigger = ScrollTrigger.create(options);
-
-      this.scrollElements.push({
-        ...scrollElement,
-        sTrigger,
-      });
+      scrollElement.sTrigger = ScrollTrigger.create(options);
+      this.scrollElements.push(scrollElement);
     });
   }
 
   createElement($element) {
     const id = $element.getAttribute('data-scroll-id');
-    const isRepeatable =
-      typeof $element.getAttribute('data-scroll-repeat') == 'string';
+    const call = $element.getAttribute('data-scroll-call');
+    const progressCall = $element.getAttribute('data-scroll-progress-call');
 
-    // Manage classic call
-    let callParameters;
-    if (typeof $element.getAttribute('data-scroll-call') === 'string') {
-      const callParametersArray = $element
-        .getAttribute('data-scroll-call')
-        .split(',');
-      callParameters = {
-        function: callParametersArray[0],
-        module: callParametersArray[1],
-        moduleId: callParametersArray.length < 3 ? id : callParametersArray[2],
-      };
-    }
+    const callParameters = call != null ? parseCall(call, id) : undefined;
 
-    // Manage progress call
     let progressCallParameters;
-    if (
-      typeof $element.getAttribute('data-scroll-progress-call') === 'string'
-    ) {
-      const progressCallParametersArray = $element
-        .getAttribute('data-scroll-progress-call')
-        .split(',');
-
+    if (progressCall != null) {
       progressCallParameters = {
-        function: progressCallParametersArray[0],
-        module: progressCallParametersArray[1],
-        moduleId:
-          progressCallParametersArray.length < 3
-            ? id
-            : progressCallParametersArray[2],
-        isReversed:
-          typeof $element.getAttribute('data-scroll-progress-reverse') ==
-          'string',
+        ...parseCall(progressCall, id),
+        isReversed: $element.hasAttribute('data-scroll-progress-reverse'),
       };
 
-      if (progressCallParameters.moduleId == undefined) {
+      if (progressCallParameters.moduleId == null) {
         console.warn(
           `You didn't specify a data-scroll-id, or a moduleId in your data-scroll-progress-call`,
           $element,
@@ -244,87 +184,75 @@ export class Scroll extends Piece {
     return {
       $el: $element,
       id,
-      isRepeatable,
+      isRepeatable: $element.hasAttribute('data-scroll-repeat'),
       callParameters,
       progressCallParameters,
     };
   }
 
-  onElementProgress(self, scrollElement) {
-    const progress = self.progress.toFixed(3);
+  onElementProgress(progress, scrollElement) {
+    const {
+      function: fn,
+      module,
+      moduleId,
+      isReversed,
+    } = scrollElement.progressCallParameters;
 
-    this.call(
-      scrollElement.progressCallParameters.function,
-      {
-        progress: parseFloat(progress),
-        isReversed: scrollElement.progressCallParameters.isReversed,
-      },
-      scrollElement.progressCallParameters.module,
-      scrollElement.progressCallParameters.moduleId,
-    );
+    this.call(fn, { progress, isReversed }, module, moduleId);
   }
 
   onElementEnter(scrollElement, direction) {
-    if (
-      !scrollElement.isRepeatable &&
-      scrollElement.$el.classList.contains(IN_VIEW_CLASS)
-    ) {
-      return;
-    }
-    scrollElement.$el.classList.add(IN_VIEW_CLASS);
+    const { $el, isRepeatable } = scrollElement;
+    if (!isRepeatable && $el.classList.contains(IN_VIEW_CLASS)) return;
 
-    // Call js functions in a specific module with data-attribute
-    if (scrollElement.callParameters != undefined) {
-      this.call(
-        scrollElement.callParameters.function,
-        { mode: 'enter', direction: direction, $el: scrollElement.$el },
-        scrollElement.callParameters.module,
-        scrollElement.callParameters.moduleId,
-      );
-    }
+    $el.classList.add(IN_VIEW_CLASS);
+    this.callElement(scrollElement, 'enter', direction);
   }
 
   onElementLeave(scrollElement, direction) {
-    if (!scrollElement.isRepeatable) {
-      return;
-    }
-    scrollElement.$el.classList.remove(IN_VIEW_CLASS);
+    if (!scrollElement.isRepeatable) return;
 
-    // Call js functions in a specific module with data-attribute
-    if (scrollElement.callParameters != undefined) {
-      this.call(
-        scrollElement.callParameters.function,
-        { mode: 'leave', direction: direction, $el: scrollElement.$el },
-        scrollElement.callParameters.module,
-        scrollElement.callParameters.moduleId,
-      );
-    }
+    scrollElement.$el.classList.remove(IN_VIEW_CLASS);
+    this.callElement(scrollElement, 'leave', direction);
+  }
+
+  callElement(scrollElement, mode, direction) {
+    if (!scrollElement.callParameters) return;
+
+    const { function: fn, module, moduleId } = scrollElement.callParameters;
+    this.call(
+      fn,
+      { mode, direction, $el: scrollElement.$el },
+      module,
+      moduleId,
+    );
+  }
+
+  update() {
+    this.refresh();
   }
 
   refresh() {
-    if (this.scrollElements) {
-      this.scrollElements.forEach((scrollElement) => {
-        scrollElement.sTrigger.refresh();
-      });
-    }
+    this.scrollElements?.forEach((scrollElement) => {
+      scrollElement.sTrigger.refresh();
+    });
     this.emit('redraw::fx');
   }
 
   resize() {
-    if (this.resizeTimeout != undefined) {
-      this.resizeTimeout.kill();
-    }
-    this.resizeTimeout = gsap.delayedCall(window.isMobile ? 0.6 : 0.3, () => {
-      this.resizeDebounce();
-    });
+    // innerHeight changes on every resize (incl. mobile URL bar), unlike the width-gated refresh below
+    this.updateMaxScroll();
+    this.updateScrollValues();
+
+    this.resizeTimeout?.kill();
+    this.resizeTimeout = gsap.delayedCall(
+      window.isMobile ? 0.6 : 0.3,
+      this.resizeDebounce.bind(this),
+    );
   }
 
   resizeDebounce() {
-    if (
-      this.windowWidth != window.innerWidth ||
-      (this.direction == 'horizontal' && !window.isMobile)
-    ) {
-      console.log('resizeDebounce');
+    if (this.windowWidth !== window.innerWidth) {
       this.windowWidth = window.innerWidth;
       this.refresh();
     }
@@ -332,16 +260,18 @@ export class Scroll extends Piece {
 
   unmount() {
     this.off('scroll', window, this.onScroll);
-
-    if (this.scrollElements) {
-      this.scrollElements.forEach((scrollElement) => {
-        scrollElement.sTrigger.kill();
-      });
-      this.$scrollItems = [];
-      this.scrollElements = [];
-    }
-
     this.off('resize', window, this.resize);
+
+    cancelAnimationFrame(this.frame);
+    this.initCall.kill();
+    this.resizeTimeout?.kill();
+    this.scrollHeightObserver.disconnect();
+
+    this.scrollElements.forEach((scrollElement) => {
+      scrollElement.sTrigger.kill();
+    });
+    this.scrollElements = [];
+    this.$scrollItems = [];
   }
 }
 
