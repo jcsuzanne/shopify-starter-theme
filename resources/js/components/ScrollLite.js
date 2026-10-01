@@ -59,6 +59,7 @@ export class Scroll extends Piece {
 
     if (this.lastScrollHeight === null) {
       this.lastScrollHeight = height;
+      this.updateMaxScroll();
       return;
     }
 
