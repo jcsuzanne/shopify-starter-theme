@@ -39,13 +39,18 @@ export function AddToCart(data, triggerEvent = true, errorDOM = null) {
 }
 
 export function HandleAddToCartSuccess(errorDOM = null) {
+  if (!errorDOM) return;
   errorDOM.classList.add('hidden');
   errorDOM.style.display = '';
 }
 
 export function HandleAddToCartError(errorData, errorDOM = null) {
-  errorDOM.querySelector('[data-dom="message"]').textContent =
-    errorData.message;
+  if (!errorDOM) {
+    console.error(errorData.message);
+    return;
+  }
+  const $message = errorDOM.querySelector('[data-dom="message"]');
+  if ($message) $message.textContent = errorData.message;
   errorDOM.classList.remove('hidden');
   errorDOM.style.display = 'block';
 }

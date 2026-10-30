@@ -10,9 +10,10 @@ export const loadPiece = async (tag, importer, context = document) => {
 
 export const updateComponents = (context) =>
   Promise.allSettled([
+    // ScrollLite.js: native scroll. Scroll.js: Lenis smooth scroll, parallax, horizontal mode
     loadPiece(
       'c-scroll',
-      () => import('/resources/js/components/ScrollLite.js'),
+      () => import('/resources/js/components/Scroll.js'),
       context,
     ),
     loadPiece(

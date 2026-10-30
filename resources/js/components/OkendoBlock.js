@@ -10,7 +10,6 @@ export class OkendoBlock extends Piece {
 
   mount() {
     this.DOM = { view: this, ...this.captureTree() };
-    console.log('init okendo');
     this.setup();
   }
 
@@ -27,9 +26,7 @@ export class OkendoBlock extends Piece {
     });
   }
 
-  unmount() {
-  }
-
+  unmount() {}
 }
 
 // Register the custom element

@@ -18,7 +18,6 @@ export function scrollUpdate() {
     typeof piecesManager.currentPieces.Scroll != 'undefined' &&
     typeof piecesManager.currentPieces.Scroll.main != 'undefined'
   ) {
-    console.log('scroll is updated');
     piecesManager.currentPieces.Scroll.main.piece.update();
   }
 }
@@ -42,12 +41,12 @@ export function getCssData(el, attr) {
 
 // Map number x from range [a, b] to [c, d]
 export function map(x, a, b, c, d) {
-  ((x - a) * (d - c)) / (b - a) + c;
+  return ((x - a) * (d - c)) / (b - a) + c;
 }
 
 // Linear interpolation
 export function lerp(a, b, n) {
-  (1 - n) * a + n * b;
+  return (1 - n) * a + n * b;
 }
 
 export function calcWinsize() {
@@ -71,7 +70,7 @@ export function distance(x1, y1, x2, y2) {
 
 // Generate a random float.
 export function getRandomFloat(min, max) {
-  (Math.random() * (max - min) + min).toFixed(2);
+  return Number((Math.random() * (max - min) + min).toFixed(2));
 }
 
 export function getRandomArbitrary(min, max) {

@@ -1,592 +1,186 @@
-import { Piece } from 'piecesjs';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { html } from '../utils/environment';
+import { ScrollBase } from './ScrollBase';
 
-gsap.registerPlugin(ScrollTrigger);
+// <c-scroll> with Lenis smooth scroll. Shared attributes and logic: ScrollBase.js
 
-// data-attributes
-// data-scroll="item" : to add element as "detectable"
-// data-scroll="to" with `href` or `data-href` to add a scrollTo link
-// data-scroll-progress-context - value "desktop" or "mobile"
+// <c-scroll> attributes
+// data-scroll-wrapper - selector of the scrolled content (default: <html>)
+// data-scroll-direction - "vertical" (default) or "horizontal" (desktop only)
+// data-scroll-infinite - infinite scroll
 
-// ScrollTo options
-//data-scroll-to-duration
-//data-scroll-to-offset
-//data-scroll-to-immediate
+// Item data-attributes
+// data-scroll-parallax-from / data-scroll-parallax-to - y values of the parallax (disabled on Safari and iOS)
+// data-scroll-parallax-safari - enable the parallax on Safari and iOS for this element
+// data-scroll-wip - scroll to this element on load (dev helper)
 
-// data-scroll-id
+// ScrollTo links: data-scroll-to with `href` or `data-href`
+// data-scroll-to-duration
+// data-scroll-to-offset
+// data-scroll-to-immediate
 
-// Call example : (data-scroll-call, data-scroll-progress-call)
-// data-scroll-call="function,moduleName,{moduleId}" - call a function, in the modue "moduleName" with id the id "moduleId"
-// OR
-// data-scroll-id="myCustomId" data-scroll-call="function,moduleName"  will automatically call myModule with the id : "myCustomId"
+const scrollToEasing = (x) =>
+  x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
 
-// data-scroll-progress-call="function,moduleName,{moduleId}" - call a function on element in viewport updates, in the modue "moduleName" with id the id "moduleId"
-// data-scroll-progress-reverse will call progress method from 1 to 0
-// data-scroll-progress-css - will set a property --progress to get a css variable on your desired element
+const getHashTarget = () => {
+  const id = decodeURIComponent(window.location.hash.slice(1));
+  return id ? document.getElementById(id) : null;
+};
 
-// data-scroll-start refered to `start` value of scrollTrigger
-// data-scroll-end refered to `end` value of scrollTrigger
-// data-scroll-marker
-// data-scroll-repeat
-// data-scroll-target - trigger when the target element is triggered
-
-//! Exemple pour un module avec un progress géré dans le JS
-//? DOM
-// data-scroll="item"
-// data-module-tonModule="tonId"
-// data-scroll-progress-call="onUpdate,TonModule,tonId"
-
-//? JS
-// Puis tu fais un module TonModule.js
-// Tu crée la function onUpdate() dans ton module
-// onUpdate({progress, isReversed}) {
-//    console.log(progress, isReversed)
-// }
-
-const IN_VIEW_CLASS = 'is-inview';
-
-export class Scroll extends Piece {
-  constructor() {
-    super('Scroll');
-
-    this.$infinite =
-      typeof this.getAttribute('data-scroll-infinite') == 'string'
-        ? document.querySelector(this.getAttribute('data-scroll-infinite'))
-        : false;
-  }
-
-  mount() {
-    this.$scrollItems = [];
-
-    // html.classList.add('lenis');
-    // html.classList.add('lenis-smooth');
-
-    if (this.querySelectorAll('[data-scroll-item]').length > 0) {
-      this.$scrollItems = Array.from(this.$('[data-scroll-item]'));
-    }
-    // check if items are outside the container
-    this.$scrollOutsideItems = document.querySelectorAll(
-      '[data-scroll="outsideItem"]',
-    );
-    this.$scrollOutsideItems.forEach((outsideItem) => {
-      this.$scrollItems.push(outsideItem);
-    });
-
-    this.$scrollToWip = this.$('[data-scroll-wip]');
-    this.scrollToItems = this.$('[data-scroll-to]');
+export class Scroll extends ScrollBase {
+  initScroll() {
+    const wrapper = this.getAttribute('data-scroll-wrapper');
     this.$wrapper =
-      typeof this.getAttribute('data-scroll-wrapper') == 'string'
-        ? document.querySelector(this.getAttribute('data-scroll-wrapper'))
-        : document.documentElement;
-    this.direction =
-      typeof this.getAttribute('data-scroll-direction') == 'string'
-        ? this.getAttribute('data-scroll-direction')
-        : 'vertical';
-
-    this.windowWidth = window.innerWidth;
-
-    if (window.isMobile) {
-      this.gestureDirection = 'vertical';
-      this.direction = 'vertical';
-    }
-
-    if (window.isTablet) {
-      this.direction = 'horizontal';
-      this.gestureDirection = 'vertical';
-    }
-
-    window.scrollInstance = {
-      velocity: 0,
-      direction: 'down',
-      progress: 0,
-      scroll: 0,
-    };
+      (wrapper && document.querySelector(wrapper)) ?? document.documentElement;
+    this.direction = window.isMobile
+      ? 'vertical'
+      : (this.getAttribute('data-scroll-direction') ?? 'vertical');
+    const isInfinite = this.hasAttribute('data-scroll-infinite');
 
     html.setAttribute('data-scroll-direction', this.direction);
-    this.initContainerSize();
-    this.imagesLoading();
-
-    let isSmoothOnMobile =
-      typeof this.getAttribute('data-scroll-infinite') == 'string' &&
-      window.isMobile
-        ? true
-        : false;
-
-    let scrollParams = {
-      smoothWheel: true,
-      duration: window.isMobile ? 0.75 : 0.8,
-      lerp: window.isMobile ? 0.3 : 0.3,
-      easing: (t) => 1 - Math.pow(1 - t, 5), // Ease Out Quint
-      touchMultiplier: 1,
-      touchInertiaMultiplier: 10,
-    };
-
-    var userAgent = navigator.userAgent.toLowerCase();
-    if (userAgent.includes('safari') && !userAgent.includes('chrome')) {
-      scrollParams.smoothWheel = false;
-      scrollParams.duration = 0;
-      scrollParams.lerp = 0;
-      scrollParams.easing = false;
-      scrollParams.touchMultiplier = 0;
-      scrollParams.touchInertiaMultiplier = 0;
-    }
 
     this.lenis = new Lenis({
       wrapper: window,
       content: this.$wrapper,
       orientation: this.direction,
-      gestureOrientation: this.gestureDirection,
-      smoothWheel: scrollParams.smoothWheel,
-      smoothTouch: window.isMobile ? isSmoothOnMobile : true,
-      duration: scrollParams.duration,
-      lerp: scrollParams.lerp,
-      easing: scrollParams.easing,
-      // wheelMultiplier: 0.7,
-      touchMultiplier: scrollParams.touchMultiplier,
-      touchInertiaMultiplier: scrollParams.touchInertiaMultiplier,
-      infinite: typeof this.getAttribute('data-scroll-infinite') == 'string',
+      gestureOrientation: 'vertical',
+      // Native wheel scroll on Safari
+      smoothWheel: !window.isSafari,
+      syncTouch: window.isMobile && isInfinite,
+      lerp: 0.3,
+      infinite: isInfinite,
     });
 
     window.scrollObjectInstance = this.lenis;
+    window.scrollInstance = {
+      scroll: 0,
+      velocity: 0,
+      direction: 'down',
+      progress: 0,
+    };
 
-    document.documentElement.style.setProperty('--scrollValue', `0px`);
+    this.lenis.on('scroll', this.onLenisScroll.bind(this));
 
-    //get scroll value
-    //get scroll value
-    this.lenis.on(
-      'scroll',
-      ({ scroll, velocity, progress }) => {
-        let direction = velocity >= 0 ? 'down' : 'up';
-        window.scrollInstance = {
-          scroll,
-          velocity,
-          direction,
-          progress,
-        };
-
-        if (scroll > 60) {
-          if (!html.classList.contains('has-scrolled')) {
-            html.classList.add('has-scrolled');
-          }
-        } else {
-          if (html.classList.contains('has-scrolled')) {
-            html.classList.remove('has-scrolled');
-          }
-        }
-
-        html.setAttribute('data-direction', direction);
-
-        document.documentElement.style.setProperty(
-          '--scrollValue',
-          `${-parseInt(Math.max(scroll, 0))}px`,
-        );
-      },
-      { passive: true },
-    );
-    this.lenis.on('scroll', ScrollTrigger.update);
-
-    ScrollTrigger.config({ ignoreMobileResize: true });
-
-    gsap.ticker.add((time) => this.lenis.raf(time * 1000));
+    // Lenis runs on the GSAP ticker so ScrollTrigger and Lenis share the same frame
+    this.onTick = (time) => this.lenis.raf(time * 1000);
+    gsap.ticker.add(this.onTick);
     gsap.ticker.lagSmoothing(0);
 
-    // Init elements to detect
-    gsap.delayedCall(1.2, () => {
-      this.initElements();
-    });
+    if (this.direction === 'horizontal') {
+      // Children grow as their images load: keep the container width in sync
+      this.containerObserver = new ResizeObserver(() =>
+        this.initContainerSize(),
+      );
+      Array.from(this.children).forEach(($child) =>
+        this.containerObserver.observe($child),
+      );
+    }
 
-    gsap.delayedCall(1.5, () => {
-      // this.update();
-
-      if (window.location.hash != '') {
-        this.lenis.scrollTo(document.querySelector(window.location.hash));
-      } else if (this.$scrollToWip != undefined) {
-        this.lenis.scrollTo(this.$scrollToWip);
-      }
-    });
-
-    // gsap.delayedCall(3.5, () => {
-    //   this.update();
-    // });
-
-    gsap.delayedCall(5, () => {
-      this.update();
-    });
-
-    this.on('click', this.$('[data-scroll-to]'), this.scrollTo);
-
-    this.on('resize', window, this.resize);
+    this.on('click', this.$All('[data-scroll-to]'), this.scrollTo);
   }
 
-  update() {
+  getScroll() {
+    return this.lenis.scroll;
+  }
+
+  updateMaxScroll() {
     this.lenis.resize();
-    gsap.delayedCall(0.2, () => {
-      this.refresh();
-      this.emit('redraw::fx');
-    });
+    this.maxScroll = this.lenis.limit;
+  }
+
+  onLenisScroll({ scroll, velocity, progress }) {
+    window.scrollInstance = {
+      scroll,
+      velocity,
+      direction: velocity >= 0 ? 'down' : 'up',
+      progress,
+    };
+
+    ScrollTrigger.update();
+    this.updateScrollValues(scroll);
+  }
+
+  afterMount() {
+    super.afterMount();
+
+    const $start = getHashTarget() ?? this.querySelector('[data-scroll-wip]');
+    if ($start) this.lenis.scrollTo($start);
   }
 
   initContainerSize() {
-    if (this.direction === 'horizontal') {
-      let elWidth = 0;
-
-      for (
-        let childIndex = 0;
-        childIndex < this.el.children.length;
-        childIndex++
-      ) {
-        const child = this.el.children[childIndex];
-        elWidth += child.getBoundingClientRect().width;
-      }
-      this.el.style.setProperty('--scrollContainerWidth', elWidth + 'px');
-    }
+    const width = Array.from(this.children).reduce(
+      (total, $child) => total + $child.getBoundingClientRect().width,
+      0,
+    );
+    this.style.setProperty('--scrollContainerWidth', `${width}px`);
   }
 
-  imagesLoading() {
-    let $images = Array.from(document.getElementsByTagName('img'));
-    let count = 0;
+  createElement($element) {
+    const scrollElement = super.createElement($element);
+    const parallaxFrom = $element.getAttribute('data-scroll-parallax-from');
+    const allowParallax =
+      !window.isSafari || $element.hasAttribute('data-scroll-parallax-safari');
 
-    $images.forEach(($image) => {
-      $image.addEventListener('load', () => {
-        count++;
-
-        if (count == $images.length) {
-          this.initContainerSize();
-        }
-      });
-    });
-  }
-
-  initElements() {
-    this.triggers = new Array(this.$scrollItems.length);
-    this.scrollElements = new Array(this.$scrollItems.length);
-
-    this.$scrollItems.forEach(($element, index) => {
-      let scrollElement = this.createElement($element, index);
-      let hasMarkers =
-        typeof $element.getAttribute('data-scroll-marker') == 'string';
-      let $target =
-        typeof $element.getAttribute('data-scroll-target') == 'string'
-          ? this.$($element.getAttribute('data-scroll-target'))
-          : $element;
-
-      if ($target == null) return;
-
-      let options = {
-        scroller: this.$wrapper,
-        trigger: $target,
-        start:
-          typeof $element.getAttribute('data-scroll-start') == 'string'
-            ? $element.getAttribute('data-scroll-start')
-            : 'top bottom',
-        end:
-          typeof $element.getAttribute('data-scroll-end') == 'string'
-            ? $element.getAttribute('data-scroll-end')
-            : 'bottom top',
-        markers: hasMarkers,
-        horizontal: this.direction == 'horizontal',
-        onEnter: () => {
-          this.onElementEnter(scrollElement, 'down');
-        },
-        onLeave: () => {
-          this.onElementLeave(scrollElement, 'down');
-        },
-        onEnterBack: () => {
-          this.onElementEnter(scrollElement, 'up');
-        },
-        onLeaveBack: () => {
-          this.onElementLeave(scrollElement, 'up');
-        },
-      };
-      if (
-        typeof $element.getAttribute('data-scroll-start-mobile') == 'string' &&
-        window.isMobile
-      ) {
-        options.start = $element.getAttribute('data-scroll-start-mobile');
-      }
-
-      if (scrollElement.progressCallParameters != undefined) {
-        options = {
-          ...options,
-          onUpdate: (self) => {
-            this.onElementProgress(self, scrollElement);
-          },
-        };
-      }
-
-      if (
-        typeof $element.getAttribute('data-scroll-progress-css') == 'string'
-      ) {
-        $element.style.setProperty('--progress', 0);
-
-        options = {
-          ...options,
-          onUpdate: (self) => {
-            let progress = self.progress.toFixed(3);
-            $element.style.setProperty('--progress', progress);
-
-            if (scrollElement.progressCallParameters != undefined) {
-              this.onElementProgress(self, scrollElement);
-            }
-          },
-        };
-      }
-
-      if (scrollElement.parallaxTl != undefined) {
-        options = {
-          ...options,
-          onUpdate: (self) => {
-            scrollElement.parallaxTl.progress(self.progress);
-          },
-        };
-      }
-
-      let sTrigger = ScrollTrigger.create(options);
-
-      this.scrollElements.push({
-        ...scrollElement,
-        sTrigger,
-      });
-    });
-  }
-
-  createElement($element, index) {
-    let id = $element.getAttribute('data-scroll-id');
-    let isRepeatable =
-      typeof $element.getAttribute('data-scroll-repeat') == 'string';
-
-    // Manage classic call
-    let callParameters;
-    if (typeof $element.getAttribute('data-scroll-call') === 'string') {
-      let callParametersArray = $element
-        .getAttribute('data-scroll-call')
-        .split(',');
-      callParameters = {
-        function: callParametersArray[0],
-        module: callParametersArray[1],
-        moduleId: callParametersArray.length < 3 ? id : callParametersArray[2],
-      };
-      if (callParameters.moduleId == undefined) {
-        // console.warn(`You didn't specified a data-scroll-id, or a moduleId in your data-scroll-call`,$element)
-      }
-    } else {
-      callParameters = undefined;
-    }
-
-    // Manage progress call
-    let progressCallParameters;
-    if (
-      typeof $element.getAttribute('data-scroll-progress-call') === 'string'
-    ) {
-      let progressCallParametersArray = $element
-        .getAttribute('data-scroll-progress-call')
-        .split(',');
-
-      progressCallParameters = {
-        function: progressCallParametersArray[0],
-        module: progressCallParametersArray[1],
-        moduleId:
-          progressCallParametersArray.length < 3
-            ? id
-            : progressCallParametersArray[2],
-        isReversed:
-          typeof $element.getAttribute('data-scroll-progress-reverse') ==
-          'string',
-      };
-      if (progressCallParameters.moduleId == undefined) {
-        console.warn(
-          `You didn't specified a data-scroll-id, or a moduleId in your data-scroll-progress-call`,
-          this.el,
-        );
-      }
-    } else {
-      progressCallParameters = undefined;
-    }
-
-    let parallax =
-      typeof $element.getAttribute('data-scroll-parallax-from') === 'string';
-
-    let parallaxTl;
-
-    if (parallax && !window.isSafari) {
-      parallaxTl = gsap.fromTo(
+    if (this.isOutOfContext($element)) {
+      gsap.killTweensOf($element);
+      gsap.set($element, { clearProps: 'y,height' });
+    } else if (parallaxFrom != null && allowParallax) {
+      scrollElement.parallaxTl = gsap.fromTo(
         $element,
-        {
-          y: $element.getAttribute('data-scroll-parallax-from'),
-        },
+        { y: parallaxFrom },
         {
           y: $element.getAttribute('data-scroll-parallax-to'),
           duration: 1,
           ease: 'none',
+          paused: true,
         },
       );
-      parallaxTl.pause();
     }
 
-    let progressContext = $element.getAttribute('data-scroll-progress-context');
-    if (typeof progressContext == 'string') {
-      if (
-        (progressContext == 'mobile' && !window.isMobile) ||
-        (progressContext == 'desktop' && window.isMobile)
-      ) {
-        gsap.killTweensOf($element);
-        gsap.set($element, { clearProps: 'y,height' });
-        progressCallParameters = undefined;
-        parallaxTl = undefined;
-      }
-    }
+    return scrollElement;
+  }
 
+  getTriggerOptions($element, $trigger, scrollElement) {
     return {
-      $el: $element,
-      id,
-      isRepeatable,
-      callParameters,
-      parallaxTl,
-      progressCallParameters,
+      ...super.getTriggerOptions($element, $trigger, scrollElement),
+      scroller: this.$wrapper,
+      horizontal: this.direction === 'horizontal',
     };
   }
 
-  onElementProgress(self, scrollElement) {
-    let progress = self.progress.toFixed(3);
-
-    this.call(
-      scrollElement.progressCallParameters.function,
-      {
-        progress: parseFloat(progress),
-        isReversed: scrollElement.progressCallParameters.isReversed,
-      },
-      scrollElement.progressCallParameters.module,
-      scrollElement.progressCallParameters.moduleId,
-    );
-  }
-
-  onElementEnter(scrollElement, direction) {
-    if (
-      !scrollElement.isRepeatable &&
-      scrollElement.$el.classList.contains(IN_VIEW_CLASS)
-    ) {
-      return;
-    }
-    scrollElement.$el.classList.add(IN_VIEW_CLASS);
-
-    // Call js functions in a specific module with data-attribute
-    if (scrollElement.callParameters != undefined) {
-      this.call(
-        scrollElement.callParameters.function,
-        { mode: 'enter', direction: direction, $el: scrollElement.$el },
-        scrollElement.callParameters.module,
-        scrollElement.callParameters.moduleId,
-      );
-    }
-  }
-
-  onElementLeave(scrollElement, direction) {
-    if (
-      !scrollElement.isRepeatable &&
-      scrollElement.$el.classList.contains(IN_VIEW_CLASS)
-    ) {
-      return;
-    }
-    scrollElement.$el.classList.remove(IN_VIEW_CLASS);
-
-    // Call js functions in a specific module with data-attribute
-    if (scrollElement.callParameters != undefined) {
-      this.call(
-        scrollElement.callParameters.function,
-        { mode: 'leave', direction: direction, $el: scrollElement.$el },
-        scrollElement.callParameters.module,
-        scrollElement.callParameters.moduleId,
-      );
-    }
-  }
-
-  raf(time) {
-    this.lenis.raf(time);
-    this.rafInstance = requestAnimationFrame((time) => this.raf(time));
-
-    if (this.lenis.scroll > 120) {
-      if (!html.classList.contains('has-scrolled')) {
-        html.classList.add('has-scrolled');
-      }
-    } else {
-      if (html.classList.contains('has-scrolled')) {
-        html.classList.remove('has-scrolled');
-      }
-    }
+  update() {
+    this.lenis.resize();
+    super.update();
   }
 
   scrollTo(e) {
     e.preventDefault();
-    let target =
-      typeof e.currentTarget.getAttribute('href') === 'string'
-        ? e.currentTarget.getAttribute('href')
-        : e.currentTarget.getAttribute('data-href');
-    let duration =
-      typeof e.currentTarget.getAttribute('data-scroll-to-duration') == 'string'
-        ? parseFloat(e.currentTarget.getAttribute('data-scroll-to-duration'))
-        : 2;
-    let offset =
-      typeof e.currentTarget.getAttribute('data-scroll-to-offset') == 'string'
-        ? parseInt(e.currentTarget.getAttribute('data-scroll-to-offset'))
-        : 0;
-    let immediate =
-      typeof e.currentTarget.getAttribute('data-scroll-to-immediate') ==
-      'string';
-    let easing = (x) =>
-      x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
+    const $link = e.currentTarget;
 
-    this.lenis.scrollTo(target, {
-      offset,
-      duration,
-      immediate,
-      easing,
-    });
-  }
-
-  refresh() {
-    if (this.scrollElements != undefined) {
-      this.scrollElements.forEach((scrollElement) => {
-        scrollElement.sTrigger.refresh();
-      });
-    }
-  }
-
-  resize() {
-    if (this.resizeTimeout != undefined) {
-      this.resizeTimeout.kill();
-    }
-    this.resizeTimeout = gsap.delayedCall(window.isMobile ? 0.6 : 0.3, () => {
-      this.resizeDebounce();
-    });
-  }
-
-  resizeDebounce() {
-    if (
-      this.windowWidth != window.innerWidth ||
-      (this.direction == 'horizontal' && !window.isMobile)
-    ) {
-      this.initContainerSize();
-      this.windowWidth = window.innerWidth;
-      this.lenis.resize();
-      this.refresh();
-    }
+    this.lenis.scrollTo(
+      $link.getAttribute('href') ?? $link.getAttribute('data-href'),
+      {
+        offset: parseInt($link.getAttribute('data-scroll-to-offset') ?? 0),
+        duration: parseFloat(
+          $link.getAttribute('data-scroll-to-duration') ?? 2,
+        ),
+        immediate: $link.hasAttribute('data-scroll-to-immediate'),
+        easing: scrollToEasing,
+      },
+    );
   }
 
   unmount() {
-    this.lenis.destroy();
-    if (this.scrollElements != undefined) {
-      this.scrollElements.forEach((scrollElement) => {
-        scrollElement.sTrigger.kill();
-      });
-      this.$scrollItems = [];
-    }
-    cancelAnimationFrame(this.rafInstance);
+    super.unmount();
+    this.off('click', this.$All('[data-scroll-to]'), this.scrollTo);
 
-    this.off('click', this.$('[data-scroll-to]'), this.scrollTo);
-    this.off('resize', window, this.resize);
+    gsap.ticker.remove(this.onTick);
+    // GSAP default lag smoothing
+    gsap.ticker.lagSmoothing(500, 33);
+    this.containerObserver?.disconnect();
+    this.lenis.destroy();
   }
 }
 

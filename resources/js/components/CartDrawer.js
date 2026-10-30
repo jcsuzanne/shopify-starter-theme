@@ -1,17 +1,20 @@
-import Env from '../base/env';
+import { html } from '../utils/environment';
 import gsap from 'gsap';
-import { renderAmount, formatDollarsToCents } from '../shopify/Helpers';
+import { renderAmount } from '../shopify/Helpers';
 import Channels from '../base/channels';
 
 export default () => ({
   items: [],
   itemsError: [],
   itemsCount: 0,
-  RAF: false,
   total: 0,
   async init() {
     this.getCart();
-    this.watch();
+    // Stock display only changes with the variant or the page, no need to poll every frame
+    const checkStock = () => this.$nextTick(() => this.listenStock());
+    checkStock();
+    window.addEventListener('option-changed', checkStock);
+    document.addEventListener('swup:page:view', checkStock);
     Channels.addListener('cart::render', () => {
       this.getCart(false, () => {
         if (this.patternBuy == 'direct') {
@@ -36,28 +39,16 @@ export default () => ({
     this.updateItem(data, item);
     this.getCart(true);
   },
-  watch() {
-    this.RAF = requestAnimationFrame(() => {
-      this.listenStock();
-      this.watch();
-    });
-  },
   closeCart() {
     Channels.emit('cart::close');
   },
   listenStock() {
-    if (document.querySelector('.js-stock-check') != null) {
-      const style = window.getComputedStyle(
-        document.querySelector('.js-stock-check'),
-        null,
-      );
-      let display = style.getPropertyValue('display');
-      if (display == 'flex') {
-        Env.$html.classList.add('product-unavailable');
-      } else {
-        Env.$html.classList.remove('product-unavailable');
-      }
-    }
+    const $stockCheck = document.querySelector('.js-stock-check');
+    html.classList.toggle(
+      'product-unavailable',
+      $stockCheck != null &&
+        window.getComputedStyle($stockCheck).display == 'flex',
+    );
   },
   openCart() {
     Channels.emit('cart::open');
@@ -71,11 +62,7 @@ export default () => ({
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
-          // Clear if sample on cart and total == 0
-
           this.itemsCount = data.item_count;
-          this.samplesCount = 0;
           this.total = data.total_price;
           this.items = data.items;
 
@@ -84,10 +71,6 @@ export default () => ({
             typeof fnComplete == 'function'
           )
             fnComplete();
-
-          if (data.item_count > 0 && data.total_price == 0) {
-            this.resetCart();
-          }
         })
         .catch((error) => {
           console.error('Error adding item to cart:', error);
@@ -131,16 +114,6 @@ export default () => ({
     };
     this.updateItem(data, item);
     this.getCart(true);
-  },
-  resetCart() {
-    fetch(window.Shopify.routes.root + 'cart/clear.js', {
-      method: 'post',
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        this.itemsError = [];
-        this.getCart();
-      });
   },
   resetItemError(item) {
     if (this.itemsError.find((error) => error.id == item.key)) {

@@ -5,8 +5,6 @@ import { initSizes } from '../utils/sizes';
 import { gsap } from 'gsap';
 import { triggerAfterMount } from '../utils/afterMountHelper';
 
-import '../alpine/start';
-
 window.firstHit = true;
 window.readyDelay = 0.3;
 window.readyCallbackDelay = 1;
@@ -19,8 +17,9 @@ export class App extends Piece {
   mount() {
     // Credits
     console.log(
-      '\n%cMade with ❤️ by Index: https://index.studio — 💻 Dev by JCS https://www.jcsuzanne.com and Quentin Hocdé https://quentinhocde.com',
-      'color:#fff;font-size:12px; padding:0.45rem 0.75rem; margin: 0.3rem auto 1.3rem auto; font-family: Metropolis, Helvetica, sans-serif; border: 2px solid #0dd8d8; border-radius: 4px;font-weight: 100;background-size: cover;background-repeat: no-repeat;border: double 1px transparent;background-image: linear-gradient(#000, #122), radial-gradient(circle at top left, #54E5E3, #ED1E63);background-origin: border-box;background-clip: padding-box, border-box;',
+      '\n%cIndex Studio%c\n\nSite developed by Index Studio — https://index.studio\n👨‍💻 JCS — https://www.jcsuzanne.com\n👨‍💻 Quentin Hocdé — https://quentinhocde.com\n',
+      'display:inline-block; padding:0.75rem 2.5rem; background:#000; color:#fff; font:700 14px/1 Helvetica, Arial, sans-serif; letter-spacing:0.2em; text-align:center; text-transform:uppercase;',
+      'font:400 12px/1.6 Helvetica, Arial, sans-serif;',
     );
 
     initDevice();

@@ -44,14 +44,10 @@ export function onRAF(fn, { fire = false } = {}) {
     fns.push({ index, fn });
 	
     return () => {
-        let idx;
+        const idx = fns.findIndex((item) => item.index === index);
 
-        for (let i = 0; i < fns.length; i++) {
-            if (fns[i].index === index) {
-                idx = i;
-                break;
-            }
-        }
+        // Already removed: splice(-1, 1) would drop the last callback instead
+        if (idx === -1) return;
 
         fns.splice(idx, 1);
 

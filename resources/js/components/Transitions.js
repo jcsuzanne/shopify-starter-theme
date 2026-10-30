@@ -147,7 +147,7 @@ export class Transitions extends Piece {
   }
 
   scheduleDomReady() {
-    toggleHtmlClasses([HTML_CLASSES.domReady, 'lenis', 'lenis-smooth']);
+    toggleHtmlClasses([HTML_CLASSES.domReady]);
 
     body.setAttribute(
       'data-template',

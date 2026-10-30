@@ -81,7 +81,6 @@ export class Timeline extends Piece {
   }
 
   progress({ progress, isReversed }) {
-    console.log('progress', progress);
     let relativeProgress = progress;
     if (isReversed) relativeProgress = 1 - progress;
 

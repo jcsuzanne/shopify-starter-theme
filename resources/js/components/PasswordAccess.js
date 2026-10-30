@@ -10,14 +10,12 @@ export class PasswordAccess extends Piece {
   mount() {
     this.DOM = { view: this, ...this.captureTree() };
 
-    console.log('PasswordAccess');
     if (window.location.search.includes('devmode')) {
       this.DOM.view.style.display = 'block';
     }
   }
 
-  unmount() {
-  }
+  unmount() {}
 }
 
 // Register the custom element

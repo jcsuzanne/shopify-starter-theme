@@ -13,6 +13,9 @@
 @import './common/layout.css';
 @import './common/animations.css';
 
+/* THEME */
+@import './theme.css';
+
 /* COMPONENTS */
 /* @import './components/yourComponent.css'; */
 

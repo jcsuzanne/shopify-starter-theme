@@ -20,7 +20,8 @@ export class PDPAddToCart extends Piece {
   }
 
   unmount() {
-
+    // Pieces are re-mounted on each swup visit: avoid stacking add-to-cart listeners
+    Channels.removeListener('product::addtocart', this.fnAddToCart);
   }
 }
 

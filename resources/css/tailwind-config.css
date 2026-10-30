@@ -41,12 +41,12 @@
   --text-sml: 15px;
 
   /* Custom line heights */
-  --line-height-xxs: 11px;
-  --line-height-xxxs: 10px;
-  --line-height-xs: 12px;
-  --line-height-sm: 14px;
-  --line-height-xsm: 13px;
-  --line-height-base-lg: 18px;
+  --leading-xxs: 11px;
+  --leading-xxxs: 10px;
+  --leading-xs: 12px;
+  --leading-sm: 14px;
+  --leading-xsm: 13px;
+  --leading-base-lg: 18px;
 
   /* Custom spacing */
   --spacing-outer-x-lg: 1.5rem;
@@ -160,7 +160,7 @@
 @custom-variant to-4xl (@media (max-width: 2099px));
 
 /* HTML state variants */
-@variant backend-preview (html[class~="wp-toolbar"] &);
+@variant backend-preview (html[class~="shopify-design-mode"] &);
 @variant local-env (html[class~="local-env"] &);
 @variant mainnav-opened (html[class~="has-nav-open"] &);
 @variant mainnav-closing (html[class~="has-nav-closing"] &);

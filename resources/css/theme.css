@@ -1,11 +1,8 @@
-@import "tailwindcss";
-
-
 .swup-progress-bar {
   @apply h-px bg-black;
 }
 html.is-changing .transition-main {
-  @apply transition-opacity duration-500
+  @apply transition-opacity duration-500;
 }
 
 html.is-animating .transition-main {

@@ -6,6 +6,9 @@ window.Alpine = Alpine;
 import xDatasApp from './xDatasApp';
 Alpine.data('DatasApp', xDatasApp);
 
+import xProductDatas from './xProductDatas';
+Alpine.data('ProductDatas', xProductDatas);
+
 import Cart from '../components/CartDrawer';
 Alpine.data('CartDrawer', Cart);
 

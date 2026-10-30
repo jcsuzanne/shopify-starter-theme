@@ -2,17 +2,9 @@ import { html, body } from './environment';
 import { getScrollBarWidth } from '../utils/device';
 
 export function initSizes() {
-  if (getScrollBarWidth() > 0) {
-    body.classList.add('has-scrollbar-y');
-    document.documentElement.style.setProperty(
-      '--scrollbar',
-      `${getScrollBarWidth()}px`,
-    );
-  } else {
-    body.classList.remove('has-scrollbar-y');
-
-    document.documentElement.style.setProperty('--scrollbar', `0px`);
-  }
+  const scrollbarWidth = getScrollBarWidth();
+  body.classList.toggle('has-scrollbar-y', scrollbarWidth > 0);
+  html.style.setProperty('--scrollbar', `${scrollbarWidth}px`);
 
   let absRatio = 1;
   if (window.innerWidth < window.innerHeight) {
@@ -21,5 +13,5 @@ export function initSizes() {
     absRatio = window.innerWidth / window.innerHeight;
   }
 
-  document.documentElement.style.setProperty('--absRatio', `${absRatio}`);
+  html.style.setProperty('--absRatio', `${absRatio}`);
 }

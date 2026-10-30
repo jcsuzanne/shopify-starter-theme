@@ -56,3 +56,7 @@ html.lenis body {
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
 }
+
+html.is-scroll-locked {
+  overflow: hidden;
+}
