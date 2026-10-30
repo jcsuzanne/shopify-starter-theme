@@ -1,235 +1,176 @@
+# Shopify Starter Theme
 
-# Starter dev theme for Shopify 2.0 store
+Starter theme for Shopify Online Store 2.0, built by [Index Studio](https://index.studio).
+Vite, Tailwind CSS v4 and Pieces.js (native web components), with a local dev environment and hot reload.
 
+## Stack
 
-Using modern tools like Vite.js, TailwindCSS and Pieces.js, this starter will help you to build more efficient theme with local environment and Github integration
+- [Vite 8](https://vite.dev) + [vite-plugin-shopify](https://github.com/barrel/shopify-vite) — single bundled `app.js` / `app.css`
+- [Tailwind CSS v4](https://tailwindcss.com) — CSS-first config, no PostCSS
+- [Pieces.js](https://github.com/quentinhocde/piecesjs) — lightweight web components
+- [Alpine.js](https://alpinejs.dev) — cart drawer and product data
+- [GSAP](https://gsap.com) + ScrollTrigger — scroll detection and animations
+- [Lenis](https://lenis.darkroom.engineering) — smooth scroll (default, swappable for native scroll)
+- [Swup](https://swup.js.org) — page transitions (opt-in)
+- Prettier with the Liquid and Tailwind plugins
 
+## Requirements
 
+- Node.js >= 22.12
+- [pnpm](https://pnpm.io) 11
+- [Shopify CLI](https://shopify.dev/docs/api/shopify-cli)
 
-
-## Features
-
-- [Shopify Vite](https://github.com/barrel/shopify-vite/tree/main)
-- Tailwind.css
-- Pieces.js
-- Prettier Liquid
-- [Tailwind Raw Reorder](https://marketplace.visualstudio.com/items?itemName=Trapfether.tailwind-raw-reorder)
-- [Github Theme integration](https://shopify.dev/docs/storefronts/themes/tools/github)
-
-
-## Run Locally
-
-
-Clone the repository and go to the project directory
-
-```bash
-  cd my-project
-```
-
-Create `shopify.theme.toml` file
+## Getting started
 
 ```bash
-    [environments.development]
-    store = "your-store"
-    theme = "XXX"
-
-    [environments.production]
-    store = "your-store"
-    theme = "XXX"
-    ignore = ["templates/*", "config/*"]
-
+git clone https://github.com/jcsuzanne/shopify-starter-theme.git my-project
+cd my-project
+pnpm install
 ```
 
+Create a `shopify.theme.toml` file (git-ignored):
 
-Install dependencies
+```toml
+[environments.development]
+store = "your-store"
+theme = "XXX"
+
+[environments.production]
+store = "your-store"
+theme = "XXX"
+ignore = ["templates/*", "config/*"]
+```
+
+Then replace the store (`--store=jcs-blueprint.myshopify.com`), the store password and the theme id (`--theme=188310552913`) in the `package.json` scripts with your own.
+
+## Development
 
 ```bash
-  yarn install
+pnpm dev
 ```
 
-Start the server
+Runs both servers:
 
-```bash
-  yarn dev
+- `pnpm start` — Vite dev server on `http://127.0.0.1:3000` (JS/CSS with HMR)
+- `pnpm shopify` — Shopify CLI theme server on `http://127.0.0.1:9292` (open this one)
+
+They can also run in two separate terminals.
+
+What reloads when:
+
+| Change | Result                                                                                                           |
+| ------ | ---------------------------------------------------------------------------------------------------------------- |
+| CSS    | Hot update, no reload                                                                                            |
+| JS     | Full page reload (custom elements can't be redefined)                                                            |
+| Liquid | CSS hot update for new Tailwind classes, the Shopify CLI hot reload refreshes the markup once the file is synced |
+
+> `pnpm build` rewrites `snippets/vite-tag.liquid` to point at the production assets. If you build while developing, restart `pnpm start` to get the dev snippet (and HMR) back.
+
+## Scripts
+
+| Script                           | Description                                                                                     |
+| -------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `pnpm dev`                       | Vite + Shopify CLI dev servers                                                                  |
+| `pnpm start`                     | Vite dev server only                                                                            |
+| `pnpm shopify`                   | Shopify CLI dev server only                                                                     |
+| `pnpm build`                     | Clean old `assets/app.*` files and build                                                        |
+| `pnpm deploy`                    | Push sections, snippets, assets, layout and blocks to the theme                                 |
+| `pnpm push-*`                    | Push one part of the theme (`assets`, `snippets`, `config`, `locales`, `sections`, `templates`) |
+| `pnpm pull-*` / `pnpm sync-pull` | Pull config, locales, templates and header group from the theme                                 |
+| `pnpm setup-store`               | First push of the theme to the store                                                            |
+| `pnpm logout`                    | Log out of the Shopify CLI                                                                      |
+
+## Project structure
+
+```
+resources/
+  js/
+    app.js            Entry point: loads <c-app>, then the other pieces
+    components.js     Registry of the pieces loaded on the page (and after each swup visit)
+    components/       Pieces (web components)
+    alpine/           Alpine data (DatasApp, ProductDatas, CartDrawer)
+    shopify/          Cart API helpers
+    utils/            Device, sizes, helpers…
+  css/
+    main.css          Entry point, imports everything below
+    tailwind-config.css  @theme tokens, custom media and variants
+    base/ common/ utilities/ theme.css
+snippets/vite-tag.liquid  Generated by vite-plugin-shopify (git-ignored)
 ```
 
+### Pieces
+
+Each piece is a custom element. To load one, add it to `components.js`:
+
+```js
+loadPiece(
+  'my-piece',
+  () => import('/resources/js/components/MyPiece.js'),
+  context,
+),
+```
+
+`BasePiece.js` is a template to start from. `afterMount()` is called once the DOM is ready (first load and after each swup visit).
+
+## Scroll
+
+`<c-scroll>` comes in two versions sharing `ScrollBase.js`. Pick one in `components.js`:
+
+- `Scroll.js` (default) — Lenis smooth scroll, parallax, horizontal mode, scroll-to links
+- `ScrollLite.js` — native scroll, lighter
+
+Common attributes (full list at the top of `ScrollBase.js` and `Scroll.js`):
+
+| Attribute                                        | Description                                                               |
+| ------------------------------------------------ | ------------------------------------------------------------------------- |
+| `data-scroll-item`                               | Detect the element: adds `is-inview` (use the `inview:` Tailwind variant) |
+| `data-scroll-repeat`                             | Remove `is-inview` when the element leaves                                |
+| `data-scroll-start` / `data-scroll-end`          | ScrollTrigger `start` / `end`                                             |
+| `data-scroll-target`                             | Trigger on another element (id or CSS selector)                           |
+| `data-scroll-progress-css`                       | Set `--progress` (0 to 1) on the element                                  |
+| `data-scroll-call` / `data-scroll-progress-call` | Call a piece method on enter/leave or on progress                         |
+| `data-scroll-parallax-from` / `-to`              | Parallax (Lenis version)                                                  |
+
+On `<c-scroll>`, `data-scroll-vars` writes `--scrollValue` and `--scrollProgress` on `<html>` (opt-in, it restyles the page on each frame).
+
+The default `rich-text` section is a playground for these attributes.
+
+## Page transitions
+
+Swup and its plugins are installed but disabled. To enable them, uncomment the `c-transitions` piece in `app.js`.
+
+## Tailwind
+
+- Theme tokens, breakpoints, easings and z-indexes live in `resources/css/tailwind-config.css`.
+- Custom variants: `from-lg:` / `to-lg:` (and the other breakpoints), `inview:`, `cart-opened:`, `ui-ready:`, `backend-preview:` (theme editor)…
+- No PostCSS: use `/* */` comments and CSS custom properties. `//` comments and `$vars` break the Tailwind parser.
 
 ## Deployment
 
-To deploy this project run, just push the modified files (assuming the theme is connected with [Github Integration](https://shopify.dev/docs/storefronts/themes/tools/github))
+Built assets (`assets/app.*`, `snippets/vite-tag.liquid`) are git-ignored, so build before pushing to the theme:
 
 ```bash
-  git push
+pnpm build
+pnpm deploy
 ```
-
 
 ## FAQ
 
-#### if authentication problem (eg: 422 API Request)
+#### Authentication problem (e.g. 422 API request)
 
-Log out of shopify and shopify partners. Check owner status (if dev store). Connect to the store with your own account to shopify partners and finally relaunch the start server command
-
-```bash
-shopify auth logout
-
-yarn shop:start
-```
-
-
-## Features
-
-- [Shopify Vite](https://github.com/barrel/shopify-vite/tree/main)
-- Tailwind.css
-- Pieces.js
-- Prettier Liquid
-- [Tailwind Raw Reorder](https://marketplace.visualstudio.com/items?itemName=Trapfether.tailwind-raw-reorder)
-- [Github Theme integration](https://shopify.dev/docs/storefronts/themes/tools/github)
-
-
-## Run Locally
-
-
-Clone the repository and go to the project directory
+Log out of Shopify and Shopify Partners, check the owner status (dev store), log in with your own account, then restart the dev server:
 
 ```bash
-  cd my-project
+pnpm logout
+pnpm dev
 ```
 
-Create `shopify.theme.toml` file
+#### `ERR_PNPM_UNEXPECTED_STORE` on install
 
-```bash
-    [environments.development]
-    store = "your-store"
-    theme = "XXX"
+`node_modules` was installed with another major version of pnpm. Use pnpm 11 (check `pnpm -v`).
 
-    [environments.production]
-    store = "your-store"
-    theme = "XXX"
-    ignore = ["templates/*", "config/*"]
+## Credits
 
-```
+Made by [Index Studio](https://index.studio) — dev by [JCS](https://www.jcsuzanne.com) and [Quentin Hocdé](https://quentinhocde.com).
 
-
-Install dependencies
-
-```bash
-  yarn install
-```
-
-Start the server
-
-```bash
-  yarn dev
-```
-
-
-## Deployment
-
-To deploy this project run, just push the modified files (assuming the theme is connected with [Github Integration](https://shopify.dev/docs/storefronts/themes/tools/github))
-
-```bash
-  yarn build
-  git push
-```
-
-
-## FAQ
-
-#### if authentication problem (eg: 422 API Request)
-
-Log out of shopify and shopify partners. Check owner status (if dev store). Connect to the store with your own account to shopify partners and finally relaunch the start server command
-
-```bash
-shopify auth logout
-
-yarn shop:start
-```
-
-#### Problem with assets loading when starting the project
-
-If your assets aren't loading due to ssl errors, visit https://127.0.0.1:3000, click Advanced and proceed, then navigate back to your Shopify CLI dev server at http://127.0.0.1:9292 and you should see your assets loaded properly.
-
-
-## Thanks to
-
-- Code reference https://github.com/james0r/slayed
-
-
-## Features
-
-- [Shopify Vite](https://github.com/barrel/shopify-vite/tree/main)
-- Tailwind.css
-- Pieces.js
-- Prettier Liquid
-- [Tailwind Raw Reorder](https://marketplace.visualstudio.com/items?itemName=Trapfether.tailwind-raw-reorder)
-- [Github Theme integration](https://shopify.dev/docs/storefronts/themes/tools/github)
-
-
-## Run Locally
-
-
-Clone the repository and go to the project directory
-
-```bash
-  cd my-project
-```
-
-Create `shopify.theme.toml` file
-
-```bash
-    [environments.development]
-    store = "your-store"
-    theme = "XXX"
-
-    [environments.production]
-    store = "your-store"
-    theme = "XXX"
-    ignore = ["templates/*", "config/*"]
-
-```
-
-
-Install dependencies
-
-```bash
-  yarn install
-```
-
-Start the server
-
-```bash
-  yarn dev
-```
-
-
-## Deployment
-
-To deploy this project run, just push the modified files (assuming the theme is connected with [Github Integration](https://shopify.dev/docs/storefronts/themes/tools/github))
-
-```bash
-  yarn build
-  git push
-```
-
-
-## FAQ
-
-#### if authentication problem (eg: 422 API Request)
-
-Log out of shopify and shopify partners. Check owner status (if dev store). Connect to the store with your own account to shopify partners and finally relaunch the start server command
-
-```bash
-shopify auth logout
-
-yarn shop:start
-```
-
-#### Problem with assets loading when starting the project
-
-If your assets aren't loading due to ssl errors, visit https://127.0.0.1:3000, click Advanced and proceed, then navigate back to your Shopify CLI dev server at http://127.0.0.1:9292 and you should see your assets loaded properly.
-
-
-## Thanks to
-
-- Code reference https://github.com/james0r/slayed
-
+Code reference: [slayed](https://github.com/james0r/slayed).
