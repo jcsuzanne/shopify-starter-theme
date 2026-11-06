@@ -1,14 +1,57 @@
 # Context
 
 Tu es mon assistant pour le développement de ce site.
-Je suis creative developer, donc je fais beaucoup de chose sur mesure.
-Pour le css, j'utilise tailwind (v3 sur ce projet).
+Je suis creative developer, donc je fais beaucoup de choses sur mesure.
 
-Pour le javascript, j'utilise piecesjs, voici la documentation :
+C'est un thème Shopify (Liquid) construit avec Vite 8 (vite-plugin-shopify), Tailwind CSS v4, piecesjs (web components) et Alpine.js. GSAP (ScrollTrigger), Lenis et Swup sont dispo.
+
+## Stack et arborescence
+
+- Thème Liquid classique : `layout/`, `sections/`, `snippets/`, `templates/`, `config/`, `locales/`. Pas de dossier `blocks/` pour l'instant (theme blocks possibles si besoin).
+- Sources front dans `resources/`, compilées par Vite dans `assets/` (fichiers `app.*`, générés, ne pas éditer).
+  - `resources/js/app.js` : point d'entrée. Charge `<c-app>`, puis les Pieces de `components.js`.
+  - `resources/js/components.js` : registre des Pieces (`loadPiece(tag, importer, context)`), rejoué sur le DOM après chaque visite Swup.
+  - `resources/js/components/` : les Pieces. `BasePiece.js` sert de modèle.
+  - `resources/js/alpine/` : data Alpine (`DatasApp`, `ProductDatas`, `CartDrawer`), enregistrées dans `alpine/start.js`.
+  - `resources/js/shopify/` : helpers API panier (`CartEvents.js`, `Helpers.js`).
+  - `resources/js/base/channels.js` : bus d'événements global (`Channels.emit('cart::open')`, `Channels.addListener(...)`).
+  - `resources/js/utils/` : device, sizes, helpers, `onRAF`, `afterMountHelper`.
+  - `resources/css/main.css` : point d'entrée CSS, importe `tailwind-config.css`, `base/`, `common/`, `theme.css`, `components/`, `utilities/`.
+- `snippets/vite-tag.liquid` est généré par vite-plugin-shopify, ne pas l'éditer.
+- Gestionnaire de paquets : pnpm 11.
+
+## Répartition Pieces / Alpine
+
+- Pieces : comportement, animation, scroll, tout ce qui est sur mesure.
+- Alpine : état réactif lié aux données Shopify (variantes produit, panier). Ne pas réécrire en Piece ce qui existe déjà en Alpine.
+
+## Tailwind v4
+
+- Pas de `tailwind.config.js`. Tokens, breakpoints, easings, z-index, custom media et variants dans `resources/css/tailwind-config.css` (`@theme`, `@custom-variant`, `@variant`).
+- Utiliser les tokens existants plutôt que des valeurs arbitraires : espacements `--spacing-*` (`tiny`, `small`, `unit`, `double`, `huge`, `outer-x-*`, `outer-y-*`), tailles `text-xxxs`/`text-xxs`/`text-xsm`/`text-sml`, z-index `z-(--z-index-ui)`, etc.
+- Utilitaires maison (`resources/css/utilities/utilities.css`) : `u-px-layout` (gouttières), `u-grid-layout` (grille 6 colonnes mobile / 24 desktop, `--half`, `--pdp`), `u-py-module` / `u-pt-module` / `u-pb-module` (espacement vertical des sections), `u-mobile` / `u-desktop`, `u-center`, `dom` (custom element en block)...
+- Variants maison : `from-lg:` / `to-lg:` (et les autres breakpoints), `below-lg:`, `inview:`, `cart-opened:`, `ui-ready:`, `mainnav-opened:`, `backend-preview:` (éditeur de thème), `local-env:`.
+- Pas de PostCSS : commentaires `/* */` uniquement, pas de `//` ni de variables `$`.
+
+## Scroll et animations
+
+- `<c-scroll>` (Lenis, `Scroll.js`) ou version native (`ScrollLite.js`), base commune `ScrollBase.js`.
+- `data-scroll-item` ajoute `is-inview` (variant `inview:`). Autres attributs : `data-scroll-repeat`, `data-scroll-start` / `data-scroll-end`, `data-scroll-target`, `data-scroll-progress-css` (`--progress` de 0 à 1), `data-scroll-call`, `data-scroll-progress-call`, `data-scroll-parallax-from` / `-to`.
+- Effets d'apparition dans `resources/css/common/animations.css` : `fx-reveal-fade`, `fx-reveal-y`, `fx-reveal-mask`, `fx-reveal-scale-x`, `fx-reveal-scale-y`, `fx-reveal-slider`, avec délais `-delay-N`. La section `rich-text` sert d'exemple.
+
+## Liquid
+
+- Attributs HTML en quotes simples (prettier-plugin-liquid, `singleQuote`).
+- Textes du schema et du front via les locales (`t:sections....` dans les schemas, `{{ 'cle' | t }}` dans le markup).
+- Blocks de section : `{%- for block in section.blocks -%}` + `{%- case block.type -%}`, toujours `{{ block.shopify_attributes }}` sur le wrapper du block.
+- Images : `{% render 'render-image', media: ..., klassPicture: ..., klassImg: ... %}` (gère aussi les vidéos via `render-video`).
+- Le minimum de logique dans le markup : préparer les variables dans un `{%- liquid -%}` en haut de fichier.
+
+Pour le javascript, j'utilise piecesjs (v0.5.7), voici la documentation :
 
 # Piecesjs
 
-## Introduction
+### Introduction
 
 piecesjs is a lightweight JavaScript framework built upon native web components, offering a suite of tools and utilities tailored for creative websites.
 
@@ -18,11 +61,11 @@ At its core, a “Piece” is a modular component that can live anywhere on your
 
 Piecesjs dynamically imports only the necessary JavaScript and CSS for each page, optimizing performance while maintaining flexibility. Unlike larger frameworks, it allows you to build exactly what you need, free from the overhead of unnecessary code or restrictive architectures.
 
-Designed for creative websites that rely heavily on JavaScript logic—handling multiple steps, states, and events—piecesjs offers a streamlined and scalable approach for developers looking to create highly interactive experiences.
+Designed for creative websites that rely heavily on JavaScript logic—handling multiple steps, states, and events. Piecesjs offers a streamlined and scalable approach for developers looking to create highly interactive experiences.
 
 Compiled with [vitejs](https://vitejs.dev/).
 
-## Main features
+### Main features
 
 - Dynamic JS & CSS Import: Automatically loads only the necessary JavaScript and CSS for each page, improving performance.
 - Scoped Event Management: Easily manage events within a specific component’s scope using `this.on()` and `this.off()` methods.
@@ -31,46 +74,51 @@ Compiled with [vitejs](https://vitejs.dev/).
 - Efficient Global CSS Management: Streamlined handling of global CSS imports to keep your styles organized.
 - PiecesManager: Provides centralized access to all active pieces, simplifying component management.
 
-## Nav
-
-- [Introduction](#introduction)
-- [Main features](#main-features)
-- [Installation](#installation)
-- [Create your first Piece](#create-your-first-piece)
-- [Methods, props and attributes](#memo)
-- [Support](#support)
-
-## Installation
+### Installation
 
 ```
-npm i piecesjs --save
+pnpm add piecesjs
 ```
 
-## Create your first Piece
+### TypeScript Support
 
-### With dynamic attributes (reactive)
+TypeScript definitions are included, so you get autocomplete and type checking out of the box.
+
+```typescript
+import { Piece } from 'piecesjs';
+
+class MyComponent extends Piece {
+  mount(): void {
+    const button = this.$<HTMLButtonElement>('button');
+  }
+}
+```
+
+### Create your first Piece
+
+#### With dynamic attributes (reactive)
 
 ```html
 <c-counter class="c-counter" value="0"></c-counter>
 ```
 
 ```js
-import { Piece } from "piecesjs";
+import { Piece } from 'piecesjs';
 
 export class Counter extends Piece {
   constructor() {
-    super("Counter", {
-      stylesheets: [() => import("/assets/css/components/counter.css")],
+    super('Counter', {
+      stylesheets: [() => import('/resources/css/components/counter.css')],
     });
   }
 
   mount() {
-    this.$button = this.$("button")[0];
-    this.on("click", this.$button, this.click);
+    this.$button = this.$('button');
+    this.on('click', this.$button, this.click);
   }
 
   unmount() {
-    this.off("click", this.$button[0], this.click);
+    this.off('click', this.$button, this.click);
   }
 
   render() {
@@ -86,24 +134,24 @@ export class Counter extends Piece {
   }
 
   set value(value) {
-    return this.setAttribute("value", value);
+    return this.setAttribute('value', value);
   }
 
   get value() {
-    return this.getAttribute("value");
+    return this.getAttribute('value');
   }
 
   // Important to automatically call the update function if attribute is changing
   static get observedAttributes() {
-    return ["value"];
+    return ['value'];
   }
 }
 
 // Register the custom element
-customElements.define("c-counter", Counter);
+customElements.define('c-counter', Counter);
 ```
 
-### With static content
+#### With static content
 
 ```html
 <c-header class="c-header">
@@ -112,26 +160,48 @@ customElements.define("c-counter", Counter);
 ```
 
 ```js
-import { Piece } from "piecesjs";
+import { Piece } from 'piecesjs';
 
 class Header extends Piece {
   constructor() {
     // Set the name of your component and stylesheets directly with the super();
-    super("Header", {
-      stylesheets: [() => import("/assets/css/components/header.css")],
+    super('Header', {
+      stylesheets: [() => import('/resources/css/components/header.css')],
     });
   }
 }
 // Register the custom element
-customElements.define("c-header", Header);
+customElements.define('c-header', Header);
 ```
 
-### Register and load dynamically your component
+`piece.stylesReady` is a promise that resolves once these stylesheets are loaded. Use it to wait for styles before measuring layout:
 
 ```js
-import { load } from "piecesjs";
+await load('c-header', () => import('/resources/js/components/Header.js'));
+await Promise.all(
+  Array.from(document.querySelectorAll('c-header'), (el) => el.stylesReady),
+);
+```
 
-load("c-button", () => import("/assets/js/components/Button.js"));
+#### Register and load dynamically your component
+
+```js
+import { load } from 'piecesjs';
+
+load('c-button', () => import('/resources/js/components/Button.js'));
+```
+
+The load function can take a context (HTMLElement) as its third parameter. It's really usefull for page transitions or if you add dynamically some pieces in your DOM.
+This will re-run a “check” of the pieces present in the "context", and mount them if there are any new ones.
+
+```js
+import { load } from 'piecesjs';
+
+load(
+  'c-button',
+  () => import('/resources/js/components/Button.js'),
+  document.querySelector('#wrapper'),
+);
 ```
 
 ---
@@ -146,19 +216,17 @@ update(){} //Called if an attribute is changed. Then it will call unmount(), pre
 unmount(update = false){} // update = true if this unmount() is called after an attribute is changed.
 ```
 
-### Query with this.$
+### Queries
+
+#### this.$
 
 Shortcut to query an element. `this.dom(query, context)` is also available.
 
 ```js
-/**
- * @param { String } query
- * @param { HTMLElement } context (this by default)
- */
-this.$("button"); // return a NodeList
+let myButton = this.$('button'); // returns a NodeList if there is more than one element otherwise returns the HTMLElement
 ```
 
-### Get an element with a slug
+#### Get an element with a slug
 
 ```html
 <ul>
@@ -169,25 +237,30 @@ this.$("button"); // return a NodeList
 
 ```js
 /**
- * @param { String } slug
- * @param { HTMLElement } context (this by default)
+ * Query by data-dom attribute
+ * @param {string} query - Value of data-dom attribute
+ * @param {Element} [context=this] - Context element, this by default
  */
-this.domAttr("listItem"); // return a NodeList
+let listItems = this.domAttr('listItem'); // returns a NodeList if there is more than one element otherwise returns the HTMLElement
 ```
 
-## Events
+#### NodeList anyway
+
+If you prefer get a `NodeList` even if there is just one element (useful for dynamic content), you can call these functions : `this.$All()`, `this.domAll()` and `this.domAttrAll()` with the same parameters as above
+
+### Events
 
 Register an event listener with `this.on()`
 
 ```js
-/*
-* Tips: call event listeners in the mount(), register event for an HTMLElement or an array of HTMLElements
-* The called func is automatically binded to this
-* @param { String } type
-* @param { HTMLElement or HTMLElement[] } el
-* @param { function } func
-* @param { Object } params
-*/
+/**
+ * Register event listener - the function is automatically binded to this
+ * Tips: call event listeners in the mount()
+ * @param {string} type - Event type (e.g., 'click', 'mouseenter')
+ * @param {HTMLElement|HTMLElement[]} el - Target element(s), Document, or Window
+ * @param {Function} func - Event handler function
+ * @param {Object} [params] - Optional parameters
+ */
 mount() {
   this.on('click', this.$button, this.click, {hello: 'world'});
 
@@ -203,32 +276,105 @@ Unregister an event listener with `this.off()`
 
 ```js
 /**
- * Tips: remove event listeners in the unmount(), unegister event for an HTMLElement or an array of HTMLElements
- * @param { String } type
- * @param { HTMLElement } el
- * @param { function } func
+ * Remove event listener
+ * Tips: remove event listeners in the unmount()
+ * @param {string} type - Event type (e.g., 'click', 'mouseenter')
+ * @param {HTMLElement} el - Target element(s), Document, or Window
+ * @param {Function} func - Event handler function to remove
  */
 unmount() {
   this.off('click', this.$button, this.click);
 }
 ```
 
-## Communication between components
+#### HTML Event System
 
-### this.call()
+PiecesJS provides a declarative way to handle events directly in your HTML using `data-events-*` attributes.
+
+`data-events-*="functionName[,pieceName][,pieceId]"`
+
+##### Syntax
+
+```html
+<!-- 1 parameter: call method in current or parent Piece -->
+<button data-events-click="increment">Increment</button>
+
+<!-- 2 parameters: call method in all instances of a Piece type -->
+<button data-events-click="reset,Counter">Reset All Counters</button>
+
+<!-- 3 parameters: call method in specific Piece instance -->
+<button data-events-click="increment,Counter,mainCounter">
+  Increment Main Counter
+</button>
+```
+
+##### Example
+
+```html
+<c-header>
+  <button data-events-click="toggleMenu">Toggle Menu</button>
+  <button data-events-click="reset,Counter">Reset All</button>
+  <button data-events-click="increment,Counter,mainCounter">+1 Main</button>
+</c-header>
+
+<c-counter cid="mainCounter" value="0"></c-counter>
+```
+
+```js
+class Header extends Piece {
+  toggleMenu() {
+    console.log('Menu toggled!');
+  }
+}
+
+class Counter extends Piece {
+  reset() {
+    this.value = 0;
+  }
+  increment(event) {
+    // Get the event, useful to get event.currentTarget
+    console.log(event);
+
+    this.value = parseInt(this.value) + 1;
+  }
+
+  get value() {
+    return this.getAttribute('value');
+  }
+  set value(val) {
+    this.setAttribute('value', val);
+  }
+
+  static get observedAttributes() {
+    return ['value'];
+  }
+}
+```
+
+You can use any DOM event: `data-events-click`, `data-events-mouseenter`, `data-events-input`, etc.
+
+##### How it works
+
+PiecesJS automatically scans for `data-events-*` attributes during mount, binds the appropriate event listeners, and cleans them up on unmount.
+
+### Communication between components
+
+#### this.call()
 
 Call a function of any components, from any components
 
 ```js
 /**
  * Call function of a component, from a component
- * @param { String } func
- * @param { Object } args
- * @param { String } pieceName
- * @param { String } pieceId
+ * @param {string} func - Method name to call
+ * @param {Object} args - Arguments to pass
+ * @param {string} pieceName - Name of the target component(s)
+ * @param {string} [pieceId] - Specific component ID (optional)
  */
-this.call("increment", {}, "Counter", "myCounterComponentId");
+this.call('increment', {}, 'Counter', 'myCounterComponentId');
 ```
+
+It returns the value returned by the called function. Usefull if you want to return a Promise 👀
 
 If no `pieceId` are specified, all occurrences of the component will be called.
 A `pieceId` can be set directly with an attribute `cid`
@@ -237,18 +383,18 @@ A `pieceId` can be set directly with an attribute `cid`
 <c-button cid="myButtonUId"></c-button>
 ```
 
-### this.emit() and custom events
+#### this.emit() and custom events
 
 You can also emit a custom event with `this.emit()`
 
 ```js
 /**
  * Emit a custom event
- * @param { String } eventName
- * @param { HTMLElement } el, by default the event is emit on document
- * @param { Object } params
+ * @param {string} eventName - Name of the custom event
+ * @param {HTMLElement} [el=document] - Element to dispatch on, document by default
+ * @param {Object} [params] - Parameters to pass in event.detail
  */
-this.emit("buttonIsMounted", document, { value: "A Button is mounted!" });
+this.emit('buttonIsMounted', document, { value: 'A Button is mounted!' });
 ```
 
 Then, in a Piece you can use `this.on()`, like the default events.
@@ -268,14 +414,14 @@ unmount() {
 }
 ```
 
-## PiecesManager
+### PiecesManager
 
 PiecesManager manage all active components.
 Get access of all current components visible in the page:
 
 ```js
 // From anywhere
-import { piecesManager } from "piecesjs";
+import { piecesManager } from 'piecesjs';
 console.log(piecesManager.currentPieces);
 
 // In a Piece
@@ -321,23 +467,24 @@ class Header extends Piece {
 
 ---
 
-## Memo
+### Memo
 
-### HTML attributes
+#### HTML attributes
 
-| Attribute | Description                                                                                 |
-| --------- | ------------------------------------------------------------------------------------------- |
-| `log`     | You can log the lifecycle of your Piece with an attribute `<c-header log>Hello</c-header>`  |
-| `cid`     | To override the generated id of your Piece. Usefull to communicate with this specific Piece |
+| Attribute       | Description                                                                                                                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `log`           | You can log the lifecycle of your Piece with an attribute `<c-header log>Hello</c-header>`                                                                                                             |
+| `cid`           | To override the generated id of your Piece. Usefull to communicate with this specific Piece                                                                                                            |
+| `data-events-*` | Declarative way to handle events directly in your HTML. Format: `data-events-*="functionName[,pieceName][,pieceId]"`. Example: `<button data-events-click="increment,Counter,mainCounter">+1</button>` |
 
-### Piece instance props
+#### Piece instance props
 
 | Attribute   | Description                                                      |
 | ----------- | ---------------------------------------------------------------- |
 | `this.cid`  | A generated id of the Piece, override if you set a cid attribute |
 | `this.name` | Return the name of the Piece                                     |
 
-### Piece instance methods
+#### Piece instance methods
 
 | Method         | Description                                                                   | Arguments                                                                       |
 | -------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
@@ -345,7 +492,7 @@ class Header extends Piece {
 | `this.dom`     | `this.$` clone                                                                | <ul><li>`query`: String</li><li> `context`: HTMLElement, `this` by default</li> |
 | `this.domAttr` | Query with a slug. If you have an element like `<li> data-dom="mySlug"></li>` | `slug`: String                                                                  |
 
-### Piece events methods
+#### Piece events methods
 
 | Method      | Description                                                                 | Arguments                                                                                                                                                           |
 | ----------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -354,26 +501,31 @@ class Header extends Piece {
 | `this.call` | Call of a function of a Piece or a specific Piece based on its `cid`        | <ul><li>`func`: String, the function name</li><li>`args`: Object</li><li>`pieceName`: String</li><li>`pieceId`: String (optional), linked to a `cid` attribute</li> |
 | `this.emit` | Emit a custom event. Can be listened by the other Pieces with a `this.on()` | <ul><li>`eventName`: String</li><li>`el`: HTMLElement, document by default (optional)</li><li>`params`: Object (optional)</li>                                      |
 
+## Méthodes ajoutées dans ce starter
+
+- `this.captureTree()` (piecesjs) : retourne tous les `[data-dom]` de la Piece groupés par slug, en tableaux. Convention : `this.DOM = { view: this, ...this.captureTree() };` dans `mount()`, puis `this.DOM.mySlug[0]`.
+- `afterMount()` : appelé automatiquement (`utils/afterMountHelper.js`) une fois toutes les Pieces montées, au premier chargement et après chaque visite Swup.
+
 ---
 
 # Details
 
-Donc quand je vais te demander de me faire une Piece, je vais te donner son nom, et je veux que tu me créer un fichier css et un fichier js dans le dossier `app/public/wp-content/themes/blueprint/assets/css/components` et `app/public/wp-content/themes/blueprint/assets/js/components`. Son nom de fichier sera le nom de la piece, en CamelCase pour le JS, en lowercase pour le css.
-Par exemple, si je te demande une piece qui s'appelle "My Piece", tu me créera un fichier `my-piece.css` et un fichier `myPiece.js`.
+Quand je te demande une Piece, je te donne son nom. Tu crées un fichier JS dans `resources/js/components/`, nommé en PascalCase (ex : "My Piece" → `MyPiece.js`).
+Si la Piece a besoin de styles, tu crées `resources/css/components/my-piece.css` (lowercase, tirets) et tu l'importes dans `resources/css/main.css` (section COMPONENTS). Pas d'option `stylesheets` dans le `super()` : le build produit un seul bundle CSS.
 
-Dans le define du custom element, je veux que tu ajoutes c- devant le nom de la piece. Par exemple, si je te demande une piece qui s'appelle "My Piece", tu me créera un fichier `my-piece.css` et un fichier `myPiece.js`. Dans le define du custom element, tu me mettras c-my-piece.
+Dans le define du custom element, préfixe `c-` : "My Piece" → `customElements.define('c-my-piece', MyPiece);`.
 
-Dans le JS, tu créeras une class qui hérite de `Piece`, et tu implémenteras les méthodes de base, comme `mount` et `unmount`, ne mets pas de commentaires stp juste les noms des méthodes.
+Dans le JS, tu crées une classe qui hérite de `Piece` (`import { Piece } from 'piecesjs';`), sur le modèle de `resources/js/components/BasePiece.js` : `constructor` avec `super('MyPiece', {})`, puis `mount` (avec `this.DOM = { view: this, ...this.captureTree() };`) et `unmount`. Pas de commentaires, juste les méthodes.
 
-Ensuite dans components.js, tu peux importer la piece en suivant la structure du fichier.
+Ensuite, dans `resources/js/components.js`, tu ajoutes la Piece à `updateComponents` en suivant la structure du fichier :
+`loadPiece('c-my-piece', () => import('/resources/js/components/MyPiece.js'), context),`
 
-Dans le css, tu me créeras les styles de la piece en mettant la piece en block par defaut.
-En gardant l'exemple :
+Dans le css, uniquement la Piece en block par défaut :
 `.c-my-piece {
-  display: block
+  display: block;
 }`
-Je veux pas que tu ajoutes plus de css, juste le display block.
+Je ne veux pas plus de css, juste le display block.
 
-Pour les class CSS, je veux pas de double underscore quand c'est un élément enfant, un simple underscore stp.
+Pour les classes CSS, pas de double underscore pour un élément enfant, un simple underscore.
 
-Ensuite tu me donneras un exemple simple d'utilisation de la piece, avec le custom element dans du html, avec la class css associée.
+Ensuite tu me donnes un exemple simple d'utilisation en Liquid, avec le custom element et la classe css associée.

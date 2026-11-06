@@ -28,20 +28,7 @@ cd my-project
 pnpm install
 ```
 
-Create a `shopify.theme.toml` file (git-ignored):
-
-```toml
-[environments.development]
-store = "your-store"
-theme = "XXX"
-
-[environments.production]
-store = "your-store"
-theme = "XXX"
-ignore = ["templates/*", "config/*"]
-```
-
-Then replace the store (`--store=jcs-blueprint.myshopify.com`), the store password and the theme id (`--theme=188310552913`) in the `package.json` scripts with your own.
+Replace the store (`--store=jcs-blueprint.myshopify.com`), the store password and the theme id (`--theme=188310552913`) in the `package.json` scripts with your own.
 
 ## Development
 
