@@ -2,9 +2,7 @@ import { Piece } from 'piecesjs';
 
 export class LanguageSwitcher extends Piece {
   constructor() {
-    super('LanguageSwitcher', {
-      // stylesheets: [() => import('/assets/css/components/file.css')],
-    });
+    super('LanguageSwitcher', {});
   }
 
   mount() {

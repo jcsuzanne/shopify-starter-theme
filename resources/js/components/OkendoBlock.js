@@ -3,9 +3,7 @@ import gsap from 'gsap';
 
 export class OkendoBlock extends Piece {
   constructor() {
-    super('OkendoBlock', {
-      // stylesheets: [() => import('/assets/css/components/file.css')],
-    });
+    super('OkendoBlock', {});
   }
 
   mount() {

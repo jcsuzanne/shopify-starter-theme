@@ -4,9 +4,7 @@ import Channels from '../base/channels';
 
 export class UIview extends Piece {
   constructor() {
-    super('UIview', {
-      // stylesheets: [() => import('/assets/css/components/file.css')],
-    });
+    super('UIview', {});
   }
 
   mount() {

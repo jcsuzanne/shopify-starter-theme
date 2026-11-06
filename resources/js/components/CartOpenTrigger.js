@@ -3,9 +3,7 @@ import Channels from '../base/channels';
 
 export class CartOpenTrigger extends Piece {
   constructor() {
-    super('CartOpenTrigger', {
-      // stylesheets: [() => import('/assets/css/components/file.css')],
-    });
+    super('CartOpenTrigger', {});
   }
 
   mount() {

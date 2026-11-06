@@ -2,9 +2,7 @@ import { Piece } from 'piecesjs';
 
 export class BasePiece extends Piece {
   constructor() {
-    super('BasePiece', {
-      // stylesheets: [() => import('/assets/css/components/view.css')],
-    });
+    super('BasePiece', {});
   }
 
   mount() {
