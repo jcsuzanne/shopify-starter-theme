@@ -22,13 +22,67 @@ Vite, Tailwind CSS v4 and Pieces.js (native web components), with a local dev en
 
 ## Getting started
 
+Get a copy without the starter history, then run the setup script. Two ways to start:
+
+### Option 1 — Use this template (GitHub, recommended)
+
+This repository is a GitHub **template repository**: GitHub can create a new repository from it, with all the files of `main` but none of its history. Unlike a fork, the new repository is independent (it can be private, nothing links it back to the starter except a "generated from" mention under its name), and unlike a clone it starts with a single commit.
+
+From the GitHub UI:
+
+1. On the starter page, click **Use this template** → **Create a new repository** (top right, next to the Code button).
+2. Pick the owner (your account or the client's organization), the repository name, and **Private**.
+3. Leave **Include all branches** unchecked (only `main` is needed).
+4. Click **Create repository**, then clone it and run the setup:
+
 ```bash
-git clone https://github.com/jcsuzanne/shopify-starter-theme.git my-project
+git clone git@github.com:you/my-project.git
 cd my-project
-pnpm install
+./setup.sh create
 ```
 
-Replace the store (`--store=jcs-blueprint.myshopify.com`), the store password and the theme id (`--theme=188310552913`) in the `package.json` scripts with your own.
+Or the same in one command with the GitHub CLI:
+
+```bash
+gh repo create my-project --template jcsuzanne/shopify-starter-theme --private --clone
+cd my-project
+./setup.sh create
+```
+
+`setup.sh` keeps this repository and its origin, and offers to commit the setup changes. Push them with `git push`.
+
+> The template always copies the current `main`. To start from a specific starter version, use option 2.
+
+### Option 2 — From a release tag
+
+Any git host (GitLab, client repository…), pinned starter version. `degit` downloads the files of the tag without git history:
+
+```bash
+npx degit jcsuzanne/shopify-starter-theme#v1.6.0 my-project
+cd my-project
+./setup.sh create
+```
+
+### Setup script
+
+| Command             | Description                                                                                                                                                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `./setup.sh create` | New project: renames it in `package.json` (version `0.1.0`), points the scripts at your store, sets up git (drops the starter history if the copy was cloned), installs, optionally creates the theme on the store, then makes the initial commit |
+| `./setup.sh theme`  | Builds, pushes a new unpublished theme to the store and writes its id in the `package.json` scripts. Safe to re-run                                                                                                                              |
+| `./setup.sh join`   | Existing project: checks node, pnpm 11 and the Shopify CLI, then installs                                                                                                                                                                        |
+
+| Option        | Description                                       |
+| ------------- | ------------------------------------------------- |
+| `--yes`       | Accept every default instead of prompting         |
+| `--no-update` | Skip the `pnpm update` that follows the install   |
+
+Each prompt can be answered from the environment: `PROJECT_NAME`, `PACKAGE_NAME`, `STORE`, `STORE_PASSWORD`, `THEME_NAME`. Set `THEME_ID` to use a theme that already exists on the store instead of creating one.
+
+```bash
+PROJECT_NAME="My Project" STORE=my-store ./setup.sh create --yes
+```
+
+> With `--yes`, `create` also creates the theme on the store and makes the initial commit.
 
 ## Development
 
@@ -64,7 +118,7 @@ What reloads when:
 | `pnpm deploy`                    | Push sections, snippets, assets, layout and blocks to the theme                                 |
 | `pnpm push-*`                    | Push one part of the theme (`assets`, `snippets`, `config`, `locales`, `sections`, `templates`) |
 | `pnpm pull-*` / `pnpm sync-pull` | Pull config, locales, templates and header group from the theme                                 |
-| `pnpm setup-store`               | First push of the theme to the store                                                            |
+| `pnpm setup-store`               | Push the theme as a new unpublished theme (`./setup.sh theme` also writes its id in the scripts) |
 | `pnpm logout`                    | Log out of the Shopify CLI                                                                      |
 
 ## Project structure

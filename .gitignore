@@ -19,3 +19,6 @@ assets/_manifest.json
 snippets/vite.liquid
 snippets/vite-tag.liquid
 .vscode
+
+# Claude Code local settings
+.claude/settings.local.json
