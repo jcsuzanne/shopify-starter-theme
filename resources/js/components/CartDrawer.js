@@ -3,7 +3,12 @@ import gsap from 'gsap';
 import { renderAmount } from '../shopify/Helpers';
 import Channels from '../base/channels';
 
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export default () => ({
+  isOpen: false,
+  lastFocused: null,
   items: [],
   itemsError: [],
   itemsCount: 0,
@@ -15,13 +20,47 @@ export default () => ({
     checkStock();
     window.addEventListener('option-changed', checkStock);
     document.addEventListener('swup:page:view', checkStock);
-    Channels.addListener('cart::render', () => {
-      this.getCart(false, () => {
-        if (this.patternBuy == 'direct') {
-          this.openCart();
-        }
-      });
+    // AddToCart opens the drawer itself (cart::open): here only refresh the content
+    Channels.addListener('cart::render', () => this.getCart());
+    Channels.addListener('cart::open', () => this.onOpen());
+    Channels.addListener('cart::close', () => this.onClose());
+  },
+  onOpen() {
+    if (this.isOpen) return;
+    this.isOpen = true;
+    this.lastFocused = document.activeElement;
+    // Wait for x-effect to drop `inert` before moving the focus
+    this.$nextTick(() => {
+      const [first] = this.getFocusables();
+      (first ?? this.$refs.drawer).focus({ preventScroll: true });
     });
+  },
+  onClose() {
+    if (!this.isOpen) return;
+    this.isOpen = false;
+    this.lastFocused?.focus?.({ preventScroll: true });
+    this.lastFocused = null;
+  },
+  getFocusables() {
+    return Array.from(this.$refs.drawer.querySelectorAll(FOCUSABLE)).filter(
+      (el) => el.getClientRects().length > 0,
+    );
+  },
+  trapFocus(e) {
+    const focusables = this.getFocusables();
+    if (!focusables.length) {
+      e.preventDefault();
+      return;
+    }
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   },
   addOneItem(item) {
     const data = {
@@ -29,7 +68,6 @@ export default () => ({
       quantity: item.quantity + 1,
     };
     this.updateItem(data, item);
-    this.getCart(true);
   },
   deleteOneItem(item) {
     const data = {
@@ -37,7 +75,6 @@ export default () => ({
       quantity: item.quantity - 1,
     };
     this.updateItem(data, item);
-    this.getCart(true);
   },
   closeCart() {
     Channels.emit('cart::close');
@@ -94,14 +131,14 @@ export default () => ({
         typeof item.total_discount != 'undefined' &&
         item.total_discount != 0
       ) {
-        text += '<strike>' + renderAmount(item.total_discount) + '</strike>';
+        text += '<s>' + renderAmount(item.total_discount) + '</s>';
       }
       return text;
     } else {
       let text = '';
       text = renderAmount(price);
       if (item.discounts.length && item.discounts[0].amount != 0) {
-        text += '<strike>' + renderAmount(item.original_price) + '</strike>';
+        text += '<s>' + renderAmount(item.original_price) + '</s>';
       }
 
       return text;
@@ -113,7 +150,6 @@ export default () => ({
       quantity: 0,
     };
     this.updateItem(data, item);
-    this.getCart(true);
   },
   resetItemError(item) {
     if (this.itemsError.find((error) => error.id == item.key)) {
@@ -149,8 +185,11 @@ export default () => ({
             message: data.message,
           });
         } else {
+          // change.js returns the whole cart: no need to fetch cart.js again
           this.resetItemError(item);
           this.items = data.items;
+          this.itemsCount = data.item_count;
+          this.total = data.total_price;
         }
       })
       .catch((error) => {

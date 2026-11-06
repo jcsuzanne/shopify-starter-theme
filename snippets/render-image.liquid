@@ -1,4 +1,28 @@
-{%- assign loading = loading | default: 'eager' -%}
+{%- comment -%}
+  Responsive image (or video via render-video).
+
+  Accepts:
+  - media: {Object} image or video (required)
+  - mediaMobile: {Object} dedicated image below 1024px (optional). A single <picture> with a desktop
+    <source media>: the browser downloads only one of the two images.
+  - klassPicture / klassImg: {String} classes of <picture> / <img>
+  - sizes: {String} sizes attribute, '100vw' by default. Set it for images narrower than the viewport.
+  - sizesMobile: {String} sizes of mediaMobile, '100vw' by default
+  - loading: {String} 'lazy' by default, pass 'eager' for images above the fold
+  - fetchpriority: {String} 'high' for the LCP image
+  - setWidth: {Number} max width rendered for media
+  - setHeight: {Number} max height rendered for media (converted to a width with the aspect ratio)
+  - dataDom: {String} data-dom of <picture>
+  - videoDetector, poster: passed to render-video
+
+  Usage:
+  {% render 'render-image', media: section.settings.image, mediaMobile: section.settings.image_mobile, sizes: '(min-width: 1024px) 50vw, 100vw' %}
+{%- endcomment -%}
+{%- liquid
+  assign loading = loading | default: 'lazy'
+  assign sizes = sizes | default: '100vw'
+  assign sizes_mobile = sizesMobile | default: '100vw'
+-%}
 {% if media.media_type == 'video' %}
   {% render 'render-video',
     media: media,
@@ -9,51 +33,90 @@
     fetchpriority: fetchpriority,
     loading: loading
   %}
-{% else %}
+{% elsif media != blank %}
+  {%- liquid
+    # Max width of media: setHeight → width through the aspect ratio, never above the source image
+    if setHeight != blank
+      assign max_width = setHeight | times: media.aspect_ratio | round
+    elsif setWidth != blank
+      assign max_width = setWidth | plus: 0
+    else
+      assign max_width = 3000
+    endif
+    if media.width < max_width
+      assign max_width = media.width
+    endif
+
+    # Widths below max_width + max_width itself: every srcset descriptor matches the real file width
+    assign candidate_widths = '400,768,1040,1368,1710,1920,2560,3000' | split: ','
+    assign widths = ''
+    for candidate in candidate_widths
+      assign candidate_width = candidate | plus: 0
+      if candidate_width < max_width
+        assign widths = widths | append: candidate_width | append: ','
+      endif
+    endfor
+    assign widths = widths | append: max_width
+    assign widths_list = widths | split: ','
+
+    if mediaMobile != blank
+      assign max_width_mobile = 1500
+      if mediaMobile.width < max_width_mobile
+        assign max_width_mobile = mediaMobile.width
+      endif
+      assign candidate_widths_mobile = '400,600,800,1000,1200' | split: ','
+      assign widths_mobile = ''
+      for candidate in candidate_widths_mobile
+        assign candidate_width = candidate | plus: 0
+        if candidate_width < max_width_mobile
+          assign widths_mobile = widths_mobile | append: candidate_width | append: ','
+        endif
+      endfor
+      assign widths_mobile = widths_mobile | append: max_width_mobile
+    endif
+  -%}
   <picture
     {% if dataDom != blank %}
       data-dom='{{ dataDom }}'
     {% endif %}
     class='{{ klassPicture }}'>
-    {% if setHeight != blank %}
+    {%- if mediaMobile != blank -%}
+      <source
+        media='(min-width: 1024px)'
+        srcset='
+          {%- for width in widths_list -%}
+            {%- assign width_int = width | plus: 0 -%}
+            {{ media | image_url: width: width_int }} {{ width_int }}w{% unless forloop.last %}, {% endunless %}
+          {%- endfor -%}
+        '
+        sizes='{{ sizes }}'
+        width='{{ media.width }}'
+        height='{{ media.height }}'>
+      {{
+        mediaMobile
+        | image_url: width: max_width_mobile
+        | image_tag:
+          widths: widths_mobile,
+          sizes: sizes_mobile,
+          class: klassImg,
+          loading: loading,
+          fetchpriority: fetchpriority,
+          width: mediaMobile.width,
+          height: mediaMobile.height
+      }}
+    {%- else -%}
       {{
         media
-        | image_url: height: setHeight
+        | image_url: width: max_width
         | image_tag:
-          widths: '1000, 2000',
-          sizes: '100vw',
+          widths: widths,
+          sizes: sizes,
           class: klassImg,
           loading: loading,
           fetchpriority: fetchpriority,
           width: media.width,
           height: media.height
       }}
-    {% elsif setWidth != blank %}
-      {{
-        media
-        | image_url: width: setWidth
-        | image_tag:
-          widths: '1000, 2000',
-          sizes: '100vw',
-          class: klassImg,
-          loading: loading,
-          fetchpriority: fetchpriority,
-          width: media.width,
-          height: media.height
-      }}
-    {% else %}
-      {{
-        media
-        | image_url: width: 3000
-        | image_tag:
-          widths: '400, 768, 1040, 1368, 1710, 1920, 2560, 3000',
-          sizes: '100vw',
-          class: klassImg,
-          loading: loading,
-          fetchpriority: fetchpriority,
-          width: media.width,
-          height: media.height
-      }}
-    {% endif %}
+    {%- endif -%}
   </picture>
 {% endif %}

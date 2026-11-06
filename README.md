@@ -129,7 +129,8 @@ resources/
     app.js            Entry point: loads <c-app>, then the other pieces
     components.js     Registry of the pieces loaded on the page (and after each swup visit)
     components/       Pieces (web components)
-    alpine/           Alpine data (DatasApp, ProductDatas, CartDrawer)
+    alpine/           Alpine data (DatasApp) + start.js
+    datas/            Alpine data ProductDatas
     shopify/          Cart API helpers
     utils/            Device, sizes, helpers…
   css/

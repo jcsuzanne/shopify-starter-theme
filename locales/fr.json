@@ -1,6 +1,7 @@
 {
   "general": {
     "password_page": {
+      "enter_site": "Accéder au site",
       "login_form_heading": "Accéder à la boutique à l'aide d'un mot de passe :",
       "login_password_button": "Saisir avec un mot de passe",
       "login_form_password_label": "Mot de passe",
@@ -284,6 +285,10 @@
       }
     },
     "cart": {
+      "remove": "Supprimer",
+      "preorder": "Précommande",
+      "variant": "Variante",
+      "free": "Offert",
       "title": "Votre panier",
       "caption": "Articles du panier",
       "remove_title": "Supprimer {{ title }}",

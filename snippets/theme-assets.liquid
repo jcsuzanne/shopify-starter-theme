@@ -11,6 +11,8 @@
     freeShippingAmount:
       '{{ shop.metafields.shopping_features.free_shipping_after_amount }}',
   };
-  var translations = {};
+  var translations = {
+    free_product_price: {{ 'sections.cart.free' | t | json }},
+  };
   // ]]>
 </script>

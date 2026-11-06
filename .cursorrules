@@ -12,7 +12,7 @@ C'est un thème Shopify (Liquid) construit avec Vite 8 (vite-plugin-shopify), Ta
   - `resources/js/app.js` : point d'entrée. Charge `<c-app>`, puis les Pieces de `components.js`.
   - `resources/js/components.js` : registre des Pieces (`loadPiece(tag, importer, context)`), rejoué sur le DOM après chaque visite Swup.
   - `resources/js/components/` : les Pieces. `BasePiece.js` sert de modèle.
-  - `resources/js/alpine/` : data Alpine (`DatasApp`, `ProductDatas`, `CartDrawer`), enregistrées dans `alpine/start.js`.
+  - Data Alpine, toutes enregistrées dans `alpine/start.js` : `DatasApp` (`alpine/xDatasApp.js`), `ProductDatas` (`datas/ProductDatas.js`, lit les variantes dans `<script type="application/json" data-dom="product-variants">` rendu par `snippets/pdp-json.liquid`), `CartDrawer` (`components/CartDrawer.js`).
   - `resources/js/shopify/` : helpers API panier (`CartEvents.js`, `Helpers.js`).
   - `resources/js/base/channels.js` : bus d'événements global (`Channels.emit('cart::open')`, `Channels.addListener(...)`).
   - `resources/js/utils/` : device, sizes, helpers, `onRAF`, `afterMountHelper`.
@@ -44,7 +44,7 @@ C'est un thème Shopify (Liquid) construit avec Vite 8 (vite-plugin-shopify), Ta
 - Attributs HTML en quotes simples (prettier-plugin-liquid, `singleQuote`).
 - Textes du schema et du front via les locales (`t:sections....` dans les schemas, `{{ 'cle' | t }}` dans le markup).
 - Blocks de section : `{%- for block in section.blocks -%}` + `{%- case block.type -%}`, toujours `{{ block.shopify_attributes }}` sur le wrapper du block.
-- Images : `{% render 'render-image', media: ..., klassPicture: ..., klassImg: ... %}` (gère aussi les vidéos via `render-video`).
+- Images : `{% render 'render-image', media: ..., klassPicture: ..., klassImg: ... %}` (gère aussi les vidéos via `render-video`). Options : `mediaMobile` (image < 1024px, un seul `<picture>`), `sizes` / `sizesMobile` (défaut `100vw`, à préciser si l'image est plus étroite que l'écran), `loading` (défaut `lazy`, `eager` + `fetchpriority: 'high'` au-dessus de la ligne de flottaison), `setWidth` / `setHeight` (largeur / hauteur max).
 - Le minimum de logique dans le markup : préparer les variables dans un `{%- liquid -%}` en haut de fichier.
 
 Pour le javascript, j'utilise piecesjs (v0.5.7), voici la documentation :

@@ -1,27 +1,57 @@
-<div data-nosnippet>
-  <script>
-    var productVariants = [];
-     {% for variant in product.variants -%}
-      var options = [];
-      {% for option in variant.options -%}
-        options.push({ 'key':'{{ product.options[forloop.index0] | handleize }}','option_name':'{{ product.options[forloop.index0] }}','name':'{{ option.name | replace: '"', '&quot;' | replace: "'", "&#x27;" }}','id':'{{ option.id }}','selected':'{{ option.selected }}'});
-      {%- endfor %}
-
-      var gallery = ['<picture class="block h-full w-full">{% if variant.image != blank -%}{{ variant.image | image_url: height: 2000 | image_tag:
-          widths: '1000, 2000',
-          loading: 'lazy',
-          fetchpriority: 'high',
-          sizes: '100vw', class:'w-full h-full object-cover' }}{% else %}{{ product.featured_image | image_url: height: 2000 | image_tag:
-          widths: '1000, 2000',
-          fetchpriority: 'high',
-          loading: 'lazy',
-          sizes: '100vw', class:'w-full h-full object-cover' }}{% endif %}</picture>',{% if variant.metafields.main.gallery != blank -%}{% for visual_extra in variant.metafields.main.gallery.value -%}'<picture class="block h-full w-full">{{ visual_extra | image_url: height: 2000 | image_tag:
-          widths: '1000, 2000',
-          loading: 'lazy',
-          fetchpriority: 'high',
-          sizes: '100vw', class:'w-full h-full object-cover' }}</picture>'{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}{% endif %}];
-
-      productVariants.push({'key_variant':'{% for option in variant.options -%}{{- option.id -}}{%- unless forloop.last -%}_{%- endunless -%}{%- endfor -%}','title':'{{ variant.title | replace: '"', '&quot;' | replace: "'", "&#x27;" }}','id':'{{ variant.id }}','available':{{ variant.available }},'price':'{{ variant.price | money }}','compare_at_price':'{{ variant.compare_at_price | money }}', 'inventory_policy':'{{ variant.inventory_policy }}', 'inventory_quantity':'{{ variant.inventory_quantity }}', 'inventory_management':'{{ variant.inventory_management }}', 'image':'{% if variant.image != blank -%}{{ variant.image | image_url: width: 2000 }}{% else %}{{ product.featured_image | image_url: width: 2000 }}{% endif %}','options':options,'gallery':gallery});
-    {%- endfor %}
-  </script>
-</div>
+{%- comment -%}
+  Variants payload read by ProductDatas (resources/js/datas/ProductDatas.js) in init().
+  Every value goes through `| json`: no manual escaping.
+{%- endcomment -%}
+<script
+  type='application/json'
+  data-dom='product-variants'>
+  [
+    {%- for variant in product.variants -%}
+      {%- liquid
+        assign variant_image = variant.image | default: product.featured_image
+      -%}
+      {%- capture key_variant -%}
+        {%- for option in variant.options -%}{{- option.id -}}{%- unless forloop.last -%}_{%- endunless -%}{%- endfor -%}
+      {%- endcapture -%}
+      {%- capture picture_main -%}
+        <picture class="block h-full w-full">{{ variant_image | image_url: height: 2000 | image_tag: widths: '1000, 2000', loading: 'lazy', fetchpriority: 'high', sizes: '100vw', class: 'w-full h-full object-cover' }}</picture>
+      {%- endcapture -%}
+      {
+        "key_variant": {{ key_variant | json }},
+        "title": {{ variant.title | json }},
+        "id": {{ variant.id | json }},
+        "available": {{ variant.available | json }},
+        "price": {{ variant.price | money | json }},
+        "compare_at_price": {{ variant.compare_at_price | money | json }},
+        "inventory_policy": {{ variant.inventory_policy | json }},
+        "inventory_quantity": {{ variant.inventory_quantity | json }},
+        "inventory_management": {{ variant.inventory_management | default: '' | json }},
+        "image": {{ variant_image | image_url: width: 2000 | json }},
+        "options": [
+          {%- for option in variant.options -%}
+            {
+              "key": {{ product.options[forloop.index0] | handleize | json }},
+              "option_name": {{ product.options[forloop.index0] | json }},
+              "name": {{ option.name | json }},
+              "id": {{ option.id | json }},
+              "selected": {{ option.selected | json }}
+            }
+            {%- unless forloop.last -%},{%- endunless -%}
+          {%- endfor -%}
+        ],
+        "gallery": [
+          {{ picture_main | json }}
+          {%- if variant.metafields.main.gallery != blank -%}
+            {%- for visual_extra in variant.metafields.main.gallery.value -%}
+              {%- capture picture_extra -%}
+                <picture class="block h-full w-full">{{ visual_extra | image_url: height: 2000 | image_tag: widths: '1000, 2000', loading: 'lazy', fetchpriority: 'high', sizes: '100vw', class: 'w-full h-full object-cover' }}</picture>
+              {%- endcapture -%}
+              , {{ picture_extra | json }}
+            {%- endfor -%}
+          {%- endif -%}
+        ]
+      }
+      {%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+</script>

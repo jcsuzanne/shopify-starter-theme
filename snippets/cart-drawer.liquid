@@ -1,52 +1,68 @@
+{%- liquid
+  assign btn_klass = 'transition-opacity duration-300 hover:opacity-40'
+  assign label_increase = 'products.product.quantity.increase' | t: product: '%s'
+  assign label_decrease = 'products.product.quantity.decrease' | t: product: '%s'
+-%}
 <cart-drawer
-  class='lg:right-popin-p lg:inset-y-popin-p z-cart cart-opened:pointer-events-auto cart-opened:translate-x-0 ease-in-out-cubic pointer-events-none fixed inset-y-0 right-0 w-full max-w-[600px] translate-x-[calc(100%+30px)] bg-white duration-700 lg:w-1/2'
+  x-ref='drawer'
+  x-effect='$el.inert = !isOpen'
+  @keydown.escape.window='isOpen && closeCart()'
+  @keydown.tab='trapFocus($event)'
+  role='dialog'
+  aria-modal='true'
+  aria-label='{{ 'sections.cart.title' | t | escape }}'
+  tabindex='-1'
+  class='lg:right-tiny lg:inset-y-tiny z-cart cart-opened:pointer-events-auto cart-opened:translate-x-0 ease-cubic-in-out pointer-events-none fixed inset-y-0 right-0 w-full max-w-[600px] translate-x-[calc(100%+30px)] bg-white duration-700 lg:w-1/2'
   @cart-update.window='getCart(true)'>
-  {% # IF CART EMPTY %}
-  <template x-if='itemsCount == 0'>
-    <div class='absolute inset-0 z-20 bg-white'>
-      <div class='mx-auto flex h-20 w-full flex-row items-center justify-end border-b border-solid'>
-        <button @click='closeCart()'>Close</button>
-      </div>
-      <div class='flex h-[calc(100%-70px)] flex-col items-center justify-center lg:h-[calc(100%-80px)]'>
-        <h4>Empty</h4>
-        <button
-          @click='closeCart()'>
-          {{- 'general.continue_shopping' | t -}}
-        </button>
-      </div>
-    </div>
-  </template>
   {% # HEADER %}
   <header class='mx-auto flex h-20 w-full flex-row items-center justify-between border-b border-solid'>
-    <p>Cart</p>
-    <button @click='closeCart()'>close</button>
+    <p>{{ 'sections.cart.title' | t }}</p>
+    <button
+      type='button'
+      @click='closeCart()'>
+      {{ 'accessibility.close' | t }}
+    </button>
   </header>
+
+  {% # IF CART EMPTY %}
+  <div
+    x-show='itemsCount == 0'
+    class='flex h-[calc(100%-80px)] flex-col items-center justify-center'>
+    <h4>{{ 'sections.cart.empty' | t }}</h4>
+    <button
+      type='button'
+      @click='closeCart()'>
+      {{- 'general.continue_shopping' | t -}}
+    </button>
+  </div>
 
   {% # CONTENT %}
   <ul
+    x-show='itemsCount > 0'
     data-lenis-prevent
-    class='block h-[calc(100%-250px)] w-full overflow-y-auto overflow-x-hidden bg-white lg:relative'>
+    class='block h-[calc(100%-250px)] w-full overflow-x-hidden overflow-y-auto bg-white lg:relative'>
     <template
       x-for='(item, index) in items'
-      x-key='index'>
+      x-key='item.key'>
       <li class='flex flex-row border-b border-solid p-6'>
         {% # Col IMG %}
         <div class='relative w-[100px]'>
           <img
             :src='item.image'
+            :alt='item.product_title'
             class='relative left-0 h-full w-full object-cover'
             width='100'
             height='100'>
         </div>
         {% # Col Infos %}
         <div class='relative flex flex-auto flex-col justify-between pl-6 lg:pl-12'>
-          <infos class='util-dom relative'>
+          <c-infos class='dom'>
             <div class='flex flex-row items-end justify-between'>
               <h3
-                x-html='item.product_title'
-                class='font-suisse-bk text-sm/[18px] text-black lg:text-lg/6'></h3>
+                x-text='item.product_title'
+                class='text-sm/[18px] text-black lg:text-lg/6'></h3>
               <p
-                class='font-suisse-bk relative top-[1px] hidden text-base/6 text-black lg:block'
+                class='relative top-[1px] hidden text-base/6 text-black lg:block'
                 x-html='renderPrice(item.line_price,item)'></p>
               <div class='relative top-[3px] block opacity-50 lg:hidden'>
                 {% render 'cart-remove-button' %}
@@ -60,35 +76,38 @@
                   </c-shape>
                   <span
                     data-dom='message'
-                    x-html='itemsError.find(error => error.id == item.key)?.message'></span>
+                    x-text='itemsError.find(error => error.id == item.key)?.message'></span>
                 </c-content>
               </pdp-error>
             </div>
             {% # Check Preoder %}
-            <template x-if='item.properties.Type == "Preorder"'>
-              <p>Preorder</p>
+            <template x-if='item.properties?.Type == "Preorder"'>
+              <p>{{ 'sections.cart.preorder' | t }}</p>
             </template>
             {% # Variant Infos %}
-            <div>
+            <template x-if='item.variant_title'>
               <p>
-                Variant Title :
+                {{ 'sections.cart.variant' | t }} :
                 <span x-text='item.variant_title'></span>
               </p>
-            </div>
-          </infos>
+            </template>
+          </c-infos>
           {% # Modifier / Supprimer %}
           <div class='flex flex-row justify-between'>
             <div class='ml-auto flex flex-auto flex-row gap-x-2 lg:gap-x-4'>
-              {%- assign btn_klass = 'transitions-color duration-300 hover:opacity-40' -%}
               <button
+                type='button'
                 class='{{ btn_klass }}'
+                :aria-label='{{ label_decrease | json | escape }}.replace("%s", item.product_title)'
                 x-on:click='deleteOneItem(item);'>
                 {{ 'icon-minus.svg' | inline_asset_content }}
               </button>
               <p
                 x-text='item.quantity'></p>
               <button
+                type='button'
                 class='{{ btn_klass }}'
+                :aria-label='{{ label_increase | json | escape }}.replace("%s", item.product_title)'
                 x-on:click='addOneItem(item);'>
                 {{ 'icon-plus.svg' | inline_asset_content }}
               </button>
@@ -107,15 +126,21 @@
   </ul>
 
   {% # Checkout %}
-  <div class='absolute inset-x-0 bottom-10'>
+  <div
+    x-show='itemsCount > 0'
+    class='absolute inset-x-0 bottom-10'>
     <form
       action='{{ routes.cart_url }}'
       method='post'>
-      <button type='submit' name='checkout'>Buy</button>
+      <button
+        type='submit'
+        name='checkout'>
+        {{ 'sections.cart.checkout' | t }}
+      </button>
     </form>
   </div>
 </cart-drawer>
 {% # Overlay %}
-<overlay
+<c-overlay
   @click='closeCart()'
-  class='u-popin-overlay cart-opened:opacity-100 cart-opened:pointer-events-auto! z-modal!'></overlay>
+  class='u-popin-overlay cart-opened:opacity-100 cart-opened:pointer-events-auto! z-modal!'></c-overlay>

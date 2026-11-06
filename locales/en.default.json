@@ -1,6 +1,7 @@
 {
   "general": {
     "password_page": {
+      "enter_site": "Enter site",
       "login_form_heading": "Enter store using password:",
       "login_password_button": "Enter using password",
       "login_form_password_label": "Password",
@@ -282,6 +283,10 @@
       }
     },
     "cart": {
+      "remove": "Remove",
+      "preorder": "Preorder",
+      "variant": "Variant",
+      "free": "Free",
       "title": "Your cart",
       "caption": "Cart items",
       "remove_title": "Remove {{ title }}",
