@@ -58,7 +58,7 @@ cd my-project
 Any git host (GitLab, client repository…), pinned starter version. `degit` downloads the files of the tag without git history:
 
 ```bash
-npx degit jcsuzanne/shopify-starter-theme#v1.6.0 my-project
+npx degit jcsuzanne/shopify-starter-theme#v1.6.1 my-project
 cd my-project
 ./setup.sh create
 ```
