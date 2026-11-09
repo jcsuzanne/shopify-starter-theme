@@ -65,16 +65,16 @@ cd my-project
 
 ### Setup script
 
-| Command             | Description                                                                                                                                                                                                                                      |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Command             | Description                                                                                                                                                                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `./setup.sh create` | New project: renames it in `package.json` (version `0.1.0`), points the scripts at your store, sets up git (drops the starter history if the copy was cloned), installs, optionally creates the theme on the store, then makes the initial commit |
-| `./setup.sh theme`  | Builds, pushes a new unpublished theme to the store and writes its id in the `package.json` scripts. Safe to re-run                                                                                                                              |
-| `./setup.sh join`   | Existing project: checks node, pnpm 11 and the Shopify CLI, then installs                                                                                                                                                                        |
+| `./setup.sh theme`  | Builds, pushes a new unpublished theme to the store and writes its id in the `package.json` scripts. Safe to re-run                                                                                                                               |
+| `./setup.sh join`   | Existing project: checks node, pnpm 11 and the Shopify CLI, then installs                                                                                                                                                                         |
 
-| Option        | Description                                       |
-| ------------- | ------------------------------------------------- |
-| `--yes`       | Accept every default instead of prompting         |
-| `--no-update` | Skip the `pnpm update` that follows the install   |
+| Option        | Description                                     |
+| ------------- | ----------------------------------------------- |
+| `--yes`       | Accept every default instead of prompting       |
+| `--no-update` | Skip the `pnpm update` that follows the install |
 
 Each prompt can be answered from the environment: `PROJECT_NAME`, `PACKAGE_NAME`, `STORE`, `STORE_PASSWORD`, `THEME_NAME`. Set `THEME_ID` to use a theme that already exists on the store instead of creating one.
 
@@ -109,17 +109,17 @@ What reloads when:
 
 ## Scripts
 
-| Script                           | Description                                                                                     |
-| -------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `pnpm dev`                       | Vite + Shopify CLI dev servers                                                                  |
-| `pnpm start`                     | Vite dev server only                                                                            |
-| `pnpm shopify`                   | Shopify CLI dev server only                                                                     |
-| `pnpm build`                     | Clean old `assets/app.*` files and build                                                        |
-| `pnpm deploy`                    | Push sections, snippets, assets, layout and blocks to the theme                                 |
-| `pnpm push-*`                    | Push one part of the theme (`assets`, `snippets`, `config`, `locales`, `sections`, `templates`) |
-| `pnpm pull-*` / `pnpm sync-pull` | Pull config, locales, templates and header group from the theme                                 |
+| Script                           | Description                                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `pnpm dev`                       | Vite + Shopify CLI dev servers                                                                   |
+| `pnpm start`                     | Vite dev server only                                                                             |
+| `pnpm shopify`                   | Shopify CLI dev server only                                                                      |
+| `pnpm build`                     | Clean old `assets/app.*` files and build                                                         |
+| `pnpm deploy`                    | Push sections, snippets, assets, layout and blocks to the theme                                  |
+| `pnpm push-*`                    | Push one part of the theme (`assets`, `snippets`, `config`, `locales`, `sections`, `templates`)  |
+| `pnpm pull-*` / `pnpm sync-pull` | Pull config, locales, templates and header group from the theme                                  |
 | `pnpm setup-store`               | Push the theme as a new unpublished theme (`./setup.sh theme` also writes its id in the scripts) |
-| `pnpm logout`                    | Log out of the Shopify CLI                                                                      |
+| `pnpm logout`                    | Log out of the Shopify CLI                                                                       |
 
 ## Project structure
 
@@ -186,6 +186,22 @@ Swup and its plugins are installed but disabled. To enable them, uncomment the `
 - Theme tokens, breakpoints, easings and z-indexes live in `resources/css/tailwind-config.css`.
 - Custom variants: `from-lg:` / `to-lg:` (and the other breakpoints), `inview:`, `cart-opened:`, `ui-ready:`, `backend-preview:` (theme editor)…
 - No PostCSS: use `/* */` comments and CSS custom properties. `//` comments and `$vars` break the Tailwind parser.
+
+## Design foundations from Figma
+
+The starter tokens (`tiny`, `unit`, `outer-x-*`, `text-xxs`…) are placeholders: each project generates its own fonts, colors, sizes, spacing and text utilities from its Figma file with a Claude Code command. Figma is only read, never modified.
+
+1. Fill `.docs/figma.md`: file key, reference page, and the screens and modules to measure. The token convention (word tiers `tiny` → `monument` with `-minus` / `-plus` variants, mobile-first) is documented there.
+2. Optional: generate a snapshot frame in Figma with the « Design tokens snapshot » plugin (prompt in `.docs/figma-plugin-prompt.md`).
+3. Run the command in Claude Code:
+
+| Command                                       | Description                                                                                     |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `/forge-design-foundations check`             | Compare Figma with the last validated snapshot (`.docs/figma-tokens.json`) and report, no edits |
+| `/forge-design-foundations update`            | Same report, then once validated rewrite the tokens, `typography.css` and the snapshot          |
+| `/forge-design-foundations check <figma url>` | Read a snapshot frame made by the plugin instead of reading the file directly                   |
+
+The first `update` replaces the starter tokens, migrates their usages and lists every change in its report.
 
 ## Deployment
 
