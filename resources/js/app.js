@@ -2,8 +2,9 @@ import { loadPiece, updateComponents } from './components.js';
 
 import './alpine/start.js';
 
-// Import CSS to bundle it
-import '../css/main.css';
+// Build: CSS bundled with the entry (render-blocking <link> from vite-tag).
+// Dev: linked by vite-tag ('/resources/css/main.css'), not injected by JS, so no unstyled flash.
+if (!import.meta.env.DEV) import('../css/main.css');
 
 loadPiece('c-app', () => import('/resources/js/components/App.js'))
   // Container Pieces read window.isMobile, set by initDevice() in App's mount
