@@ -13,7 +13,7 @@
   - setWidth: {Number} max width rendered for media
   - setHeight: {Number} max height rendered for media (converted to a width with the aspect ratio)
   - dataDom: {String} data-dom of <picture>
-  - videoDetector, poster: passed to render-video
+  - videoDetector, mode, poster: passed to render-video
 
   Usage:
   {% render 'render-image', media: section.settings.image, mediaMobile: section.settings.image_mobile, sizes: '(min-width: 1024px) 50vw, 100vw' %}
@@ -28,6 +28,7 @@
     media: media,
     klassImg: klassImg,
     videoDetector: videoDetector,
+    mode: mode,
     klassPicture: klassPicture,
     poster: poster,
     fetchpriority: fetchpriority,

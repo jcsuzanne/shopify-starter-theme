@@ -1,22 +1,77 @@
-{%- assign poster_img = blank -%}
-{% if poster != blank %}
-  {% assign poster_img = poster | image_url: width: 1980 %}
-{% endif %}
+{%- comment -%}
+  Muted looping video.
 
-{%- assign tag = 'div' -%}
+  Accepts:
+  - media: {Object} Shopify video (required)
+  - poster: {Object} poster image (optional, the video preview image otherwise)
+  - klassPicture / klassImg: {String} classes of the wrapper / <video>
+  - videoDetector: {Boolean} lazy video driven by the <video-detector> Piece: no download until the
+    video is visible in its breakpoint, paused off screen, poster only with reduced motion
+  - mode: {String} with videoDetector: 'video-all' (default), 'video-mobile' (below 1024px) or 'video-desktop'
+  - fetchpriority, loading: without videoDetector, passed to video_tag
+
+  Usage:
+  {% render 'render-video', media: block.settings.video, poster: block.settings.image, videoDetector: true %}
+{%- endcomment -%}
+{%- liquid
+  assign poster_source = poster | default: media.preview_image
+  assign poster_img = blank
+  if poster_source != blank
+    assign poster_img = poster_source | image_url: width: 1980
+  endif
+-%}
 {%- if videoDetector -%}
-  {%- assign tag = 'video-detector' -%}
+  {%- liquid
+    assign mode = mode | default: 'video-all'
+    assign best_source = blank
+    assign best_height = 0
+    for source in media.sources
+      if source.mime_type == 'video/mp4' and source.height <= 1080 and source.height > best_height
+        assign best_source = source
+        assign best_height = source.height
+      endif
+    endfor
+    if best_source == blank
+      assign best_source = media.sources | where: 'mime_type', 'video/mp4' | first
+    endif
+  -%}
+  <video-detector
+    class='{{ klassPicture }}'
+    data-mode='{{ mode }}'>
+    <video
+      data-dom='video'
+      class='{{ klassImg }}'
+      muted
+      loop
+      playsinline
+      preload='none'
+      {% if poster_img != blank %}
+        poster='{{ poster_img }}'
+      {% endif %}
+      {% if best_source.width %}
+        width='{{ best_source.width }}'
+        height='{{ best_source.height }}'
+      {% endif %}>
+      {%- if best_source != blank -%}
+        <source
+          data-src='{{ best_source.url }}'
+          type='{{ best_source.mime_type }}'>
+      {%- endif -%}
+    </video>
+  </video-detector>
+{%- else -%}
+  <div class='{{ klassPicture }}'>
+    {{
+      media
+      | video_tag:
+        autoplay: true,
+        muted: true,
+        loop: true,
+        playsinline: true,
+        class: klassImg,
+        poster: poster_img,
+        fetchpriority: fetchpriority,
+        loading: loading
+    }}
+  </div>
 {%- endif -%}
-<{{ tag }} class='{{ klassPicture }}' data-mode='video-all'>
-  {{
-    media
-    | video_tag:
-      autoplay: true,
-      muted: true,
-      loop: true,
-      class: klassImg,
-      poster: poster_img,
-      fetchpriority: fetchpriority,
-      loading: loading
-  }}
-</{{ tag }}>

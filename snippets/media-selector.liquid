@@ -1,27 +1,85 @@
-{% if video != blank %}
+{%- comment -%}
+  Picks the media to render: video first, then image, with optional mobile media (below 1024px).
+
+  Accepts:
+  - visual / video: {Object} desktop image / video (video wins, image becomes its poster)
+  - visualMobile / videoMobile: {Object} mobile image / video (optional, same priority).
+    Without mobile media, the desktop media is used everywhere.
+  - klassPicture, klassImg, loading, fetchpriority, parallax, setWidth, setHeight,
+    sizes, sizesMobile: passed to render-image / render-video
+  Videos are always lazy (<video-detector>): only the one visible in the current breakpoint downloads.
+
+  Two images: a single <picture> (the browser downloads only one).
+  A video on either side: two elements, toggled with lg:hidden / max-lg:hidden.
+
+  Usage:
+  {% render 'media-selector', visual: section.settings.image, video: section.settings.video, visualMobile: section.settings.image_mobile, videoMobile: section.settings.video_mobile %}
+{%- endcomment -%}
+{%- liquid
+  assign desktop_media = video | default: visual
+  assign mobile_media = videoMobile | default: visualMobile
+  assign mobile_poster = visualMobile | default: visual
+  assign klass_picture_mobile = klassPicture | append: ' lg:hidden'
+  assign klass_picture_desktop = klassPicture | append: ' max-lg:hidden'
+
+  assign is_split = false
+  if mobile_media != blank and desktop_media != blank
+    if video != blank or videoMobile != blank
+      assign is_split = true
+    endif
+  endif
+-%}
+{%- if is_split -%}
   {% render 'render-image',
-    media: video,
-    klassPicture: klassPicture,
+    media: mobile_media,
+    poster: mobile_poster,
+    mode: 'video-mobile',
+    klassPicture: klass_picture_mobile,
     klassImg: klassImg,
     loading: loading,
     fetchpriority: fetchpriority,
-    videoDetector: videoDetector,
+    videoDetector: true,
     parallax: parallax,
+    sizes: sizesMobile,
+    setWidth: setWidth,
+    setHeight: setHeight
+  %}
+  {% render 'render-image',
+    media: desktop_media,
     poster: visual,
+    mode: 'video-desktop',
+    klassPicture: klass_picture_desktop,
+    klassImg: klassImg,
+    loading: loading,
+    fetchpriority: fetchpriority,
+    videoDetector: true,
+    parallax: parallax,
+    sizes: sizes,
     setWidth: setWidth,
     setHeight: setHeight
   %}
-{% endif %}
-{% if visual != blank and video == blank %}
+{%- elsif desktop_media != blank or mobile_media != blank -%}
+  {%- liquid
+    assign media = desktop_media | default: mobile_media
+    assign poster = visual | default: visualMobile
+    assign media_mobile = blank
+    if desktop_media != blank and visualMobile != blank
+      assign media_mobile = visualMobile
+    endif
+  -%}
   {% render 'render-image',
-    media: visual,
+    media: media,
+    mediaMobile: media_mobile,
+    poster: poster,
     klassPicture: klassPicture,
     klassImg: klassImg,
     loading: loading,
     fetchpriority: fetchpriority,
-    videoDetector: videoDetector,
+    videoDetector: true,
     parallax: parallax,
+    sizes: sizes,
+    sizesMobile: sizesMobile,
     setWidth: setWidth,
     setHeight: setHeight
   %}
-{% endif %}
+{%- endif -%}
