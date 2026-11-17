@@ -1,4 +1,8 @@
-import { loadPiece, updateComponents } from './components.js';
+import {
+  loadPiece,
+  loadGlobalComponents,
+  updateComponents,
+} from './components.js';
 
 import './alpine/start.js';
 
@@ -10,11 +14,9 @@ loadPiece('c-app', () => import('/resources/js/components/App.js'))
   // Container Pieces read window.isMobile, set by initDevice() in App's mount
   .then(() =>
     Promise.all([
+      // Layout shell (ui, password…): once. Swup container: replayed by Transitions on each visit
+      loadGlobalComponents(),
       updateComponents(document),
-      // Page transitions (swup) are opt-in: uncomment to enable them on a project
-      // loadPiece('c-transitions', () =>
-      //   import('/resources/js/components/Transitions.js'),
-      // ),
     ]),
   )
   .then(() => document.dispatchEvent(new CustomEvent('pieces:ready')));

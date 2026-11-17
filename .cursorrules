@@ -10,7 +10,7 @@ C'est un thème Shopify (Liquid) construit avec Vite 8 (vite-plugin-shopify), Ta
 - Thème Liquid classique : `layout/`, `sections/`, `snippets/`, `templates/`, `config/`, `locales/`. Pas de dossier `blocks/` pour l'instant (theme blocks possibles si besoin).
 - Sources front dans `resources/`, compilées par Vite dans `assets/` (fichiers `app.*`, générés, ne pas éditer).
   - `resources/js/app.js` : point d'entrée. Charge `<c-app>`, puis les Pieces de `components.js`.
-  - `resources/js/components.js` : registre des Pieces (`loadPiece(tag, importer, context)`), rejoué sur le DOM après chaque visite Swup.
+  - `resources/js/components.js` : registre des Pieces. `GLOBAL_PIECES` (hors du conteneur Swup : chargées une fois) et `PIECES` (dans le conteneur : rejouées sur le nouveau conteneur après chaque visite Swup).
   - `resources/js/components/` : les Pieces. `BasePiece.js` sert de modèle.
   - Data Alpine, toutes enregistrées dans `alpine/start.js` : `DatasApp` (`alpine/xDatasApp.js`), `ProductDatas` (`datas/ProductDatas.js`, lit les variantes dans `<script type="application/json" data-dom="product-variants">` rendu par `snippets/pdp-json.liquid`), `CartDrawer` (`components/CartDrawer.js`).
   - `resources/js/shopify/` : helpers API panier (`CartEvents.js`, `Helpers.js`).
@@ -517,8 +517,8 @@ Dans le define du custom element, préfixe `c-` : "My Piece" → `customElements
 
 Dans le JS, tu crées une classe qui hérite de `Piece` (`import { Piece } from 'piecesjs';`), sur le modèle de `resources/js/components/BasePiece.js` : `constructor` avec `super('MyPiece', {})`, puis `mount` (avec `this.DOM = { view: this, ...this.captureTree() };`) et `unmount`. Pas de commentaires, juste les méthodes.
 
-Ensuite, dans `resources/js/components.js`, tu ajoutes la Piece à `updateComponents` en suivant la structure du fichier :
-`loadPiece('c-my-piece', () => import('/resources/js/components/MyPiece.js'), context),`
+Ensuite, dans `resources/js/components.js`, tu ajoutes la Piece à `PIECES` (rendue dans le conteneur Swup) ou à `GLOBAL_PIECES` (layout, hors conteneur) :
+`['c-my-piece', () => import('/resources/js/components/MyPiece.js')],`
 
 Dans le css, uniquement la Piece en block par défaut :
 `.c-my-piece {
